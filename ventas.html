@@ -18,9 +18,10 @@
     <main class="content hidden" id="clientsView"><section class="notebook"><h2>Clientes</h2><p class="empty">Cuentas y familia del mes, calculado con los precios actuales.</p><div class="sale-list" id="clientList"></div></section></main>
   </div>
   <div class="modal-backdrop hidden" id="paymentModal"><section class="payment-modal"><div class="payment-head"><h2>Pago</h2><button class="close-btn" type="button" onclick="closePayment()">X</button></div><div class="payment-body"><div class="payment-total-label">Total a pagar</div><div class="payment-total" id="paymentTotal">$0</div><div class="payment-status" id="paymentStatus">Faltan $0</div><div class="payment-grid"><div class="payment-row"><label for="cashInput">Efectivo</label><input id="cashInput" type="number" min="0" step="1" placeholder="$ 0"></div><div class="payment-row"><label for="transferInput">Transferencia / QR</label><input id="transferInput" type="number" min="0" step="1" placeholder="$ 0"></div></div><div class="payment-actions"><button class="confirm-pay" type="button" onclick="confirmPayment()">Guardar venta</button></div></div></section></div>
- <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
 <script src="firebase.js"></script>
+
   <script>
     const STORAGE_KEY="panaderia_josue_productos_v1",SALES_KEY="panaderia_josue_ventas_v1",SHIFTS_KEY="panaderia_josue_turnos_v1";
     const customers=[{name:"Consumidor final",type:"normal"},{name:"Lorena",type:"account"},{name:"Ulices",type:"account"},{name:"Josue",type:"family"},{name:"Juan y bety",type:"family"},{name:"Gera",type:"family"},{name:"Laura",type:"family"}];
