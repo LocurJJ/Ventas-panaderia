@@ -25,9 +25,15 @@ function listenOnline(key, callback) {
   db.ref(dbPath(key)).on("value", (snapshot) => {
     const value = snapshot.val();
 
+    let list = [];
+
     if (Array.isArray(value)) {
-      localStorage.setItem(key, JSON.stringify(value));
-      callback(value);
+      list = value.filter(Boolean);
+    } else if (value && typeof value === "object") {
+      list = Object.values(value);
     }
+
+    localStorage.setItem(key, JSON.stringify(list));
+    callback(list);
   });
 }
