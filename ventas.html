@@ -17,6 +17,15 @@
       color: #111827;
     }
 
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
     .app {
       display: flex;
       min-height: 100vh;
@@ -48,7 +57,6 @@
       border: none;
       border-radius: 10px;
       margin-bottom: 10px;
-      cursor: pointer;
       text-align: left;
       background: #f3f4f6;
       font-size: 16px;
@@ -75,11 +83,16 @@
       flex-direction: column;
     }
 
-    .products {
+    .products,
+    .notebook {
       flex: 1;
       background: white;
       border-radius: 20px;
       padding: 20px;
+    }
+
+    .hidden {
+      display: none !important;
     }
 
     .search {
@@ -103,7 +116,6 @@
       color: white;
       padding: 20px;
       border-radius: 15px;
-      cursor: pointer;
       text-align: left;
       min-height: 92px;
     }
@@ -142,8 +154,7 @@
       vertical-align: top;
     }
 
-    .price-edit,
-    .qty-edit {
+    .price-edit {
       width: 92px;
       padding: 7px;
       border: 1px solid #ddd;
@@ -171,7 +182,8 @@
       margin-bottom: 20px;
     }
 
-    .pay-btn {
+    .pay-btn,
+    .confirm-pay {
       width: 100%;
       background: #2563eb;
       color: white;
@@ -179,7 +191,6 @@
       padding: 18px;
       border-radius: 15px;
       font-size: 18px;
-      cursor: pointer;
     }
 
     .back-link {
@@ -188,6 +199,168 @@
       color: #2563eb;
       text-decoration: none;
       font-weight: bold;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: rgba(17, 24, 39, .55);
+      padding: 16px;
+    }
+
+    .payment-modal {
+      width: min(560px, 100%);
+      background: white;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 20px 55px rgba(0, 0, 0, .25);
+    }
+
+    .payment-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 24px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .close-btn,
+    .delete-btn {
+      border: none;
+      border-radius: 999px;
+      background: #f3f4f6;
+      width: 36px;
+      height: 36px;
+      font-weight: bold;
+    }
+
+    .payment-body {
+      padding: 24px;
+      text-align: center;
+    }
+
+    .payment-total-label {
+      font-weight: bold;
+      color: #374151;
+    }
+
+    .payment-total {
+      margin: 8px 0 12px;
+      font-size: 48px;
+      font-weight: bold;
+    }
+
+    .payment-status {
+      display: inline-block;
+      margin-bottom: 20px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      color: #9a6400;
+      font-size: 18px;
+    }
+
+    .payment-status.ok {
+      color: #166534;
+    }
+
+    .payment-grid {
+      display: grid;
+      gap: 12px;
+      text-align: left;
+    }
+
+    .payment-row {
+      display: grid;
+      grid-template-columns: 1fr 170px;
+      gap: 12px;
+      align-items: center;
+      padding: 16px;
+      border: 1px solid #dbe3ef;
+      border-radius: 12px;
+    }
+
+    .payment-row label {
+      font-weight: bold;
+    }
+
+    .payment-row input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      text-align: right;
+    }
+
+    .payment-actions {
+      margin-top: 16px;
+    }
+
+    .notebook h2 {
+      margin-bottom: 16px;
+    }
+
+    .notebook-summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .summary-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 14px;
+      background: #f9fafb;
+    }
+
+    .summary-card strong {
+      display: block;
+      margin-top: 6px;
+      font-size: 20px;
+    }
+
+    .sale-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .sale-item {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .sale-main {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 12px;
+      align-items: center;
+      padding: 14px;
+    }
+
+    .sale-main button:not(.delete-btn) {
+      border: none;
+      background: transparent;
+      text-align: left;
+    }
+
+    .sale-detail {
+      display: none;
+      padding: 0 14px 14px;
+      color: #4b5563;
+      font-size: 14px;
+    }
+
+    .sale-item.open .sale-detail {
+      display: block;
+    }
+
+    .sale-detail ul {
+      margin: 8px 0 0 18px;
     }
 
     @media (max-width: 900px) {
@@ -205,8 +378,15 @@
         padding: 12px;
       }
 
-      .products {
+      .products,
+      .notebook {
         margin-top: 14px;
+      }
+
+      .payment-row,
+      .notebook-summary,
+      .sale-main {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -218,18 +398,18 @@
       <div class="local-name" id="localName">Central</div>
 
       <div class="menu">
-        <button class="active">Vender</button>
-        <button>Turnos</button>
-        <button onclick="window.location.href='index.html'">Productos</button>
-        <button>Cuaderno</button>
-        <button>Reportes</button>
-        <button>Clientes</button>
+        <button class="active" id="sellMenuButton" type="button">Vender</button>
+        <button type="button">Turnos</button>
+        <button type="button" onclick="window.location.href='index.html'">Productos</button>
+        <button id="notebookMenuButton" type="button">Cuaderno</button>
+        <button type="button">Reportes</button>
+        <button type="button">Clientes</button>
       </div>
 
       <a class="back-link" href="index.html">Volver al inicio</a>
     </aside>
 
-    <main class="content">
+    <main class="content" id="sellView">
       <section class="cart">
         <h2>Venta</h2>
 
@@ -249,22 +429,74 @@
 
         <div class="total">
           <h2 id="total">Total: $0</h2>
-          <button class="pay-btn" type="button" onclick="chargeSale()">Cobrar</button>
+          <button class="pay-btn" type="button" onclick="openPayment()">Cobrar</button>
         </div>
       </section>
 
       <section class="products">
-        <input id="searchInput" type="text" class="search" placeholder="Buscar producto o codigo...">
+        <input id="searchInput" type="text" class="search" placeholder="Buscar producto o codigo..." autofocus>
         <div class="product-grid" id="productGrid"></div>
+      </section>
+    </main>
+
+    <main class="content hidden" id="notebookView">
+      <section class="notebook">
+        <h2>Cuaderno</h2>
+        <div class="notebook-summary">
+          <div class="summary-card">
+            Efectivo
+            <strong id="cashSummary">$0</strong>
+          </div>
+          <div class="summary-card">
+            Transferencia
+            <strong id="transferSummary">$0</strong>
+          </div>
+          <div class="summary-card">
+            Mixto
+            <strong id="mixedSummary">$0</strong>
+          </div>
+        </div>
+        <div class="sale-list" id="saleList"></div>
       </section>
     </main>
   </div>
 
+  <div class="modal-backdrop hidden" id="paymentModal">
+    <section class="payment-modal">
+      <div class="payment-head">
+        <h2>Pago</h2>
+        <button class="close-btn" type="button" onclick="closePayment()">X</button>
+      </div>
+      <div class="payment-body">
+        <div class="payment-total-label">Total a pagar</div>
+        <div class="payment-total" id="paymentTotal">$0</div>
+        <div class="payment-status" id="paymentStatus">Faltan $0</div>
+
+        <div class="payment-grid">
+          <div class="payment-row">
+            <label for="cashInput">Efectivo</label>
+            <input id="cashInput" type="number" min="0" step="1" placeholder="$ 0">
+          </div>
+          <div class="payment-row">
+            <label for="transferInput">Transferencia / QR</label>
+            <input id="transferInput" type="number" min="0" step="1" placeholder="$ 0">
+          </div>
+        </div>
+
+        <div class="payment-actions">
+          <button class="confirm-pay" type="button" onclick="confirmPayment()">Guardar venta</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
   <script>
     const STORAGE_KEY = "panaderia_josue_productos_v1";
+    const SALES_KEY = "panaderia_josue_ventas_v1";
     const params = new URLSearchParams(window.location.search);
     const local = params.get("local") || "Central";
     const products = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    let sales = JSON.parse(localStorage.getItem(SALES_KEY) || "[]");
     let cart = [];
 
     document.getElementById("localName").textContent = local;
@@ -275,6 +507,14 @@
         currency: "ARS",
         maximumFractionDigits: 0,
       });
+    }
+
+    function getCartTotal() {
+      return cart.reduce((sum, item) => sum + Number(item.total || 0), 0);
+    }
+
+    function saveSales() {
+      localStorage.setItem(SALES_KEY, JSON.stringify(sales));
     }
 
     function renderProducts() {
@@ -352,7 +592,7 @@
 
       cart.forEach((item) => {
         total += item.total;
-        const quantityText = item.weighable ? `${formatKg(item.quantity)}` : item.quantity;
+        const quantityText = item.weighable ? formatKg(item.quantity) : item.quantity;
         const note = item.weighable ? `<span class="item-note">${formatMoney(item.unitPrice)} por kg</span>` : "";
 
         container.innerHTML += `
@@ -398,19 +638,184 @@
       renderCart();
     }
 
-    function chargeSale() {
-      const total = cart.reduce((sum, item) => sum + item.total, 0);
+    function openPayment() {
+      const total = getCartTotal();
       if (total <= 0) {
         alert("No hay productos para cobrar.");
         return;
       }
-      alert(`Total a cobrar: ${formatMoney(total)}`);
+
+      document.getElementById("paymentTotal").textContent = formatMoney(total);
+      document.getElementById("cashInput").value = "";
+      document.getElementById("transferInput").value = "";
+      document.getElementById("paymentModal").classList.remove("hidden");
+      updatePaymentStatus();
+      setTimeout(() => document.getElementById("cashInput").focus(), 50);
+    }
+
+    function closePayment() {
+      document.getElementById("paymentModal").classList.add("hidden");
+    }
+
+    function updatePaymentStatus() {
+      const total = getCartTotal();
+      const cash = Number(document.getElementById("cashInput").value || 0);
+      const transfer = Number(document.getElementById("transferInput").value || 0);
+      const paid = cash + transfer;
+      const status = document.getElementById("paymentStatus");
+
+      status.classList.remove("ok");
+      if (paid < total) {
+        status.textContent = `Faltan ${formatMoney(total - paid)}`;
+        return;
+      }
+
+      if (cash > 0 && paid > total) {
+        status.textContent = `Vuelto ${formatMoney(paid - total)}`;
+        status.classList.add("ok");
+        return;
+      }
+
+      status.textContent = "Pago completo";
+      status.classList.add("ok");
+    }
+
+    function confirmPayment() {
+      const total = getCartTotal();
+      const cash = Number(document.getElementById("cashInput").value || 0);
+      const transfer = Number(document.getElementById("transferInput").value || 0);
+      const paid = cash + transfer;
+
+      if (paid < total) {
+        alert(`Faltan ${formatMoney(total - paid)}.`);
+        return;
+      }
+
+      const sale = {
+        id: crypto.randomUUID(),
+        local,
+        date: new Date().toISOString(),
+        items: cart.map((item) => ({ ...item })),
+        total,
+        cash,
+        transfer,
+        change: Math.max(0, paid - total),
+        method: getPaymentMethod(cash, transfer),
+      };
+
+      sales.unshift(sale);
+      saveSales();
+      cart = [];
+      closePayment();
+      renderCart();
+      renderNotebook();
+      alert("Venta guardada.");
+    }
+
+    function getPaymentMethod(cash, transfer) {
+      if (cash > 0 && transfer > 0) return "Mixto";
+      if (transfer > 0) return "Transferencia";
+      return "Efectivo";
+    }
+
+    function showSellView() {
+      document.getElementById("sellView").classList.remove("hidden");
+      document.getElementById("notebookView").classList.add("hidden");
+      document.getElementById("sellMenuButton").classList.add("active");
+      document.getElementById("notebookMenuButton").classList.remove("active");
+    }
+
+    function showNotebookView() {
+      document.getElementById("sellView").classList.add("hidden");
+      document.getElementById("notebookView").classList.remove("hidden");
+      document.getElementById("sellMenuButton").classList.remove("active");
+      document.getElementById("notebookMenuButton").classList.add("active");
+      renderNotebook();
+    }
+
+    function renderNotebook() {
+      const localSales = sales.filter((sale) => sale.local === local);
+      const cashTotal = localSales.reduce((sum, sale) => sum + Number(sale.cash || 0), 0);
+      const transferTotal = localSales.reduce((sum, sale) => sum + Number(sale.transfer || 0), 0);
+      const mixedTotal = localSales
+        .filter((sale) => sale.method === "Mixto")
+        .reduce((sum, sale) => sum + Number(sale.total || 0), 0);
+
+      document.getElementById("cashSummary").textContent = formatMoney(cashTotal);
+      document.getElementById("transferSummary").textContent = formatMoney(transferTotal);
+      document.getElementById("mixedSummary").textContent = formatMoney(mixedTotal);
+
+      const list = document.getElementById("saleList");
+      if (localSales.length === 0) {
+        list.innerHTML = "<p class='empty'>Todavia no hay ventas guardadas.</p>";
+        return;
+      }
+
+      list.innerHTML = localSales.map((sale) => {
+        const time = new Date(sale.date).toLocaleString("es-AR", {
+          day: "2-digit",
+          month: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+        const detailItems = sale.items.map((item) => `
+          <li>${escapeHtml(item.name)} - ${item.weighable ? formatKg(item.quantity) : item.quantity} - ${formatMoney(item.total)}</li>
+        `).join("");
+
+        return `
+          <article class="sale-item" id="sale-${sale.id}">
+            <div class="sale-main">
+              <button type="button" onclick="toggleSaleDetail('${sale.id}')">
+                <strong>${sale.method}</strong>
+                <span class="item-note">${time} | ${sale.local}</span>
+              </button>
+              <strong>${formatMoney(sale.total)}</strong>
+              <button class="delete-btn" type="button" onclick="deleteSale('${sale.id}')">X</button>
+            </div>
+            <div class="sale-detail">
+              <div>Efectivo: ${formatMoney(sale.cash)} | Transferencia: ${formatMoney(sale.transfer)} | Vuelto: ${formatMoney(sale.change)}</div>
+              <ul>${detailItems}</ul>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function toggleSaleDetail(id) {
+      document.getElementById(`sale-${id}`)?.classList.toggle("open");
+    }
+
+    function deleteSale(id) {
+      const ok = confirm("Seguro que queres borrar esta venta?");
+      if (!ok) return;
+
+      sales = sales.filter((sale) => sale.id !== id);
+      saveSales();
+      renderNotebook();
     }
 
     document.getElementById("searchInput").addEventListener("input", renderProducts);
+    document.getElementById("searchInput").addEventListener("keydown", (event) => {
+      if (event.key !== "Enter") return;
+
+      const search = event.target.value.trim().toLowerCase();
+      const exactMatch = products.find((product) => String(product.barcode || "").toLowerCase() === search);
+      if (!exactMatch) return;
+
+      event.preventDefault();
+      addProduct(exactMatch.id);
+      event.target.value = "";
+      renderProducts();
+    });
+
+    document.getElementById("cashInput").addEventListener("input", updatePaymentStatus);
+    document.getElementById("transferInput").addEventListener("input", updatePaymentStatus);
+    document.getElementById("sellMenuButton").addEventListener("click", showSellView);
+    document.getElementById("notebookMenuButton").addEventListener("click", showNotebookView);
 
     renderProducts();
     renderCart();
+    renderNotebook();
   </script>
 </body>
 </html>
