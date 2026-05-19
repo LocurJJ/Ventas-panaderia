@@ -1,302 +1,416 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ventas</title>
-
   <style>
-
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-      font-family:Arial;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
     }
 
-    body{
-      background:#f4f6fb;
+    body {
+      background: #f4f6fb;
+      color: #111827;
     }
 
-    .app{
-      display:flex;
-      height:100vh;
+    .app {
+      display: flex;
+      min-height: 100vh;
     }
 
-    .sidebar{
-      width:220px;
-      background:white;
-      border-right:1px solid #ddd;
-      padding:20px;
+    .sidebar {
+      width: 220px;
+      background: white;
+      border-right: 1px solid #ddd;
+      padding: 20px;
     }
 
-    .logo{
-      font-size:28px;
-      font-weight:bold;
-      color:#2563eb;
-      margin-bottom:30px;
+    .logo {
+      font-size: 28px;
+      font-weight: bold;
+      color: #2563eb;
+      margin-bottom: 8px;
     }
 
-    .menu button{
-      width:100%;
-      padding:14px;
-      border:none;
-      border-radius:10px;
-      margin-bottom:10px;
-      cursor:pointer;
-      text-align:left;
-      background:#f3f4f6;
-      font-size:16px;
+    .local-name {
+      color: #6b7280;
+      margin-bottom: 24px;
+      font-size: 14px;
     }
 
-    .menu button.active{
-      background:#2563eb;
-      color:white;
+    .menu button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      text-align: left;
+      background: #f3f4f6;
+      font-size: 16px;
     }
 
-    .content{
-      flex:1;
-      padding:20px;
-      display:flex;
-      gap:20px;
+    .menu button.active {
+      background: #2563eb;
+      color: white;
     }
 
-    .cart{
-      width:420px;
-      background:white;
-      border-radius:20px;
-      padding:20px;
-      display:flex;
-      flex-direction:column;
+    .content {
+      flex: 1;
+      padding: 20px;
+      display: flex;
+      gap: 20px;
     }
 
-    .products{
-      flex:1;
-      background:white;
-      border-radius:20px;
-      padding:20px;
+    .cart {
+      width: 430px;
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
     }
 
-    .search{
-      width:100%;
-      padding:15px;
-      border-radius:12px;
-      border:1px solid #ddd;
-      margin-bottom:20px;
-      font-size:16px;
+    .products {
+      flex: 1;
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
     }
 
-    .product-grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
-      gap:15px;
+    .search {
+      width: 100%;
+      padding: 15px;
+      border-radius: 12px;
+      border: 1px solid #ddd;
+      margin-bottom: 20px;
+      font-size: 16px;
     }
 
-    .product{
-      background:#2563eb;
-      color:white;
-      padding:20px;
-      border-radius:15px;
-      cursor:pointer;
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 15px;
     }
 
-    .product small{
-      display:block;
-      margin-top:10px;
+    .product {
+      border: none;
+      background: #2563eb;
+      color: white;
+      padding: 20px;
+      border-radius: 15px;
+      cursor: pointer;
+      text-align: left;
+      min-height: 92px;
     }
 
-   .cart-table{
-  width:100%;
-  border-collapse:collapse;
-  margin-top:15px;
-}
-
-.cart-table th{
-  text-align:left;
-  font-size:13px;
-  color:#6b7280;
-  padding-bottom:10px;
-}
-
-.cart-table td{
-  padding:10px 0;
-  border-bottom:1px solid #eee;
-  font-size:14px;
-}
-
-.price-edit{
-  width:90px;
-  padding:6px;
-  border:1px solid #ddd;
-  border-radius:8px;
-}
-
-    .total{
-      margin-top:auto;
-      padding-top:20px;
+    .product strong,
+    .product small {
+      display: block;
     }
 
-    .total h2{
-      margin-bottom:20px;
+    .product small {
+      margin-top: 10px;
+      color: #dbeafe;
     }
 
-    .pay-btn{
-      width:100%;
-      background:#2563eb;
-      color:white;
-      border:none;
-      padding:18px;
-      border-radius:15px;
-      font-size:18px;
-      cursor:pointer;
+    .product.weighable {
+      background: #0f766e;
     }
 
+    .cart-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    .cart-table th {
+      text-align: left;
+      font-size: 13px;
+      color: #6b7280;
+      padding-bottom: 10px;
+    }
+
+    .cart-table td {
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+      vertical-align: top;
+    }
+
+    .price-edit,
+    .qty-edit {
+      width: 92px;
+      padding: 7px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+
+    .item-note {
+      display: block;
+      margin-top: 4px;
+      color: #6b7280;
+      font-size: 12px;
+    }
+
+    .empty {
+      margin-top: 20px;
+      color: #6b7280;
+    }
+
+    .total {
+      margin-top: auto;
+      padding-top: 20px;
+    }
+
+    .total h2 {
+      margin-bottom: 20px;
+    }
+
+    .pay-btn {
+      width: 100%;
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 18px;
+      border-radius: 15px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .back-link {
+      display: block;
+      margin-top: 24px;
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    @media (max-width: 900px) {
+      .app,
+      .content {
+        display: block;
+      }
+
+      .sidebar,
+      .cart {
+        width: auto;
+      }
+
+      .content {
+        padding: 12px;
+      }
+
+      .products {
+        margin-top: 14px;
+      }
+    }
   </style>
 </head>
 <body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">Josue</div>
+      <div class="local-name" id="localName">Central</div>
 
-<div class="app">
+      <div class="menu">
+        <button class="active">Vender</button>
+        <button>Turnos</button>
+        <button onclick="window.location.href='index.html'">Productos</button>
+        <button>Cuaderno</button>
+        <button>Reportes</button>
+        <button>Clientes</button>
+      </div>
 
-  <aside class="sidebar">
+      <a class="back-link" href="index.html">Volver al inicio</a>
+    </aside>
 
-    <div class="logo">
-      Josué
-    </div>
+    <main class="content">
+      <section class="cart">
+        <h2>Venta</h2>
 
-    <div class="menu">
-      <button class="active">⚡ Vender</button>
-      <button>🕒 Turnos</button>
-      <button>📦 Productos</button>
-      <button>📒 Cuaderno</button>
-      <button>📊 Reportes</button>
-      <button>👤 Clientes</button>
-    </div>
+        <table class="cart-table">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Cant.</th>
+              <th>Precio</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="cartItems"></tbody>
+        </table>
 
-  </aside>
+        <p class="empty" id="emptyCart">Todavia no agregaste productos.</p>
 
-  <main class="content">
+        <div class="total">
+          <h2 id="total">Total: $0</h2>
+          <button class="pay-btn" type="button" onclick="chargeSale()">Cobrar</button>
+        </div>
+      </section>
 
-    <section class="cart">
+      <section class="products">
+        <input id="searchInput" type="text" class="search" placeholder="Buscar producto o codigo...">
+        <div class="product-grid" id="productGrid"></div>
+      </section>
+    </main>
+  </div>
 
-      <h2>Venta</h2>
+  <script>
+    const STORAGE_KEY = "panaderia_josue_productos_v1";
+    const params = new URLSearchParams(window.location.search);
+    const local = params.get("local") || "Central";
+    const products = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    let cart = [];
 
-      <table class="cart-table">
-  <thead>
-    <tr>
-      <th>Producto</th>
-      <th>Cant.</th>
-      <th>Precio</th>
-    </tr>
-  </thead>
-  <tbody id="cartItems"></tbody>
-</table>
+    document.getElementById("localName").textContent = local;
 
-      <div class="total">
-        <h2 id="total">
-          Total: $0
-        </h2>
+    function formatMoney(value) {
+      return Number(value || 0).toLocaleString("es-AR", {
+        style: "currency",
+        currency: "ARS",
+        maximumFractionDigits: 0,
+      });
+    }
 
-        <button class="pay-btn">
-          Cobrar
+    function renderProducts() {
+      const search = document.getElementById("searchInput").value.trim().toLowerCase();
+      const filtered = products.filter((product) => {
+        const text = `${product.name} ${product.barcode || ""}`.toLowerCase();
+        return text.includes(search);
+      });
+
+      const grid = document.getElementById("productGrid");
+      if (filtered.length === 0) {
+        grid.innerHTML = "<p class='empty'>No hay productos cargados. Agregalos desde Admin.</p>";
+        return;
+      }
+
+      grid.innerHTML = filtered.map((product) => `
+        <button class="product ${product.weighable ? "weighable" : ""}" type="button" onclick="addProduct('${product.id}')">
+          <strong>${escapeHtml(product.name)}</strong>
+          <small>${formatMoney(product.salePrice)}${product.weighable ? "/kg" : ""}</small>
         </button>
-      </div>
+      `).join("");
+    }
 
-    </section>
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
 
-    <section class="products">
+    function addProduct(id) {
+      const product = products.find((item) => item.id === id);
+      if (!product) return;
 
-      <input
-        type="text"
-        class="search"
-        placeholder="Buscar producto..."
-      >
+      if (product.weighable) {
+        cart.push({
+          id: crypto.randomUUID(),
+          productId: product.id,
+          name: product.name,
+          unitPrice: Number(product.salePrice),
+          quantity: 1,
+          total: Number(product.salePrice),
+          weighable: true,
+        });
+      } else {
+        const existing = cart.find((item) => item.productId === product.id && !item.weighable);
+        if (existing) {
+          existing.quantity += 1;
+          existing.total = existing.quantity * existing.unitPrice;
+        } else {
+          cart.push({
+            id: crypto.randomUUID(),
+            productId: product.id,
+            name: product.name,
+            unitPrice: Number(product.salePrice),
+            quantity: 1,
+            total: Number(product.salePrice),
+            weighable: false,
+          });
+        }
+      }
 
-      <div class="product-grid">
+      renderCart();
+    }
 
-        <div class="product" onclick="addProduct('Pan',2800)">
-          Pan
-          <small>$2800/kg</small>
-        </div>
+    function renderCart() {
+      const container = document.getElementById("cartItems");
+      const emptyCart = document.getElementById("emptyCart");
+      let total = 0;
 
-        <div class="product" onclick="addProduct('Leche',1600)">
-          Leche
-          <small>$1600</small>
-        </div>
+      emptyCart.style.display = cart.length ? "none" : "block";
+      container.innerHTML = "";
 
-        <div class="product" onclick="addProduct('Facturas',500)">
-          Facturas
-          <small>$500</small>
-        </div>
+      cart.forEach((item) => {
+        total += item.total;
+        const quantityText = item.weighable ? `${formatKg(item.quantity)}` : item.quantity;
+        const note = item.weighable ? `<span class="item-note">${formatMoney(item.unitPrice)} por kg</span>` : "";
 
-      </div>
+        container.innerHTML += `
+          <tr>
+            <td>
+              ${escapeHtml(item.name)}
+              ${note}
+            </td>
+            <td>${quantityText}</td>
+            <td>
+              <input class="price-edit" type="number" value="${item.total}" onchange="changePrice('${item.id}', this.value)">
+            </td>
+            <td>
+              <button type="button" onclick="removeItem('${item.id}')">X</button>
+            </td>
+          </tr>
+        `;
+      });
 
-    </section>
+      document.getElementById("total").innerText = `Total: ${formatMoney(total)}`;
+    }
 
-  </main>
+    function formatKg(quantity) {
+      const grams = Math.round(Number(quantity || 0) * 1000);
+      if (grams < 1000) return `${grams} g`;
+      return `${Number(quantity || 0).toFixed(3).replace(/\.?0+$/, "")} kg`;
+    }
 
-</div>
+    function changePrice(id, newPrice) {
+      const item = cart.find((product) => product.id === id);
+      if (!item) return;
 
-<script>
+      item.total = Number(newPrice || 0);
+      if (item.weighable) {
+        item.quantity = item.unitPrice > 0 ? item.total / item.unitPrice : 0;
+      }
 
-let cart = [];
+      renderCart();
+    }
 
-function addProduct(name, price){
+    function removeItem(id) {
+      cart = cart.filter((item) => item.id !== id);
+      renderCart();
+    }
 
-  let existing = cart.find(item => item.name === name);
+    function chargeSale() {
+      const total = cart.reduce((sum, item) => sum + item.total, 0);
+      if (total <= 0) {
+        alert("No hay productos para cobrar.");
+        return;
+      }
+      alert(`Total a cobrar: ${formatMoney(total)}`);
+    }
 
-  if(existing){
-    existing.quantity += 1;
-    existing.total = existing.quantity * existing.price;
-  }else{
-    cart.push({
-      name: name,
-      quantity: 1,
-      price: price,
-      total: price
-    });
-  }
+    document.getElementById("searchInput").addEventListener("input", renderProducts);
 
-  renderCart();
-}
-
-function renderCart(){
-
-  let container = document.getElementById("cartItems");
-
-  container.innerHTML = "";
-
-  let total = 0;
-
-  cart.forEach((product, index) => {
-
-    total += product.total;
-
-    container.innerHTML += `
-      <tr>
-        <td>${product.name}</td>
-        <td>${product.quantity}</td>
-        <td>
-          <input
-            class="price-edit"
-            type="number"
-            value="${product.total}"
-            onchange="changePrice(${index}, this.value)"
-          >
-        </td>
-      </tr>
-    `;
-  });
-
-  document.getElementById("total").innerText =
-    "Total: $" + total;
-}
-
-function changePrice(index, newPrice){
-  cart[index].total = Number(newPrice);
-  renderCart();
-}
-
-</script>
-
+    renderProducts();
+    renderCart();
+  </script>
 </body>
 </html>
