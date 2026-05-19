@@ -1,7 +1,8 @@
-
 const PASSWORD = "1704";
 const STORAGE_KEY = "panaderia_josue_productos_v1";
 const WHATSAPP_KEY = "panaderia_josue_whatsapp_v1";
+const SALES_KEY = "panaderia_josue_ventas_v1";
+const SHIFTS_KEY = "panaderia_josue_turnos_v1";
 
 const suppliers = [
   "Oscar",
@@ -47,6 +48,11 @@ const weighableInput = $("weighableInput");
 const formTitle = $("formTitle");
 const deleteProductButton = $("deleteProductButton");
 const whatsappMessage = $("whatsappMessage");
+const adminTitle = $("adminTitle");
+const adminProductsView = $("adminProductsView");
+const adminReportsView = $("adminReportsView");
+const adminReportLocalSelect = $("adminReportLocalSelect");
+const adminReportList = $("adminReportList");
 
 function loadProducts() {
   return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
@@ -58,6 +64,16 @@ function saveProducts() {
 
 function loadWhatsappProducts() {
   return JSON.parse(localStorage.getItem(WHATSAPP_KEY) || "[]");
+}
+
+function loadList(key) {
+  try {
+    const value = JSON.parse(localStorage.getItem(key) || "[]");
+    return Array.isArray(value) ? value : [];
+  } catch (error) {
+    console.warn(`No se pudo leer ${key}.`, error);
+    return [];
+  }
 }
 
 function saveWhatsappProducts() {
@@ -75,6 +91,19 @@ function formatMoney(value) {
     style: "currency",
     currency: "ARS",
     maximumFractionDigits: 0,
+  });
+}
+
+function formatDateOnly(value) {
+  if (!value) return "-";
+  return new Date(value).toLocaleDateString("es-AR");
+}
+
+function formatTimeOnly(value) {
+  if (!value) return "-";
+  return new Date(value).toLocaleTimeString("es-AR", {
+    hour: "2-digit",
+    minute: "2-digit",
   });
 }
 
@@ -204,6 +233,71 @@ function renderWhatsappMessage() {
     .join("\n");
 }
 
+function showAdminProducts() {
+  adminTitle.textContent = "Productos";
+  adminProductsView.classList.remove("hidden");
+  adminReportsView.classList.add("hidden");
+}
+
+function showAdminReports() {
+  adminTitle.textContent = "Reportes";
+  adminProductsView.classList.add("hidden");
+  adminReportsView.classList.remove("hidden");
+  renderAdminReports();
+}
+
+function getShiftSummary(shift, sales) {
+  const shiftSales = sales.filter((sale) => sale.shiftId === shift.id);
+  const expenses = shift.expenses || [];
+  const totalSales = shiftSales.reduce((sum, sale) => sum + Number(sale.total || 0), 0);
+  const cashSales = shiftSales.reduce((sum, sale) => sum + Number(sale.cash || 0) - Number(sale.change || 0), 0);
+  const digitalSales = shiftSales.reduce((sum, sale) => sum + Number(sale.transfer || 0), 0);
+  const expenseTotal = expenses.reduce((sum, expense) => sum + Number(expense.amount || 0), 0);
+  const expectedCash = Number(shift.initialCash || 0) + cashSales - expenseTotal;
+  return { shiftSales, totalSales, cashSales, digitalSales, expenseTotal, expectedCash };
+}
+
+function renderAdminReports() {
+  const selectedLocal = adminReportLocalSelect.value;
+  const sales = loadList(SALES_KEY);
+  const shifts = loadList(SHIFTS_KEY);
+  const closedShifts = shifts
+    .filter((shift) => shift.local === selectedLocal && shift.status === "closed")
+    .sort((a, b) => new Date(b.closedAt) - new Date(a.closedAt));
+
+  if (closedShifts.length === 0) {
+    adminReportList.innerHTML = `<p class="muted">Todavia no hay turnos cerrados para ${selectedLocal}.</p>`;
+    return;
+  }
+
+  adminReportList.innerHTML = closedShifts.map((shift) => {
+    const summary = getShiftSummary(shift, sales);
+    const difference = Number(shift.countedCash || 0) - summary.expectedCash;
+    const detail = summary.shiftSales.map((sale) => {
+      const items = sale.items.map((item) => item.name).join(", ");
+      return `<li>Venta ${sale.saleNumber || "-"}: ${escapeHtml(items)} - ${formatMoney(sale.total)} - ${escapeHtml(sale.method)}</li>`;
+    }).join("");
+
+    return `
+      <article class="report-card">
+        <h3>${escapeHtml(selectedLocal)}</h3>
+        <p class="muted">Fecha ${formatDateOnly(shift.openedAt)} - Desde ${formatTimeOnly(shift.openedAt)} h hasta ${formatTimeOnly(shift.closedAt)} h</p>
+        <div class="report-row"><span>Total vendido</span><strong>${formatMoney(summary.totalSales)}</strong></div>
+        <div class="report-row"><span>Efectivo</span><strong>${formatMoney(summary.cashSales)}</strong></div>
+        <div class="report-row"><span>Digital</span><strong>${formatMoney(summary.digitalSales)}</strong></div>
+        <div class="report-row"><span>Gastos</span><strong>${formatMoney(summary.expenseTotal)}</strong></div>
+        <div class="report-row"><span>Cierre de caja teorico</span><strong>${formatMoney(summary.expectedCash)}</strong></div>
+        <div class="report-row"><span>Cerro realmente con</span><strong>${formatMoney(shift.countedCash)}</strong></div>
+        <div class="report-row"><span>Diferencia</span><strong>${formatMoney(difference)}</strong></div>
+        <div class="report-detail">
+          <strong>Detalle</strong>
+          <ul>${detail || "<li>Sin ventas en este turno.</li>"}</ul>
+        </div>
+      </article>
+    `;
+  }).join("");
+}
+
 productForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const product = getFormProduct();
@@ -277,6 +371,7 @@ passwordForm.addEventListener("submit", (event) => {
   if (passwordInput.value === PASSWORD) {
     passwordDialog.close();
     showView(adminView);
+    showAdminProducts();
     renderProducts();
     renderWhatsappMessage();
   } else {
@@ -287,6 +382,9 @@ passwordForm.addEventListener("submit", (event) => {
 
 cancelPasswordButton.addEventListener("click", () => passwordDialog.close());
 $("backHomeFromAdmin").addEventListener("click", () => showView(welcomeView));
+$("adminProductsButton").addEventListener("click", showAdminProducts);
+$("adminReportsButton").addEventListener("click", showAdminReports);
+adminReportLocalSelect.addEventListener("change", renderAdminReports);
 
 document.querySelectorAll("[data-open-sales]").forEach((button) => {
   button.addEventListener("click", () => {
