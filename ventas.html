@@ -5,78 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ventas</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
-    body { background: #f4f6fb; color: #111827; }
-    button, input { font: inherit; }
-    button { cursor: pointer; }
-    .app { display: flex; min-height: 100vh; }
-    .sidebar { width: 220px; background: white; border-right: 1px solid #ddd; padding: 20px; }
-    .logo { font-size: 28px; font-weight: bold; color: #2563eb; margin-bottom: 8px; }
-    .local-name { color: #6b7280; margin-bottom: 24px; font-size: 14px; }
-    .menu button { width: 100%; padding: 14px; border: none; border-radius: 10px; margin-bottom: 10px; text-align: left; background: #f3f4f6; font-size: 16px; }
-    .menu button.active { background: #2563eb; color: white; }
-    .content { flex: 1; padding: 20px; display: flex; gap: 20px; }
-    .cart { width: 430px; background: white; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; }
-    .products, .notebook, .shift-panel, .report-panel { flex: 1; background: white; border-radius: 20px; padding: 20px; }
-    .hidden { display: none !important; }
-    .search { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #ddd; margin-bottom: 20px; font-size: 16px; }
-    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
-    .product { border: none; background: #2563eb; color: white; padding: 20px; border-radius: 15px; text-align: left; min-height: 92px; }
-    .product strong, .product small { display: block; }
-    .product small { margin-top: 10px; color: #dbeafe; }
-    .product.weighable { background: #0f766e; }
-    .cart-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-    .cart-table th { text-align: left; font-size: 13px; color: #6b7280; padding-bottom: 10px; }
-    .cart-table td { padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px; vertical-align: top; }
-    .price-edit { width: 92px; padding: 7px; border: 1px solid #ddd; border-radius: 8px; }
-    .item-note { display: block; margin-top: 4px; color: #6b7280; font-size: 12px; }
-    .empty { margin-top: 20px; color: #6b7280; }
-    .total { margin-top: auto; padding-top: 20px; }
-    .total h2 { margin-bottom: 20px; }
-    .pay-btn, .confirm-pay { width: 100%; background: #2563eb; color: white; border: none; padding: 18px; border-radius: 15px; font-size: 18px; }
-    .back-link { display: block; margin-top: 24px; color: #2563eb; text-decoration: none; font-weight: bold; }
-    .modal-backdrop { position: fixed; inset: 0; display: grid; place-items: center; background: rgba(17, 24, 39, .55); padding: 16px; }
-    .payment-modal { width: min(560px, 100%); background: white; border-radius: 18px; overflow: hidden; box-shadow: 0 20px 55px rgba(0, 0, 0, .25); }
-    .payment-head { display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; border-bottom: 1px solid #eee; }
-    .close-btn, .delete-btn { border: none; border-radius: 999px; background: #f3f4f6; width: 36px; height: 36px; font-weight: bold; }
-    .payment-body { padding: 24px; text-align: center; }
-    .payment-total-label { font-weight: bold; color: #374151; }
-    .payment-total { margin: 8px 0 12px; font-size: 48px; font-weight: bold; }
-    .payment-status { display: inline-block; margin-bottom: 20px; padding: 8px 14px; border-radius: 999px; background: #f3f4f6; color: #9a6400; font-size: 18px; }
-    .payment-status.ok { color: #166534; }
-    .payment-grid { display: grid; gap: 12px; text-align: left; }
-    .payment-row { display: grid; grid-template-columns: 1fr 170px; gap: 12px; align-items: center; padding: 16px; border: 1px solid #dbe3ef; border-radius: 12px; }
-    .payment-row label { font-weight: bold; }
-    .payment-row input { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 10px; text-align: right; }
-    .payment-actions { margin-top: 16px; }
-    .notebook h2, .shift-panel h2, .report-panel h2 { margin-bottom: 16px; }
-    .shift-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 380px); gap: 18px; }
-    .shift-box, .report-card { border: 1px solid #e5e7eb; border-radius: 14px; padding: 16px; background: #fff; }
-    .shift-row { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f0f2f5; }
-    .shift-row strong { text-align: right; }
-    .shift-form { display: grid; gap: 10px; margin-top: 12px; }
-    .shift-form input { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 10px; }
-    .secondary-btn { border: none; border-radius: 12px; background: #eef2ff; color: #1d4ed8; padding: 12px; font-weight: bold; }
-    .danger-wide { width: 100%; margin-top: 14px; border: none; border-radius: 14px; background: #dc2626; color: white; padding: 15px; font-weight: bold; }
-    .sale-list { display: grid; gap: 10px; }
-    .sale-item { border: 1px solid #e5e7eb; border-radius: 12px; background: #fff; overflow: hidden; }
-    .sale-main { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center; padding: 14px; }
-    .sale-main button:not(.delete-btn) { border: none; background: transparent; text-align: left; }
-    .sale-detail { display: none; padding: 0 14px 14px; color: #4b5563; font-size: 14px; }
-    .sale-item.open .sale-detail { display: block; }
-    .report-card .sale-detail { display: block; padding: 12px 0 0; }
-    .sale-detail ul { margin: 8px 0 0 18px; }
-    .report-toolbar { display: flex; gap: 12px; align-items: center; margin-bottom: 18px; }
-    .report-toolbar select { padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 10px; font: inherit; }
-    .report-card { margin-bottom: 12px; }
-    .report-card h3 { margin-bottom: 8px; }
-    @media (max-width: 900px) {
-      .app, .content { display: block; }
-      .sidebar, .cart { width: auto; }
-      .content { padding: 12px; }
-      .products, .notebook, .shift-panel, .report-panel { margin-top: 14px; }
-      .payment-row, .shift-grid, .sale-main { grid-template-columns: 1fr; }
-    }
+    *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+    body{background:#f4f6fb;color:#111827}button,input{font:inherit}button{cursor:pointer}
+    .app{display:flex;min-height:100vh}.sidebar{width:220px;background:white;border-right:1px solid #ddd;padding:20px}
+    .logo{font-size:28px;font-weight:bold;color:#2563eb;margin-bottom:8px}.local-name{color:#6b7280;margin-bottom:24px;font-size:14px}
+    .menu button{width:100%;padding:14px;border:none;border-radius:10px;margin-bottom:10px;text-align:left;background:#f3f4f6;font-size:16px}
+    .menu button.active{background:#2563eb;color:white}.content{flex:1;padding:20px;display:flex;gap:20px}.hidden{display:none!important}
+    .cart{width:430px;background:white;border-radius:20px;padding:20px;display:flex;flex-direction:column}.products,.notebook,.shift-panel{flex:1;background:white;border-radius:20px;padding:20px}
+    .search{width:100%;padding:15px;border-radius:12px;border:1px solid #ddd;margin-bottom:20px;font-size:16px}.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:15px}
+    .product{border:none;background:#2563eb;color:white;padding:20px;border-radius:15px;text-align:left;min-height:92px}.product strong,.product small{display:block}.product small{margin-top:10px;color:#dbeafe}.product.weighable{background:#0f766e}
+    .cart-table{width:100%;border-collapse:collapse;margin-top:15px}.cart-table th{text-align:left;font-size:13px;color:#6b7280;padding-bottom:10px}.cart-table td{padding:10px 0;border-bottom:1px solid #eee;font-size:14px;vertical-align:top}
+    .price-edit{width:92px;padding:7px;border:1px solid #ddd;border-radius:8px}.item-note{display:block;margin-top:4px;color:#6b7280;font-size:12px}.empty{margin-top:20px;color:#6b7280}
+    .total{margin-top:auto;padding-top:20px}.total h2{margin-bottom:20px}.pay-btn,.confirm-pay{width:100%;background:#2563eb;color:white;border:none;padding:18px;border-radius:15px;font-size:18px}.back-link{display:block;margin-top:24px;color:#2563eb;text-decoration:none;font-weight:bold}
+    .modal-backdrop{position:fixed;inset:0;display:grid;place-items:center;background:rgba(17,24,39,.55);padding:16px}.payment-modal{width:min(560px,100%);background:white;border-radius:18px;overflow:hidden;box-shadow:0 20px 55px rgba(0,0,0,.25)}
+    .payment-head{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;border-bottom:1px solid #eee}.close-btn,.delete-btn{border:none;border-radius:999px;background:#f3f4f6;width:36px;height:36px;font-weight:bold}
+    .payment-body{padding:24px;text-align:center}.payment-total-label{font-weight:bold;color:#374151}.payment-total{margin:8px 0 12px;font-size:48px;font-weight:bold}.payment-status{display:inline-block;margin-bottom:20px;padding:8px 14px;border-radius:999px;background:#f3f4f6;color:#9a6400;font-size:18px}.payment-status.ok{color:#166534}
+    .payment-grid{display:grid;gap:12px;text-align:left}.payment-row{display:grid;grid-template-columns:1fr 170px;gap:12px;align-items:center;padding:16px;border:1px solid #dbe3ef;border-radius:12px}.payment-row label{font-weight:bold}.payment-row input{width:100%;padding:12px;border:1px solid #d1d5db;border-radius:10px;text-align:right}.payment-actions{margin-top:16px}
+    .notebook h2,.shift-panel h2{margin-bottom:16px}.shift-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,380px);gap:18px}.shift-box{border:1px solid #e5e7eb;border-radius:14px;padding:16px;background:#fff}.shift-row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #f0f2f5}.shift-row strong{text-align:right}.shift-form{display:grid;gap:10px;margin-top:12px}.shift-form input{width:100%;padding:12px;border:1px solid #d1d5db;border-radius:10px}.secondary-btn{border:none;border-radius:12px;background:#eef2ff;color:#1d4ed8;padding:12px;font-weight:bold}.danger-wide{width:100%;margin-top:14px;border:none;border-radius:14px;background:#dc2626;color:white;padding:15px;font-weight:bold}
+    .sale-list{display:grid;gap:10px}.sale-item{border:1px solid #e5e7eb;border-radius:12px;background:#fff;overflow:hidden}.sale-main{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:14px}.sale-main button:not(.delete-btn){border:none;background:transparent;text-align:left}.sale-detail{display:none;padding:0 14px 14px;color:#4b5563;font-size:14px}.sale-item.open .sale-detail{display:block}.sale-detail ul{margin:8px 0 0 18px}
+    @media(max-width:900px){.app,.content{display:block}.sidebar,.cart{width:auto}.content{padding:12px}.products,.notebook,.shift-panel{margin-top:14px}.payment-row,.shift-grid,.sale-main{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -89,7 +36,6 @@
         <button id="shiftMenuButton" type="button">Turnos</button>
         <button type="button" onclick="window.location.href='index.html'">Productos</button>
         <button id="notebookMenuButton" type="button">Cuaderno</button>
-        <button id="reportsMenuButton" type="button">Reportes</button>
         <button type="button">Clientes</button>
       </div>
       <a class="back-link" href="index.html">Volver al inicio</a>
@@ -117,7 +63,6 @@
     </main>
 
     <main class="content hidden" id="notebookView"><section class="notebook"><h2>Cuaderno</h2><p class="empty" id="notebookSubtitle">Historial de ventas del turno.</p><div class="sale-list" id="saleList"></div></section></main>
-    <main class="content hidden" id="reportsView"><section class="report-panel"><h2>Reportes</h2><div class="report-toolbar"><label for="reportLocalSelect">Local</label><select id="reportLocalSelect"><option value="Central">Central</option><option value="Sucursal">Sucursal</option></select></div><div class="sale-list" id="reportList"></div></section></main>
   </div>
 
   <div class="modal-backdrop hidden" id="paymentModal"><section class="payment-modal"><div class="payment-head"><h2>Pago</h2><button class="close-btn" type="button" onclick="closePayment()">X</button></div><div class="payment-body"><div class="payment-total-label">Total a pagar</div><div class="payment-total" id="paymentTotal">$0</div><div class="payment-status" id="paymentStatus">Faltan $0</div><div class="payment-grid"><div class="payment-row"><label for="cashInput">Efectivo</label><input id="cashInput" type="number" min="0" step="1" placeholder="$ 0"></div><div class="payment-row"><label for="transferInput">Transferencia / QR</label><input id="transferInput" type="number" min="0" step="1" placeholder="$ 0"></div></div><div class="payment-actions"><button class="confirm-pay" type="button" onclick="confirmPayment()">Guardar venta</button></div></div></section></div>
@@ -133,54 +78,81 @@
     let shifts = loadList(SHIFTS_KEY);
     let cart = [];
     document.getElementById("localName").textContent = local;
-    function loadList(key) { try { const value = JSON.parse(localStorage.getItem(key) || "[]"); return Array.isArray(value) ? value : []; } catch (error) { console.warn(`No se pudo leer ${key}. Se inicia vacio.`, error); return []; } }
-    function makeId() { if (crypto.randomUUID) return crypto.randomUUID(); return `${Date.now()}-${Math.random().toString(16).slice(2)}`; }
-    function formatMoney(value) { return Number(value || 0).toLocaleString("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }); }
-    function getCartTotal() { return cart.reduce((sum, item) => sum + Number(item.total || 0), 0); }
-    function saveSales() { localStorage.setItem(SALES_KEY, JSON.stringify(sales)); }
-    function saveShifts() { localStorage.setItem(SHIFTS_KEY, JSON.stringify(shifts)); }
-    function getOpenShift() { return shifts.find((shift) => shift.local === local && shift.status === "open"); }
-    function getShiftSales(shiftId) { return sales.filter((sale) => sale.shiftId === shiftId); }
-    function getShiftExpenses(shift) { return shift?.expenses || []; }
-    function renderProducts() { const search = document.getElementById("searchInput").value.trim().toLowerCase(); const filtered = products.filter((product) => `${product.name} ${product.barcode || ""}`.toLowerCase().includes(search)); const grid = document.getElementById("productGrid"); if (filtered.length === 0) { grid.innerHTML = "<p class='empty'>No hay productos cargados. Agregalos desde Admin.</p>"; return; } grid.innerHTML = filtered.map((product) => `<button class="product ${product.weighable ? "weighable" : ""}" type="button" onclick="addProduct('${product.id}')"><strong>${escapeHtml(product.name)}</strong><small>${formatMoney(product.salePrice)}${product.weighable ? "/kg" : ""}</small></button>`).join(""); }
-    function escapeHtml(value) { return String(value ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;"); }
-    function addProduct(id) { const product = products.find((item) => item.id === id); if (!product) return; if (product.weighable) { cart.push({ id: makeId(), productId: product.id, name: product.name, unitPrice: Number(product.salePrice), quantity: 1, total: Number(product.salePrice), weighable: true }); } else { const existing = cart.find((item) => item.productId === product.id && !item.weighable); if (existing) { existing.quantity += 1; existing.total = existing.quantity * existing.unitPrice; } else { cart.push({ id: makeId(), productId: product.id, name: product.name, unitPrice: Number(product.salePrice), quantity: 1, total: Number(product.salePrice), weighable: false }); } } renderCart(); }
-    function renderCart() { const container = document.getElementById("cartItems"); const emptyCart = document.getElementById("emptyCart"); let total = 0; emptyCart.style.display = cart.length ? "none" : "block"; container.innerHTML = ""; cart.forEach((item) => { total += item.total; const quantityText = item.weighable ? formatKg(item.quantity) : item.quantity; const note = item.weighable ? `<span class="item-note">${formatMoney(item.unitPrice)} por kg</span>` : ""; container.innerHTML += `<tr><td>${escapeHtml(item.name)}${note}</td><td>${quantityText}</td><td><input class="price-edit" type="number" value="${item.total}" onchange="changePrice('${item.id}', this.value)"></td><td><button type="button" onclick="removeItem('${item.id}')">X</button></td></tr>`; }); document.getElementById("total").innerText = `Total: ${formatMoney(total)}`; }
-    function formatKg(quantity) { const grams = Math.round(Number(quantity || 0) * 1000); if (grams < 1000) return `${grams} g`; return `${Number(quantity || 0).toFixed(3).replace(/\.?0+$/, "")} kg`; }
-    function changePrice(id, newPrice) { const item = cart.find((product) => product.id === id); if (!item) return; item.total = Number(newPrice || 0); if (item.weighable) item.quantity = item.unitPrice > 0 ? item.total / item.unitPrice : 0; renderCart(); }
-    function removeItem(id) { cart = cart.filter((item) => item.id !== id); renderCart(); }
-    function openPayment() { const total = getCartTotal(); if (total <= 0) { alert("No hay productos para cobrar."); return; } if (!getOpenShift()) { alert("Primero tenes que abrir un turno de caja."); showShiftView(); return; } document.getElementById("paymentTotal").textContent = formatMoney(total); document.getElementById("cashInput").value = ""; document.getElementById("transferInput").value = ""; document.getElementById("paymentModal").classList.remove("hidden"); updatePaymentStatus(); setTimeout(() => document.getElementById("cashInput").focus(), 50); }
-    function closePayment() { document.getElementById("paymentModal").classList.add("hidden"); }
-    function updatePaymentStatus() { const total = getCartTotal(); const cash = Number(document.getElementById("cashInput").value || 0); const transfer = Number(document.getElementById("transferInput").value || 0); const paid = cash + transfer; const status = document.getElementById("paymentStatus"); status.classList.remove("ok"); if (paid < total) { status.textContent = `Faltan ${formatMoney(total - paid)}`; return; } if (cash > 0 && paid > total) { status.textContent = `Vuelto ${formatMoney(paid - total)}`; status.classList.add("ok"); return; } status.textContent = "Pago completo"; status.classList.add("ok"); }
-    function confirmPayment() { const shift = getOpenShift(); if (!shift) { alert("Primero tenes que abrir un turno de caja."); closePayment(); showShiftView(); return; } const total = getCartTotal(); const cash = Number(document.getElementById("cashInput").value || 0); const transfer = Number(document.getElementById("transferInput").value || 0); const paid = cash + transfer; if (paid < total) { alert(`Faltan ${formatMoney(total - paid)}.`); return; } const saleNumber = getShiftSales(shift.id).length + 1; const sale = { id: makeId(), shiftId: shift.id, saleNumber, local, date: new Date().toISOString(), items: cart.map((item) => ({ ...item })), total, cash, transfer, change: Math.max(0, paid - total), method: getPaymentMethod(cash, transfer) }; sales.unshift(sale); saveSales(); cart = []; closePayment(); renderCart(); renderNotebook(); renderShift(); alert("Venta guardada."); }
-    function getPaymentMethod(cash, transfer) { if (cash > 0 && transfer > 0) return "Mixto"; if (transfer > 0) return "Transferencia"; return "Efectivo"; }
-    function showSellView() { document.getElementById("sellView").classList.remove("hidden"); document.getElementById("shiftView").classList.add("hidden"); document.getElementById("notebookView").classList.add("hidden"); document.getElementById("reportsView").classList.add("hidden"); document.getElementById("sellMenuButton").classList.add("active"); document.getElementById("shiftMenuButton").classList.remove("active"); document.getElementById("notebookMenuButton").classList.remove("active"); document.getElementById("reportsMenuButton").classList.remove("active"); }
-    function showShiftView() { document.getElementById("sellView").classList.add("hidden"); document.getElementById("shiftView").classList.remove("hidden"); document.getElementById("notebookView").classList.add("hidden"); document.getElementById("reportsView").classList.add("hidden"); document.getElementById("sellMenuButton").classList.remove("active"); document.getElementById("shiftMenuButton").classList.add("active"); document.getElementById("notebookMenuButton").classList.remove("active"); document.getElementById("reportsMenuButton").classList.remove("active"); renderShift(); }
-    function showNotebookView() { document.getElementById("sellView").classList.add("hidden"); document.getElementById("shiftView").classList.add("hidden"); document.getElementById("notebookView").classList.remove("hidden"); document.getElementById("reportsView").classList.add("hidden"); document.getElementById("sellMenuButton").classList.remove("active"); document.getElementById("shiftMenuButton").classList.remove("active"); document.getElementById("notebookMenuButton").classList.add("active"); document.getElementById("reportsMenuButton").classList.remove("active"); renderNotebook(); }
-    function showReportsView() { document.getElementById("sellView").classList.add("hidden"); document.getElementById("shiftView").classList.add("hidden"); document.getElementById("notebookView").classList.add("hidden"); document.getElementById("reportsView").classList.remove("hidden"); document.getElementById("sellMenuButton").classList.remove("active"); document.getElementById("shiftMenuButton").classList.remove("active"); document.getElementById("notebookMenuButton").classList.remove("active"); document.getElementById("reportsMenuButton").classList.add("active"); document.getElementById("reportLocalSelect").value = local; renderReports(); }
-    function openShift() { if (getOpenShift()) { alert("Ya hay un turno abierto."); renderShift(); return; } const initialCash = Number(document.getElementById("initialCashInput").value || 0); shifts.unshift({ id: makeId(), local, status: "open", openedAt: new Date().toISOString(), closedAt: null, initialCash, expenses: [] }); saveShifts(); document.getElementById("initialCashInput").value = ""; renderShift(); renderNotebook(); }
-    function addExpense() { const shift = getOpenShift(); if (!shift) return; const descriptionInput = document.getElementById("expenseDescriptionInput"); const amountInput = document.getElementById("expenseAmountInput"); const amount = Number(amountInput.value || 0); if (amount <= 0) { alert("Carga el importe del gasto."); return; } shift.expenses.push({ id: makeId(), description: descriptionInput.value.trim() || "Gasto", amount, date: new Date().toISOString() }); saveShifts(); descriptionInput.value = ""; amountInput.value = ""; renderShift(); }
-    function closeShift() { const shift = getOpenShift(); if (!shift) return; const countedCashText = prompt("Con cuanto efectivo cerro realmente la caja?"); if (countedCashText === null) return; const countedCash = Number(countedCashText); if (Number.isNaN(countedCash) || countedCash < 0) { alert("Carga un importe valido para cerrar la caja."); return; } const ok = confirm(`Seguro que queres cerrar la caja con ${formatMoney(countedCash)}?`); if (!ok) return; shift.status = "closed"; shift.closedAt = new Date().toISOString(); shift.countedCash = countedCash; saveShifts(); renderShift(); renderNotebook(); renderReports(); }
-    function renderShift() { const shift = getOpenShift(); const closedBox = document.getElementById("closedShiftBox"); const openBox = document.getElementById("openShiftBox"); if (!shift) { closedBox.classList.remove("hidden"); openBox.classList.add("hidden"); return; } closedBox.classList.add("hidden"); openBox.classList.remove("hidden"); const shiftSales = getShiftSales(shift.id); const expenses = getShiftExpenses(shift); const expenseTotal = expenses.reduce((sum, expense) => sum + Number(expense.amount || 0), 0); const cashSales = shiftSales.reduce((sum, sale) => sum + Number(sale.cash || 0) - Number(sale.change || 0), 0); const digitalSales = shiftSales.reduce((sum, sale) => sum + Number(sale.transfer || 0), 0); const expectedCash = Number(shift.initialCash || 0) + cashSales - expenseTotal; document.getElementById("shiftOpenedAt").textContent = formatDateTime(shift.openedAt); document.getElementById("shiftInitialCash").textContent = formatMoney(shift.initialCash); document.getElementById("shiftExpenses").textContent = formatMoney(expenseTotal); document.getElementById("shiftCashSales").textContent = formatMoney(cashSales); document.getElementById("shiftDigitalSales").textContent = formatMoney(digitalSales); document.getElementById("shiftExpectedCash").textContent = formatMoney(expectedCash); const expenseList = document.getElementById("expenseList"); if (expenses.length === 0) { expenseList.innerHTML = "<p class='empty'>Sin gastos cargados.</p>"; } else { expenseList.innerHTML = expenses.map((expense) => `<div class="sale-item"><div class="sale-main"><strong>${escapeHtml(expense.description)}</strong><strong>${formatMoney(expense.amount)}</strong><button class="delete-btn" type="button" onclick="deleteExpense('${expense.id}')">X</button></div></div>`).join(""); } }
-    function deleteExpense(id) { const shift = getOpenShift(); if (!shift) return; shift.expenses = getShiftExpenses(shift).filter((expense) => expense.id !== id); saveShifts(); renderShift(); }
-    function formatDateTime(value) { if (!value) return "-"; return new Date(value).toLocaleString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }); }
-    function renderNotebook() { const shift = getOpenShift(); const localSales = shift ? getShiftSales(shift.id) : sales.filter((sale) => sale.local === local && !sale.shiftId); document.getElementById("notebookSubtitle").textContent = shift ? `Historial del turno abierto desde ${formatDateTime(shift.openedAt)}.` : "No hay turno abierto. Se muestran ventas anteriores sin turno."; const list = document.getElementById("saleList"); if (localSales.length === 0) { list.innerHTML = "<p class='empty'>Todavia no hay ventas guardadas.</p>"; return; } list.innerHTML = localSales.map((sale) => { const time = formatDateTime(sale.date); const detailItems = sale.items.map((item) => `<li>${escapeHtml(item.name)} - ${item.weighable ? formatKg(item.quantity) : item.quantity} - ${formatMoney(item.total)}</li>`).join(""); const saleNumber = sale.saleNumber || localSales.length; const paymentLabel = sale.method === "Transferencia" ? "Digital" : sale.method; return `<article class="sale-item" id="sale-${sale.id}"><div class="sale-main"><button type="button" onclick="toggleSaleDetail('${sale.id}')"><strong>Venta ${saleNumber}</strong><span class="item-note">${time} | ${paymentLabel}</span></button><strong>${formatMoney(sale.total)}</strong><button class="delete-btn" type="button" onclick="deleteSale('${sale.id}')">X</button></div><div class="sale-detail"><div>Cobrado: ${formatMoney(sale.total)} | Tipo de pago: ${paymentLabel}</div><div>Efectivo: ${formatMoney(sale.cash)} | Digital: ${formatMoney(sale.transfer)} | Vuelto: ${formatMoney(sale.change)}</div><ul>${detailItems}</ul></div></article>`; }).join(""); }
-    function getShiftSummary(shift) { const shiftSales = getShiftSales(shift.id); const expenses = getShiftExpenses(shift); const totalSales = shiftSales.reduce((sum, sale) => sum + Number(sale.total || 0), 0); const cashSales = shiftSales.reduce((sum, sale) => sum + Number(sale.cash || 0) - Number(sale.change || 0), 0); const digitalSales = shiftSales.reduce((sum, sale) => sum + Number(sale.transfer || 0), 0); const expenseTotal = expenses.reduce((sum, expense) => sum + Number(expense.amount || 0), 0); const expectedCash = Number(shift.initialCash || 0) + cashSales - expenseTotal; return { shiftSales, expenses, totalSales, cashSales, digitalSales, expenseTotal, expectedCash }; }
-    function renderReports() { const selectedLocal = document.getElementById("reportLocalSelect").value; const closedShifts = shifts.filter((shift) => shift.local === selectedLocal && shift.status === "closed").sort((a, b) => new Date(b.closedAt) - new Date(a.closedAt)); const list = document.getElementById("reportList"); if (closedShifts.length === 0) { list.innerHTML = "<p class='empty'>Todavia no hay turnos cerrados para este local.</p>"; return; } list.innerHTML = closedShifts.map((shift) => { const summary = getShiftSummary(shift); const difference = Number(shift.countedCash || 0) - summary.expectedCash; const detail = summary.shiftSales.map((sale) => { const items = sale.items.map((item) => item.name).join(", "); return `<li>Venta ${sale.saleNumber || "-"}: ${items} - ${formatMoney(sale.total)} - ${sale.method}</li>`; }).join(""); return `<article class="report-card"><h3>${selectedLocal}</h3><div class="item-note">Fecha ${formatDateOnly(shift.openedAt)}</div><div class="item-note">Desde ${formatTimeOnly(shift.openedAt)} h hasta ${formatTimeOnly(shift.closedAt)} h</div><div class="shift-row"><span>Total vendido</span><strong>${formatMoney(summary.totalSales)}</strong></div><div class="shift-row"><span>Efectivo</span><strong>${formatMoney(summary.cashSales)}</strong></div><div class="shift-row"><span>Digital</span><strong>${formatMoney(summary.digitalSales)}</strong></div><div class="shift-row"><span>Gastos</span><strong>${formatMoney(summary.expenseTotal)}</strong></div><div class="shift-row"><span>Cierre de caja teorico</span><strong>${formatMoney(summary.expectedCash)}</strong></div><div class="shift-row"><span>Cerro realmente con</span><strong>${formatMoney(shift.countedCash)}</strong></div><div class="shift-row"><span>Diferencia</span><strong>${formatMoney(difference)}</strong></div><div class="sale-detail"><strong>Detalle</strong><ul>${detail || "<li>Sin ventas en este turno.</li>"}</ul></div></article>`; }).join(""); }
-    function formatDateOnly(value) { if (!value) return "-"; return new Date(value).toLocaleDateString("es-AR"); }
-    function formatTimeOnly(value) { if (!value) return "-"; return new Date(value).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" }); }
-    function toggleSaleDetail(id) { document.getElementById(`sale-${id}`)?.classList.toggle("open"); }
-    function deleteSale(id) { const ok = confirm("Seguro que queres borrar esta venta?"); if (!ok) return; sales = sales.filter((sale) => sale.id !== id); saveSales(); renderNotebook(); renderShift(); }
-    document.getElementById("searchInput").addEventListener("input", renderProducts);
-    document.getElementById("searchInput").addEventListener("keydown", (event) => { if (event.key !== "Enter") return; const search = event.target.value.trim().toLowerCase(); const exactMatch = products.find((product) => String(product.barcode || "").toLowerCase() === search); if (!exactMatch) return; event.preventDefault(); addProduct(exactMatch.id); event.target.value = ""; renderProducts(); });
-    document.getElementById("cashInput").addEventListener("input", updatePaymentStatus);
-    document.getElementById("transferInput").addEventListener("input", updatePaymentStatus);
-    document.getElementById("sellMenuButton").addEventListener("click", showSellView);
-    document.getElementById("shiftMenuButton").addEventListener("click", showShiftView);
-    document.getElementById("notebookMenuButton").addEventListener("click", showNotebookView);
-    document.getElementById("reportsMenuButton").addEventListener("click", showReportsView);
-    document.getElementById("reportLocalSelect").addEventListener("change", renderReports);
-    renderProducts(); renderCart(); renderShift(); renderNotebook(); renderReports();
+
+    function loadList(key){try{const value=JSON.parse(localStorage.getItem(key)||"[]");return Array.isArray(value)?value:[]}catch(error){console.warn(`No se pudo leer ${key}. Se inicia vacio.`,error);return[]}}
+    function makeId(){if(crypto.randomUUID)return crypto.randomUUID();return `${Date.now()}-${Math.random().toString(16).slice(2)}`}
+    function formatMoney(value){return Number(value||0).toLocaleString("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0})}
+    function getCartTotal(){return cart.reduce((sum,item)=>sum+Number(item.total||0),0)}
+    function saveSales(){localStorage.setItem(SALES_KEY,JSON.stringify(sales))}
+    function saveShifts(){localStorage.setItem(SHIFTS_KEY,JSON.stringify(shifts))}
+    function getOpenShift(){return shifts.find((shift)=>shift.local===local&&shift.status==="open")}
+    function getShiftSales(shiftId){return sales.filter((sale)=>sale.shiftId===shiftId)}
+    function getShiftExpenses(shift){return shift?.expenses||[]}
+    function escapeHtml(value){return String(value??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
+
+    function renderProducts(){
+      const search=document.getElementById("searchInput").value.trim().toLowerCase();
+      const filtered=products.filter((product)=>`${product.name} ${product.barcode||""}`.toLowerCase().includes(search));
+      const grid=document.getElementById("productGrid");
+      if(filtered.length===0){grid.innerHTML="<p class='empty'>No hay productos cargados. Agregalos desde Admin.</p>";return}
+      grid.innerHTML=filtered.map((product)=>`<button class="product ${product.weighable?"weighable":""}" type="button" onclick="addProduct('${product.id}')"><strong>${escapeHtml(product.name)}</strong><small>${formatMoney(product.salePrice)}${product.weighable?"/kg":""}</small></button>`).join("");
+    }
+
+    function addProduct(id){
+      const product=products.find((item)=>item.id===id);if(!product)return;
+      if(product.weighable){cart.push({id:makeId(),productId:product.id,name:product.name,unitPrice:Number(product.salePrice),quantity:1,total:Number(product.salePrice),weighable:true})}
+      else{const existing=cart.find((item)=>item.productId===product.id&&!item.weighable);if(existing){existing.quantity+=1;existing.total=existing.quantity*existing.unitPrice}else{cart.push({id:makeId(),productId:product.id,name:product.name,unitPrice:Number(product.salePrice),quantity:1,total:Number(product.salePrice),weighable:false})}}
+      renderCart();
+    }
+
+    function renderCart(){
+      const container=document.getElementById("cartItems");const emptyCart=document.getElementById("emptyCart");let total=0;
+      emptyCart.style.display=cart.length?"none":"block";container.innerHTML="";
+      cart.forEach((item)=>{total+=item.total;const quantityText=item.weighable?formatKg(item.quantity):item.quantity;const note=item.weighable?`<span class="item-note">${formatMoney(item.unitPrice)} por kg</span>`:"";container.innerHTML+=`<tr><td>${escapeHtml(item.name)}${note}</td><td>${quantityText}</td><td><input class="price-edit" type="number" value="${item.total}" onchange="changePrice('${item.id}', this.value)"></td><td><button type="button" onclick="removeItem('${item.id}')">X</button></td></tr>`});
+      document.getElementById("total").innerText=`Total: ${formatMoney(total)}`;
+    }
+
+    function formatKg(quantity){const grams=Math.round(Number(quantity||0)*1000);if(grams<1000)return `${grams} g`;return `${Number(quantity||0).toFixed(3).replace(/\.?0+$/," ").trim()} kg`}
+    function changePrice(id,newPrice){const item=cart.find((product)=>product.id===id);if(!item)return;item.total=Number(newPrice||0);if(item.weighable)item.quantity=item.unitPrice>0?item.total/item.unitPrice:0;renderCart()}
+    function removeItem(id){cart=cart.filter((item)=>item.id!==id);renderCart()}
+
+    function openPayment(){const total=getCartTotal();if(total<=0){alert("No hay productos para cobrar.");return}if(!getOpenShift()){alert("Primero tenes que abrir un turno de caja.");showShiftView();return}document.getElementById("paymentTotal").textContent=formatMoney(total);document.getElementById("cashInput").value="";document.getElementById("transferInput").value="";document.getElementById("paymentModal").classList.remove("hidden");updatePaymentStatus();setTimeout(()=>document.getElementById("cashInput").focus(),50)}
+    function closePayment(){document.getElementById("paymentModal").classList.add("hidden")}
+    function updatePaymentStatus(){const total=getCartTotal();const cash=Number(document.getElementById("cashInput").value||0);const transfer=Number(document.getElementById("transferInput").value||0);const paid=cash+transfer;const status=document.getElementById("paymentStatus");status.classList.remove("ok");if(paid<total){status.textContent=`Faltan ${formatMoney(total-paid)}`;return}if(cash>0&&paid>total){status.textContent=`Vuelto ${formatMoney(paid-total)}`;status.classList.add("ok");return}status.textContent="Pago completo";status.classList.add("ok")}
+
+    function confirmPayment(){
+      const shift=getOpenShift();if(!shift){alert("Primero tenes que abrir un turno de caja.");closePayment();showShiftView();return}
+      const total=getCartTotal();const cash=Number(document.getElementById("cashInput").value||0);const transfer=Number(document.getElementById("transferInput").value||0);const paid=cash+transfer;
+      if(paid<total){alert(`Faltan ${formatMoney(total-paid)}.`);return}
+      const saleNumber=getShiftSales(shift.id).length+1;
+      const sale={id:makeId(),shiftId:shift.id,saleNumber,local,date:new Date().toISOString(),items:cart.map((item)=>({...item})),total,cash,transfer,change:Math.max(0,paid-total),method:getPaymentMethod(cash,transfer)};
+      sales.unshift(sale);saveSales();cart=[];closePayment();renderCart();renderNotebook();renderShift();alert("Venta guardada.");
+    }
+
+    function getPaymentMethod(cash,transfer){if(cash>0&&transfer>0)return"Mixto";if(transfer>0)return"Transferencia";return"Efectivo"}
+    function showSellView(){document.getElementById("sellView").classList.remove("hidden");document.getElementById("shiftView").classList.add("hidden");document.getElementById("notebookView").classList.add("hidden");document.getElementById("sellMenuButton").classList.add("active");document.getElementById("shiftMenuButton").classList.remove("active");document.getElementById("notebookMenuButton").classList.remove("active")}
+    function showShiftView(){document.getElementById("sellView").classList.add("hidden");document.getElementById("shiftView").classList.remove("hidden");document.getElementById("notebookView").classList.add("hidden");document.getElementById("sellMenuButton").classList.remove("active");document.getElementById("shiftMenuButton").classList.add("active");document.getElementById("notebookMenuButton").classList.remove("active");renderShift()}
+    function showNotebookView(){document.getElementById("sellView").classList.add("hidden");document.getElementById("shiftView").classList.add("hidden");document.getElementById("notebookView").classList.remove("hidden");document.getElementById("sellMenuButton").classList.remove("active");document.getElementById("shiftMenuButton").classList.remove("active");document.getElementById("notebookMenuButton").classList.add("active");renderNotebook()}
+
+    function openShift(){if(getOpenShift()){alert("Ya hay un turno abierto.");renderShift();return}const initialCash=Number(document.getElementById("initialCashInput").value||0);shifts.unshift({id:makeId(),local,status:"open",openedAt:new Date().toISOString(),closedAt:null,initialCash,expenses:[]});saveShifts();document.getElementById("initialCashInput").value="";renderShift();renderNotebook()}
+    function addExpense(){const shift=getOpenShift();if(!shift)return;const descriptionInput=document.getElementById("expenseDescriptionInput");const amountInput=document.getElementById("expenseAmountInput");const amount=Number(amountInput.value||0);if(amount<=0){alert("Carga el importe del gasto.");return}shift.expenses.push({id:makeId(),description:descriptionInput.value.trim()||"Gasto",amount,date:new Date().toISOString()});saveShifts();descriptionInput.value="";amountInput.value="";renderShift()}
+    function closeShift(){const shift=getOpenShift();if(!shift)return;const countedCashText=prompt("Con cuanto efectivo cerro realmente la caja?");if(countedCashText===null)return;const countedCash=Number(countedCashText);if(Number.isNaN(countedCash)||countedCash<0){alert("Carga un importe valido para cerrar la caja.");return}const ok=confirm(`Seguro que queres cerrar la caja con ${formatMoney(countedCash)}?`);if(!ok)return;shift.status="closed";shift.closedAt=new Date().toISOString();shift.countedCash=countedCash;saveShifts();renderShift();renderNotebook()}
+
+    function renderShift(){const shift=getOpenShift();const closedBox=document.getElementById("closedShiftBox");const openBox=document.getElementById("openShiftBox");if(!shift){closedBox.classList.remove("hidden");openBox.classList.add("hidden");return}closedBox.classList.add("hidden");openBox.classList.remove("hidden");const shiftSales=getShiftSales(shift.id);const expenses=getShiftExpenses(shift);const expenseTotal=expenses.reduce((sum,expense)=>sum+Number(expense.amount||0),0);const cashSales=shiftSales.reduce((sum,sale)=>sum+Number(sale.cash||0)-Number(sale.change||0),0);const digitalSales=shiftSales.reduce((sum,sale)=>sum+Number(sale.transfer||0),0);const expectedCash=Number(shift.initialCash||0)+cashSales-expenseTotal;document.getElementById("shiftOpenedAt").textContent=formatDateTime(shift.openedAt);document.getElementById("shiftInitialCash").textContent=formatMoney(shift.initialCash);document.getElementById("shiftExpenses").textContent=formatMoney(expenseTotal);document.getElementById("shiftCashSales").textContent=formatMoney(cashSales);document.getElementById("shiftDigitalSales").textContent=formatMoney(digitalSales);document.getElementById("shiftExpectedCash").textContent=formatMoney(expectedCash);const expenseList=document.getElementById("expenseList");if(expenses.length===0){expenseList.innerHTML="<p class='empty'>Sin gastos cargados.</p>"}else{expenseList.innerHTML=expenses.map((expense)=>`<div class="sale-item"><div class="sale-main"><strong>${escapeHtml(expense.description)}</strong><strong>${formatMoney(expense.amount)}</strong><button class="delete-btn" type="button" onclick="deleteExpense('${expense.id}')">X</button></div></div>`).join("")}}
+    function deleteExpense(id){const shift=getOpenShift();if(!shift)return;shift.expenses=getShiftExpenses(shift).filter((expense)=>expense.id!==id);saveShifts();renderShift()}
+    function formatDateTime(value){if(!value)return"-";return new Date(value).toLocaleString("es-AR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"})}
+    function renderNotebook(){const shift=getOpenShift();const localSales=shift?getShiftSales(shift.id):sales.filter((sale)=>sale.local===local&&!sale.shiftId);document.getElementById("notebookSubtitle").textContent=shift?`Historial del turno abierto desde ${formatDateTime(shift.openedAt)}.`:"No hay turno abierto. Se muestran ventas anteriores sin turno.";const list=document.getElementById("saleList");if(localSales.length===0){list.innerHTML="<p class='empty'>Todavia no hay ventas guardadas.</p>";return}list.innerHTML=localSales.map((sale)=>{const time=formatDateTime(sale.date);const detailItems=sale.items.map((item)=>`<li>${escapeHtml(item.name)} - ${item.weighable?formatKg(item.quantity):item.quantity} - ${formatMoney(item.total)}</li>`).join("");const saleNumber=sale.saleNumber||localSales.length;const paymentLabel=sale.method==="Transferencia"?"Digital":sale.method;return `<article class="sale-item" id="sale-${sale.id}"><div class="sale-main"><button type="button" onclick="toggleSaleDetail('${sale.id}')"><strong>Venta ${saleNumber}</strong><span class="item-note">${time} | ${paymentLabel}</span></button><strong>${formatMoney(sale.total)}</strong><button class="delete-btn" type="button" onclick="deleteSale('${sale.id}')">X</button></div><div class="sale-detail"><div>Cobrado: ${formatMoney(sale.total)} | Tipo de pago: ${paymentLabel}</div><div>Efectivo: ${formatMoney(sale.cash)} | Digital: ${formatMoney(sale.transfer)} | Vuelto: ${formatMoney(sale.change)}</div><ul>${detailItems}</ul></div></article>`}).join("")}
+    function toggleSaleDetail(id){document.getElementById(`sale-${id}`)?.classList.toggle("open")}
+    function deleteSale(id){const ok=confirm("Seguro que queres borrar esta venta?");if(!ok)return;sales=sales.filter((sale)=>sale.id!==id);saveSales();renderNotebook();renderShift()}
+
+    document.getElementById("searchInput").addEventListener("input",renderProducts);
+    document.getElementById("searchInput").addEventListener("keydown",(event)=>{if(event.key!=="Enter")return;const search=event.target.value.trim().toLowerCase();const exactMatch=products.find((product)=>String(product.barcode||"").toLowerCase()===search);if(!exactMatch)return;event.preventDefault();addProduct(exactMatch.id);event.target.value="";renderProducts()});
+    document.getElementById("cashInput").addEventListener("input",updatePaymentStatus);
+    document.getElementById("transferInput").addEventListener("input",updatePaymentStatus);
+    document.getElementById("sellMenuButton").addEventListener("click",showSellView);
+    document.getElementById("shiftMenuButton").addEventListener("click",showShiftView);
+    document.getElementById("notebookMenuButton").addEventListener("click",showNotebookView);
+    renderProducts();renderCart();renderShift();renderNotebook();
   </script>
 </body>
 </html>
