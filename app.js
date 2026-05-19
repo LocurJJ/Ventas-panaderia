@@ -401,6 +401,15 @@ listenOnline(WHATSAPP_KEY, (data) => {
   changedProducts = data;
   renderWhatsappMessage();
 });
+listenOnline(SALES_KEY, (data) => {
+  localStorage.setItem(SALES_KEY, JSON.stringify(data));
+  renderAdminReports();
+});
+
+listenOnline(SHIFTS_KEY, (data) => {
+  localStorage.setItem(SHIFTS_KEY, JSON.stringify(data));
+  renderAdminReports();
+});
 fillSuppliers();
 renderProducts();
 renderWhatsappMessage();
