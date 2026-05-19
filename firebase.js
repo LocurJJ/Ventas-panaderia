@@ -1,14 +1,15 @@
 const firebaseConfig = {
-  apiKey: "TU_API_KEY",
-  authDomain: "TU_PROYECTO.firebaseapp.com",
-  databaseURL: "https://TU_PROYECTO-default-rtdb.firebaseio.com",
-  projectId: "TU_PROYECTO",
-  storageBucket: "TU_PROYECTO.appspot.com",
-  messagingSenderId: "...",
-  appId: "..."
+  apiKey: "AIzaSyAl2gyZygEHklr5gq2WuDShwuW6GmSEKQ",
+  authDomain: "panaderia-venta.firebaseapp.com",
+  databaseURL: "https://panaderia-venta-default-rtdb.firebaseio.com",
+  projectId: "panaderia-venta",
+  storageBucket: "panaderia-venta.firebasestorage.app",
+  messagingSenderId: "672040680513",
+  appId: "1:672040680513:web:ed523e825a36749b325ac0"
 };
 
 firebase.initializeApp(firebaseConfig);
+
 const db = firebase.database();
 
 function dbPath(key) {
@@ -21,7 +22,7 @@ function saveOnline(key, value) {
 }
 
 function listenOnline(key, callback) {
-  db.ref(dbPath(key)).on("value", snapshot => {
+  db.ref(dbPath(key)).on("value", (snapshot) => {
     const value = snapshot.val();
 
     if (Array.isArray(value)) {
