@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ventas Panadería</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main id="app">
+    <section class="welcome" id="welcomeView">
+      <div class="welcome-card">
+        <p class="eyebrow">Panadería Josué</p>
+        <h1>Sistema de ventas</h1>
+        <p>Elegí dónde vas a trabajar.</p>
+        <div class="welcome-actions">
+          <button data-open-location="Central">Central</button>
+          <button data-open-location="Sucursal">Sucursal</button>
+          <button id="openAdminBtn">Admin</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="pos hidden" id="posView">
+      <aside class="sidebar">
+        <div class="brand">🍞 Josué</div>
+        <button class="nav active" data-section="vender">⚡ Vender</button>
+        <button class="nav" data-section="turnos">💼 Turnos</button>
+        <button class="nav" data-section="productos">📦 Productos</button>
+        <button class="nav" data-section="cuaderno">🧾 Cuaderno</button>
+        <button class="nav" data-section="reportes">📊 Reportes</button>
+        <button class="nav" data-section="clientes">👥 Clientes</button>
+        <button class="nav" id="goHomeBtn">🏠 Inicio</button>
+      </aside>
+
+      <section class="content">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow" id="locationLabel">Central</p>
+            <h2 id="sectionTitle">Vender</h2>
+          </div>
+          <button id="openTurnPanelBtn">Caja / Turno</button>
+        </header>
+
+        <section class="section" id="venderSection">
+          <div class="sell-layout">
+            <aside class="cart-panel">
+              <h3>Venta actual</h3>
+              <div id="cartList" class="cart-list empty">Todavía no agregaste productos.</div>
+              <div class="cart-total">
+                <span>Total</span>
+                <strong id="cartTotal">$0</strong>
+              </div>
+              <button class="primary big" id="chargeBtn">Cobrar: $0</button>
+              <button class="secondary" id="clearCartBtn">Limpiar venta</button>
+            </aside>
+
+            <section class="products-zone">
+              <input id="saleSearch" class="search" placeholder="Buscar producto o escanear código..." />
+              <div id="saleProducts" class="product-grid"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="section hidden" id="turnosSection">
+          <div class="panel">
+            <h3>Abrir caja</h3>
+            <div class="inline-form">
+              <input id="initialCashInput" type="number" placeholder="Efectivo inicial" />
+              <button id="openShiftBtn" class="primary">Abrir turno</button>
+            </div>
+          </div>
+          <div class="panel">
+            <h3>Resumen del turno</h3>
+            <div id="shiftSummary"></div>
+          </div>
+          <div class="panel">
+            <h3>Gastos / retiros</h3>
+            <div class="inline-form">
+              <input id="expenseAmount" type="number" placeholder="Monto" />
+              <input id="expenseComment" placeholder="Comentario" />
+              <button id="addExpenseBtn">Guardar gasto</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="section hidden" id="productosSection">
+          <div class="panel"><h3>Productos y stock</h3><div id="stockProductList"></div></div>
+        </section>
+
+        <section class="section hidden" id="cuadernoSection">
+          <div class="panel"><h3>Cuaderno de ventas</h3><div id="salesBook"></div></div>
+        </section>
+
+        <section class="section hidden" id="reportesSection">
+          <div class="panel"><h3>Reportes del día</h3><div id="reportsBox"></div></div>
+        </section>
+
+        <section class="section hidden" id="clientesSection">
+          <div class="panel"><h3>Clientes / fiados</h3><p>Primera base: Lorena, Ulices y Familia. Después agregamos detalle de cuentas.</p><div id="clientsBox"></div></div>
+        </section>
+      </section>
+    </section>
+
+    <section class="admin hidden" id="adminView">
+      <header class="topbar"><div><p class="eyebrow">Admin</p><h2>Productos</h2></div><button id="backFromAdmin">Inicio</button></header>
+      <div class="admin-layout">
+        <div class="panel">
+          <div class="panel-row"><h3>Lista</h3><button id="newProductBtn" class="primary">Nuevo</button></div>
+          <input id="adminSearch" class="search" placeholder="Buscar producto..." />
+          <div id="adminProducts"></div>
+        </div>
+        <form class="panel" id="productForm">
+          <input type="hidden" id="productId" />
+          <h3 id="formTitle">Nuevo producto</h3>
+          <label>Nombre <input id="nameInput" required /></label>
+          <label>Costo <input id="costInput" type="number" step="0.01" required /></label>
+          <label>Precio venta <input id="saleInput" type="number" step="100" required /></label>
+          <label>Código de barra <input id="barcodeInput" /></label>
+          <label>Stock <input id="stockInput" type="number" step="0.01" /></label>
+          <label>Proveedor <select id="supplierInput"></select></label>
+          <label class="check"><input id="weighableInput" type="checkbox" /> Pesable</label>
+          <div class="form-actions"><button type="button" id="deleteProductBtn" class="danger hidden">Borrar</button><button class="primary">Guardar</button></div>
+          <textarea id="whatsappMessage" readonly placeholder="Mensaje de WhatsApp"></textarea>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="passwordDialog"><form method="dialog" class="dialog"><h3>Admin</h3><input id="passwordInput" type="password" placeholder="Contraseña" maxlength="4" /><p id="passwordError" class="error hidden">Contraseña incorrecta</p><button class="primary">Entrar</button></form></dialog>
+  <dialog id="weighDialog"><form method="dialog" class="dialog"><h3 id="weighTitle">Producto pesable</h3><p id="weighInfo"></p><input id="weighAmount" type="number" placeholder="¿Cuánto va a cobrar?" /><button class="primary">Agregar</button></form></dialog>
+  <dialog id="payDialog"><form method="dialog" class="dialog pay"><h3>Pago</h3><h1 id="payTotal">$0</h1><p id="payStatus">Faltan $0</p><label>Efectivo <input id="cashPay" type="number" value="0" /></label><label>Transferencia <input id="transferPay" type="number" value="0" /></label><button id="finishPayBtn" class="primary" type="button">Confirmar venta</button></form></dialog>
+  <aside id="turnPanel" class="turn-panel hidden"><div class="panel-row"><h3>Turno de caja</h3><button id="closeTurnPanel">✕</button></div><div id="turnPanelBody"></div></aside>
+
+  <script src="app.js"></script>
+</body>
+</html>
