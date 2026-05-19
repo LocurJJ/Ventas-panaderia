@@ -16,11 +16,11 @@
       </div>
 
       <div class="location-grid">
-        <button class="location-card" onclick="window.location.href='ventas.html?local=Central&v=20260519-2'">
+        <button class="location-card" onclick="window.location.href='ventas.html?local=Central&v=20260519-3'">
           <span>Central</span>
           <small>Vender en central</small>
         </button>
-        <button class="location-card" onclick="window.location.href='ventas.html?local=Sucursal&v=20260519-2'">
+        <button class="location-card" onclick="window.location.href='ventas.html?local=Sucursal&v=20260519-3'">
           <span>Sucursal</span>
           <small>Vender en sucursal</small>
         </button>
@@ -35,12 +35,16 @@
       <header class="topbar">
         <div>
           <p class="eyebrow">Admin</p>
-          <h2>Productos</h2>
+          <h2 id="adminTitle">Productos</h2>
         </div>
-        <button class="ghost-button" id="backHomeFromAdmin">Inicio</button>
+        <div class="actions">
+          <button class="ghost-button" id="adminProductsButton">Productos</button>
+          <button class="ghost-button" id="adminReportsButton">Reportes</button>
+          <button class="ghost-button" id="backHomeFromAdmin">Inicio</button>
+        </div>
       </header>
 
-      <div class="admin-layout">
+      <div class="admin-layout" id="adminProductsView">
         <aside class="product-panel">
           <div class="panel-header">
             <div>
@@ -122,6 +126,23 @@
           </div>
         </section>
       </div>
+
+      <section class="report-panel hidden" id="adminReportsView">
+        <div class="panel-header">
+          <div>
+            <h3>Reporte de turnos</h3>
+            <p class="muted">Elegi el local para ver los turnos cerrados.</p>
+          </div>
+          <label class="compact-label">
+            Local
+            <select id="adminReportLocalSelect">
+              <option value="Central">Central</option>
+              <option value="Sucursal">Sucursal</option>
+            </select>
+          </label>
+        </div>
+        <div class="report-list" id="adminReportList"></div>
+      </section>
     </section>
   </main>
 
@@ -151,6 +172,6 @@
     </form>
   </dialog>
 
-  <script src="app.js?v=20260519-2"></script>
+  <script src="app.js?v=20260519-3"></script>
 </body>
 </html>
