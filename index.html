@@ -16,11 +16,11 @@
       </div>
 
       <div class="location-grid">
-        <button class="location-card" onclick="window.location.href='ventas.html?local=Central&v=20260519-4'">
+        <button class="location-card" onclick="window.location.href='ventas.html?local=Central&v=20260519-5'">
           <span>Central</span>
           <small>Vender en central</small>
         </button>
-        <button class="location-card" onclick="window.location.href='ventas.html?local=Sucursal&v=20260519-4'">
+        <button class="location-card" onclick="window.location.href='ventas.html?local=Sucursal&v=20260519-5'">
           <span>Sucursal</span>
           <small>Vender en sucursal</small>
         </button>
@@ -70,108 +70,23 @@
               <button class="danger-button hidden" type="button" id="deleteProductButton">Borrar</button>
             </div>
 
-            <label>
-              Nombre del producto
-              <input id="nameInput" required autocomplete="off">
-            </label>
-
-            <div class="form-grid">
-              <label>
-                Precio de compra
-                <input id="costInput" type="number" min="0" step="0.01" required>
-              </label>
-              <label>
-                Precio de venta
-                <input id="saleInput" type="number" min="0" step="100" required>
-              </label>
-            </div>
-
-            <div class="form-grid">
-              <label>
-                Codigo de barra
-                <input id="barcodeInput" autocomplete="off">
-              </label>
-              <label>
-                Stock
-                <input id="stockInput" type="number" min="0" step="0.01" value="0">
-              </label>
-            </div>
-
-            <div class="form-grid">
-              <label>
-                Proveedor
-                <select id="supplierInput" required></select>
-              </label>
-              <label class="checkbox-label">
-                <input id="weighableInput" type="checkbox">
-                Producto pesable
-              </label>
-            </div>
-
-            <div class="actions">
-              <button class="ghost-button" type="button" id="clearFormButton">Limpiar</button>
-              <button class="primary-button" type="submit">Guardar cambios</button>
-            </div>
+            <label>Nombre del producto<input id="nameInput" required autocomplete="off"></label>
+            <div class="form-grid"><label>Precio de compra<input id="costInput" type="number" min="0" step="0.01" required></label><label>Precio de venta<input id="saleInput" type="number" min="0" step="100" required></label></div>
+            <div class="form-grid"><label>Codigo de barra<input id="barcodeInput" autocomplete="off"></label><label>Stock<input id="stockInput" type="number" min="0" step="0.01" value="0"></label></div>
+            <div class="form-grid"><label>Proveedor<select id="supplierInput" required></select></label><label class="checkbox-label"><input id="weighableInput" type="checkbox">Producto pesable</label></div>
+            <div class="actions"><button class="ghost-button" type="button" id="clearFormButton">Limpiar</button><button class="primary-button" type="submit">Guardar cambios</button></div>
           </form>
 
-          <div class="whatsapp-box">
-            <div class="panel-header">
-              <div>
-                <h3>Mensaje para WhatsApp</h3>
-                <p class="muted">Se agregan los productos que guardaste o modificaste.</p>
-              </div>
-              <button class="ghost-button" id="copyWhatsappButton">Copiar</button>
-            </div>
-            <textarea id="whatsappMessage" readonly placeholder="Todavia no guardaste cambios."></textarea>
-          </div>
+          <div class="whatsapp-box"><div class="panel-header"><div><h3>Mensaje para WhatsApp</h3><p class="muted">Se agregan los productos que guardaste o modificaste.</p></div><button class="ghost-button" id="copyWhatsappButton">Copiar</button></div><textarea id="whatsappMessage" readonly placeholder="Todavia no guardaste cambios."></textarea></div>
         </section>
       </div>
 
-      <section class="report-panel hidden" id="adminReportsView">
-        <div class="panel-header">
-          <div>
-            <h3>Reporte de turnos</h3>
-            <p class="muted">Elegi el local para ver los turnos cerrados.</p>
-          </div>
-          <label class="compact-label">
-            Local
-            <select id="adminReportLocalSelect">
-              <option value="Central">Central</option>
-              <option value="Sucursal">Sucursal</option>
-            </select>
-          </label>
-        </div>
-        <div class="report-list" id="adminReportList"></div>
-      </section>
+      <section class="report-panel hidden" id="adminReportsView"><div class="panel-header"><div><h3>Reporte de turnos</h3><p class="muted">Elegi el local para ver los turnos cerrados.</p></div><label class="compact-label">Local<select id="adminReportLocalSelect"><option value="Central">Central</option><option value="Sucursal">Sucursal</option></select></label></div><div class="report-list" id="adminReportList"></div></section>
     </section>
   </main>
 
-  <dialog id="passwordDialog">
-    <form method="dialog" class="dialog-card" id="passwordForm">
-      <h3>Ingresar a Admin</h3>
-      <label>
-        Contrasena
-        <input id="passwordInput" type="password" inputmode="numeric" maxlength="4" autocomplete="off">
-      </label>
-      <p class="error hidden" id="passwordError">Contrasena incorrecta.</p>
-      <div class="actions">
-        <button class="ghost-button" type="button" id="cancelPasswordButton">Cancelar</button>
-        <button class="primary-button" type="submit">Entrar</button>
-      </div>
-    </form>
-  </dialog>
-
-  <dialog id="confirmDialog">
-    <form method="dialog" class="dialog-card">
-      <h3>Guardar cambios?</h3>
-      <p class="muted" id="confirmText">Se actualizara la lista de productos.</p>
-      <div class="actions">
-        <button class="ghost-button" value="no">No</button>
-        <button class="primary-button" value="yes">Si, guardar</button>
-      </div>
-    </form>
-  </dialog>
-
+  <dialog id="passwordDialog"><form method="dialog" class="dialog-card" id="passwordForm"><h3>Ingresar a Admin</h3><label>Contrasena<input id="passwordInput" type="password" inputmode="numeric" maxlength="4" autocomplete="off"></label><p class="error hidden" id="passwordError">Contrasena incorrecta.</p><div class="actions"><button class="ghost-button" type="button" id="cancelPasswordButton">Cancelar</button><button class="primary-button" type="submit">Entrar</button></div></form></dialog>
+  <dialog id="confirmDialog"><form method="dialog" class="dialog-card"><h3>Guardar cambios?</h3><p class="muted" id="confirmText">Se actualizara la lista de productos.</p><div class="actions"><button class="ghost-button" value="no">No</button><button class="primary-button" value="yes">Si, guardar</button></div></form></dialog>
   <script src="app.js?v=20260519-3"></script>
 </body>
 </html>
