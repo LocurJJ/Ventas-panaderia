@@ -14,19 +14,17 @@ const suppliers = [
   "Serenisima",
   "Pastas",
   "Tapas",
-  "Otro"
+  "Otro",
 ];
 
 let products = loadProducts();
 let changedProducts = loadWhatsappProducts();
 let selectedId = null;
-let currentSalesLocation = "Central";
 
 const $ = (id) => document.getElementById(id);
 
 const welcomeView = $("welcomeView");
 const adminView = $("adminView");
-const salesView = $("salesView");
 const adminOpenButton = $("adminOpenButton");
 const passwordDialog = $("passwordDialog");
 const passwordForm = $("passwordForm");
@@ -49,108 +47,123 @@ const weighableInput = $("weighableInput");
 const formTitle = $("formTitle");
 const deleteProductButton = $("deleteProductButton");
 const whatsappMessage = $("whatsappMessage");
-const salesLocation = $("salesLocation");
 
-function loadProducts(){
+function loadProducts() {
   return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
 }
 
-function saveProducts(){
+function saveProducts() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
 }
 
-function loadWhatsappProducts(){
+function loadWhatsappProducts() {
   return JSON.parse(localStorage.getItem(WHATSAPP_KEY) || "[]");
 }
 
-function saveWhatsappProducts(){
+function saveWhatsappProducts() {
   localStorage.setItem(WHATSAPP_KEY, JSON.stringify(changedProducts));
 }
 
-function showView(view){
+function showView(view) {
   welcomeView.classList.add("hidden");
   adminView.classList.add("hidden");
-  salesView.classList.add("hidden");
   view.classList.remove("hidden");
 }
 
-function formatMoney(value){
+function formatMoney(value) {
   return Number(value || 0).toLocaleString("es-AR", {
-    style:"currency",
-    currency:"ARS",
-    maximumFractionDigits:0
+    style: "currency",
+    currency: "ARS",
+    maximumFractionDigits: 0,
   });
 }
 
-function roundToNearest100(value){
-  return Math.round(Number(value || 0) / 100) * 100;
+function roundSalePrice(value) {
+  const raw = Number(value || 0);
+  const remainder = raw % 100;
+  const base = raw - remainder;
+  return remainder >= 50 ? base + 100 : base;
 }
 
-function calculateSalePrice(){
+function calculateSalePrice() {
   const cost = Number(costInput.value || 0);
-  if(cost <= 0) return;
-  saleInput.value = roundToNearest100(cost * 1.3);
+  if (cost <= 0) {
+    saleInput.value = "";
+    return;
+  }
+  saleInput.value = roundSalePrice(cost * 1.3);
 }
 
-function fillSuppliers(){
-  supplierInput.innerHTML = suppliers.map(s => `<option value="${s}">${s}</option>`).join("");
+function fillSuppliers() {
+  supplierInput.innerHTML = suppliers.map((supplier) => `<option value="${supplier}">${supplier}</option>`).join("");
 }
 
-function renderProducts(){
+function renderProducts() {
   const search = productSearch.value.trim().toLowerCase();
   const filtered = products
-    .filter(p => {
-      const text = `${p.name} ${p.barcode} ${p.supplier}`.toLowerCase();
+    .filter((product) => {
+      const text = `${product.name} ${product.barcode || ""} ${product.supplier || ""}`.toLowerCase();
       return text.includes(search);
     })
-    .sort((a,b) => a.name.localeCompare(b.name));
+    .sort((a, b) => a.name.localeCompare(b.name, "es"));
 
   productCount.textContent = `${products.length} producto${products.length === 1 ? "" : "s"}`;
 
-  if(filtered.length === 0){
+  if (filtered.length === 0) {
     productList.innerHTML = `<p class="muted">No hay productos para mostrar.</p>`;
     return;
   }
 
-  productList.innerHTML = filtered.map(p => `
-    <button class="product-item ${p.id === selectedId ? "active" : ""}" data-id="${p.id}">
-      <strong>${p.name}</strong>
-      <small>Venta: ${formatMoney(p.salePrice)} | Costo: ${formatMoney(p.cost)}</small>
-      <small>Stock: ${p.stock || 0} ${p.weighable ? "kg/unidad pesable" : "un."} | ${p.supplier}</small>
-      <small>Código: ${p.barcode || "Sin código"}</small>
+  productList.innerHTML = filtered.map((product) => `
+    <button class="product-item ${product.id === selectedId ? "active" : ""}" data-id="${product.id}">
+      <strong>${escapeHtml(product.name)}</strong>
+      <small>Venta: ${formatMoney(product.salePrice)} | Costo: ${formatMoney(product.cost)}</small>
+      <small>Stock: ${product.stock || 0} ${product.weighable ? "kg/unidad pesable" : "un."} | ${escapeHtml(product.supplier)}</small>
+      <small>Codigo: ${escapeHtml(product.barcode || "Sin codigo")}</small>
     </button>
   `).join("");
 }
 
-function resetForm(){
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function resetForm() {
   selectedId = null;
   productForm.reset();
   productId.value = "";
   stockInput.value = 0;
-  formTitle.textContent = "Añadir producto";
+  supplierInput.value = "Oscar";
+  formTitle.textContent = "Anadir producto";
   deleteProductButton.classList.add("hidden");
   renderProducts();
   nameInput.focus();
 }
 
-function selectProduct(id){
-  const p = products.find(item => item.id === id);
-  if(!p) return;
+function selectProduct(id) {
+  const product = products.find((item) => item.id === id);
+  if (!product) return;
+
   selectedId = id;
-  productId.value = p.id;
-  nameInput.value = p.name;
-  costInput.value = p.cost;
-  saleInput.value = p.salePrice;
-  barcodeInput.value = p.barcode || "";
-  stockInput.value = p.stock || 0;
-  supplierInput.value = p.supplier || "Otro";
-  weighableInput.checked = !!p.weighable;
+  productId.value = product.id;
+  nameInput.value = product.name;
+  costInput.value = product.cost;
+  saleInput.value = product.salePrice;
+  barcodeInput.value = product.barcode || "";
+  stockInput.value = product.stock || 0;
+  supplierInput.value = product.supplier || "Otro";
+  weighableInput.checked = Boolean(product.weighable);
   formTitle.textContent = "Modificar producto";
   deleteProductButton.classList.remove("hidden");
   renderProducts();
 }
 
-function getFormProduct(){
+function getFormProduct() {
   return {
     id: productId.value || crypto.randomUUID(),
     name: nameInput.value.trim(),
@@ -160,52 +173,53 @@ function getFormProduct(){
     stock: Number(stockInput.value || 0),
     supplier: supplierInput.value,
     weighable: weighableInput.checked,
-    updatedAt: new Date().toISOString()
+    updatedAt: new Date().toISOString(),
   };
 }
 
-function confirmSave(){
-  return new Promise(resolve => {
+function confirmSave() {
+  return new Promise((resolve) => {
     confirmDialog.showModal();
     confirmDialog.addEventListener("close", () => {
       resolve(confirmDialog.returnValue === "yes");
-    }, {once:true});
+    }, { once: true });
   });
 }
 
-function addToWhatsapp(product){
-  changedProducts = changedProducts.filter(p => p.id !== product.id);
-  changedProducts.push({id: product.id, name: product.name, salePrice: product.salePrice});
+function addToWhatsapp(product) {
+  changedProducts = changedProducts.filter((item) => item.id !== product.id);
+  changedProducts.push({ id: product.id, name: product.name, salePrice: product.salePrice });
   saveWhatsappProducts();
   renderWhatsappMessage();
 }
 
-function renderWhatsappMessage(){
-  if(changedProducts.length === 0){
+function renderWhatsappMessage() {
+  if (changedProducts.length === 0) {
     whatsappMessage.value = "";
     return;
   }
+
   whatsappMessage.value = changedProducts
-    .map(p => `${p.name}---$${Number(p.salePrice).toLocaleString("es-AR")}`)
+    .map((product) => `${product.name}---$${Number(product.salePrice).toLocaleString("es-AR")}`)
     .join("\n");
 }
 
-productForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
+productForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
   const product = getFormProduct();
 
-  if(!product.name){
+  if (!product.name) {
     alert("Falta el nombre del producto.");
     return;
   }
 
   const ok = await confirmSave();
-  if(!ok) return;
+  if (!ok) return;
 
-  const index = products.findIndex(p => p.id === product.id);
-  if(index >= 0){
+  const index = products.findIndex((item) => item.id === product.id);
+  if (index >= 0) {
     products[index] = product;
-  }else{
+  } else {
     products.push(product);
   }
 
@@ -217,9 +231,9 @@ productForm.addEventListener("submit", async (e) => {
   alert("Producto guardado.");
 });
 
-productList.addEventListener("click", (e) => {
-  const button = e.target.closest(".product-item");
-  if(!button) return;
+productList.addEventListener("click", (event) => {
+  const button = event.target.closest(".product-item");
+  if (!button) return;
   selectProduct(button.dataset.id);
 });
 
@@ -229,8 +243,8 @@ $("newProductButton").addEventListener("click", resetForm);
 $("clearFormButton").addEventListener("click", resetForm);
 
 $("copyWhatsappButton").addEventListener("click", async () => {
-  if(!whatsappMessage.value.trim()){
-    alert("No hay mensaje para copiar todavía.");
+  if (!whatsappMessage.value.trim()) {
+    alert("No hay mensaje para copiar todavia.");
     return;
   }
   await navigator.clipboard.writeText(whatsappMessage.value);
@@ -238,12 +252,13 @@ $("copyWhatsappButton").addEventListener("click", async () => {
 });
 
 deleteProductButton.addEventListener("click", () => {
-  if(!selectedId) return;
-  const product = products.find(p => p.id === selectedId);
-  const ok = confirm(`¿Seguro que querés borrar ${product?.name || "este producto"}?`);
-  if(!ok) return;
-  products = products.filter(p => p.id !== selectedId);
-  changedProducts = changedProducts.filter(p => p.id !== selectedId);
+  if (!selectedId) return;
+  const product = products.find((item) => item.id === selectedId);
+  const ok = confirm(`Seguro que queres borrar ${product?.name || "este producto"}?`);
+  if (!ok) return;
+
+  products = products.filter((item) => item.id !== selectedId);
+  changedProducts = changedProducts.filter((item) => item.id !== selectedId);
   saveProducts();
   saveWhatsappProducts();
   renderWhatsappMessage();
@@ -257,14 +272,14 @@ adminOpenButton.addEventListener("click", () => {
   setTimeout(() => passwordInput.focus(), 100);
 });
 
-passwordForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  if(passwordInput.value === PASSWORD){
+passwordForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  if (passwordInput.value === PASSWORD) {
     passwordDialog.close();
     showView(adminView);
     renderProducts();
     renderWhatsappMessage();
-  }else{
+  } else {
     passwordError.classList.remove("hidden");
     passwordInput.select();
   }
@@ -272,12 +287,11 @@ passwordForm.addEventListener("submit", (e) => {
 
 cancelPasswordButton.addEventListener("click", () => passwordDialog.close());
 $("backHomeFromAdmin").addEventListener("click", () => showView(welcomeView));
-$("backHomeFromSales").addEventListener("click", () => showView(welcomeView));
 
-document.querySelectorAll("[data-open-sales]").forEach(button => {
+document.querySelectorAll("[data-open-sales]").forEach((button) => {
   button.addEventListener("click", () => {
     const local = button.dataset.openSales;
-    window.location.href = "ventas.html?local=" + encodeURIComponent(local);
+    window.location.href = `ventas.html?local=${encodeURIComponent(local)}`;
   });
 });
 
