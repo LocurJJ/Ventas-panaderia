@@ -59,7 +59,7 @@ function loadProducts() {
 }
 
 function saveProducts() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
+  saveOnline(STORAGE_KEY, products);
 }
 
 function loadWhatsappProducts() {
@@ -77,7 +77,7 @@ function loadList(key) {
 }
 
 function saveWhatsappProducts() {
-  localStorage.setItem(WHATSAPP_KEY, JSON.stringify(changedProducts));
+  saveOnline(WHATSAPP_KEY, changedProducts);
 }
 
 function showView(view) {
@@ -392,7 +392,15 @@ document.querySelectorAll("[data-open-sales]").forEach((button) => {
     window.location.href = `ventas.html?local=${encodeURIComponent(local)}`;
   });
 });
+listenOnline(STORAGE_KEY, (data) => {
+  products = data;
+  renderProducts();
+});
 
+listenOnline(WHATSAPP_KEY, (data) => {
+  changedProducts = data;
+  renderWhatsappMessage();
+});
 fillSuppliers();
 renderProducts();
 renderWhatsappMessage();
