@@ -276,9 +276,8 @@ $("backHomeFromSales").addEventListener("click", () => showView(welcomeView));
 
 document.querySelectorAll("[data-open-sales]").forEach(button => {
   button.addEventListener("click", () => {
-    currentSalesLocation = button.dataset.openSales;
-    salesLocation.textContent = currentSalesLocation;
-    showView(salesView);
+    const local = button.dataset.openSales;
+    window.location.href = "ventas.html?local=" + encodeURIComponent(local);
   });
 });
 
