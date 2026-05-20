@@ -97,6 +97,28 @@ function listenOnline(key, callback) {
     saveOnline(SHIFTS_KEY, shifts);
   }
 
+  function installFixedSalesLayout() {
+    if (document.getElementById("fixed-sales-layout-patch")) return;
+    const style = document.createElement("style");
+    style.id = "fixed-sales-layout-patch";
+    style.textContent = `
+      @media (min-width: 901px) {
+        html, body { height: 100%; overflow: hidden !important; }
+        .app { height: 100vh !important; overflow: hidden !important; }
+        .sidebar { height: 100vh !important; overflow: auto !important; flex-shrink: 0 !important; }
+        .content { height: 100vh !important; overflow: hidden !important; }
+        #sellView .cart { height: calc(100vh - 40px) !important; flex-shrink: 0 !important; }
+        #sellView .products { height: calc(100vh - 40px) !important; max-height: calc(100vh - 40px) !important; overflow-y: auto !important; overflow-x: hidden !important; }
+        #sellView .product-grid { padding-bottom: 24px !important; }
+        #shiftView .shift-panel,
+        #notebookView .notebook,
+        #productManageView .product-manage-panel,
+        #clientsView .notebook { max-height: calc(100vh - 40px) !important; overflow: auto !important; }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
   function ensureReinforcementUi() {
     const shiftExpected = document.getElementById("shiftExpectedCash");
     if (shiftExpected && !document.getElementById("shiftReinforcements")) {
@@ -241,6 +263,7 @@ function listenOnline(key, callback) {
   }
 
   function installOverrides() {
+    installFixedSalesLayout();
     ensureReinforcementUi();
     window.addExpense = addExpensePatched;
     window.addReinforcement = addReinforcementPatched;
