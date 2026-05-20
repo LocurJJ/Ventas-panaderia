@@ -108,7 +108,6 @@ function listenOnline(key, callback) {
 
     const expenseList = document.getElementById("expenseList");
     if (expenseList && !document.getElementById("reinforcementList")) {
-      const box = expenseList.closest(".shift-box");
       const form = document.createElement("div");
       form.className = "shift-form";
       form.innerHTML = '<input id="reinforcementDescriptionInput" placeholder="Detalle del refuerzo"><input id="reinforcementAmountInput" type="number" min="0" step="1" placeholder="Importe"><button class="secondary-btn" type="button" onclick="addReinforcement()">Agregar refuerzo</button>';
@@ -122,7 +121,7 @@ function listenOnline(key, callback) {
     }
   }
 
-  window.addExpense = function addExpensePatched() {
+  function addExpensePatched() {
     const shifts = readList(SHIFTS_KEY);
     const shift = getOpenShift(shifts);
     if (!shift) return;
@@ -145,11 +144,11 @@ function listenOnline(key, callback) {
     persistShifts(shifts);
     if (descriptionInput) descriptionInput.value = "";
     if (amountInput) amountInput.value = "";
-    window.renderShift?.();
+    renderShiftPatched();
     alert("Gasto agregado.");
-  };
+  }
 
-  window.addReinforcement = function addReinforcement() {
+  function addReinforcementPatched() {
     const shifts = readList(SHIFTS_KEY);
     const shift = getOpenShift(shifts);
     if (!shift) return;
@@ -172,29 +171,29 @@ function listenOnline(key, callback) {
     persistShifts(shifts);
     if (descriptionInput) descriptionInput.value = "";
     if (amountInput) amountInput.value = "";
-    window.renderShift?.();
+    renderShiftPatched();
     alert("Refuerzo agregado.");
-  };
+  }
 
-  window.deleteExpense = function deleteExpensePatched(id) {
+  function deleteExpensePatched(id) {
     const shifts = readList(SHIFTS_KEY);
     const shift = getOpenShift(shifts);
     if (!shift) return;
     shift.expenses = (shift.expenses || []).filter((expense) => expense.id !== id);
     persistShifts(shifts);
-    window.renderShift?.();
-  };
+    renderShiftPatched();
+  }
 
-  window.deleteReinforcement = function deleteReinforcement(id) {
+  function deleteReinforcementPatched(id) {
     const shifts = readList(SHIFTS_KEY);
     const shift = getOpenShift(shifts);
     if (!shift) return;
     shift.reinforcements = (shift.reinforcements || []).filter((reinforcement) => reinforcement.id !== id);
     persistShifts(shifts);
-    window.renderShift?.();
-  };
+    renderShiftPatched();
+  }
 
-  window.renderShift = function renderShiftPatched() {
+  function renderShiftPatched() {
     ensureReinforcementUi();
 
     const shifts = readList(SHIFTS_KEY);
@@ -239,10 +238,18 @@ function listenOnline(key, callback) {
     reinforcementList.innerHTML = reinforcements.length
       ? reinforcements.map((reinforcement) => `<div class="sale-item"><div class="sale-main"><strong>${esc(reinforcement.description)}</strong><strong>${money(reinforcement.amount)}</strong><button class="delete-btn" type="button" onclick="deleteReinforcement('${reinforcement.id}')">X</button></div></div>`).join("")
       : "<p class='empty'>Sin refuerzos cargados.</p>";
-  };
+  }
 
-  window.addEventListener("DOMContentLoaded", () => {
+  function installOverrides() {
     ensureReinforcementUi();
-    window.renderShift?.();
-  });
+    window.addExpense = addExpensePatched;
+    window.addReinforcement = addReinforcementPatched;
+    window.deleteExpense = deleteExpensePatched;
+    window.deleteReinforcement = deleteReinforcementPatched;
+    window.renderShift = renderShiftPatched;
+    renderShiftPatched();
+  }
+
+  window.addEventListener("DOMContentLoaded", installOverrides);
+  setTimeout(installOverrides, 0);
 })();
