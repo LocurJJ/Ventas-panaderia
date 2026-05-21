@@ -81,7 +81,7 @@
         </section>
       </div>
 
-      <section class="report-panel hidden" id="adminReportsView"><div class="panel-header"><div><h3>Reporte de turnos</h3><p class="muted">Elegi el local para ver los turnos cerrados.</p></div><label class="compact-label">Local<select id="adminReportLocalSelect"><option value="Central">Central</option><option value="Sucursal">Sucursal</option></select></label></div><div class="report-list" id="adminReportList"></div></section>
+      <section class="report-panel hidden" id="adminReportsView"><div class="panel-header"><div><h3>Reporte de turnos</h3><p class="muted">Elegi el local o estadisticas.</p></div><label class="compact-label">Ver<select id="adminReportLocalSelect"><option value="Central">Central</option><option value="Sucursal">Sucursal</option><option value="Estadisticas">Estadisticas</option></select></label></div><div class="stats-controls hidden" id="adminStatsControls"><label>Desde<input id="adminStatsFromInput" type="date"></label><label>Hasta<input id="adminStatsToInput" type="date"></label><label>Ordenar por<select id="adminStatsSortInput"><option value="quantity">Cantidad vendida</option><option value="revenue">Ingreso</option></select></label></div><div class="report-list" id="adminReportList"></div></section>
     </section>
   </main>
 
@@ -120,6 +120,11 @@
     return new Date(value).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" });
   }
 
+  function dateInputValue(value) {
+    const date = value ? new Date(value) : new Date();
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+  }
+
   function esc(value) {
     return String(value ?? "")
       .replaceAll("&", "&amp;")
@@ -144,23 +149,126 @@
       .report-arrow { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 999px; background: #eef4ff; color: var(--blue); font-size: 22px; line-height: 1; transition: transform .18s ease; }
       .report-card[open] .report-arrow { transform: rotate(90deg); }
       .report-body { padding: 0 16px 16px; border-top: 1px solid #edf1f6; }
+      .stats-controls { display: grid; grid-template-columns: repeat(3, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; padding-top: 18px; border-top: 1px solid #edf1f6; }
+      .stats-period { display: flex; justify-content: space-between; gap: 12px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 8px; background: #f8fafc; color: var(--muted); }
+      .stats-period strong { color: var(--text); }
+      .stats-heading, .stats-row { display: grid; grid-template-columns: 1fr 150px 150px; gap: 12px; align-items: center; }
+      .stats-heading { padding: 12px 0 8px; color: var(--muted); font-weight: 800; font-size: 14px; }
+      .stats-row { padding: 10px 0; border-top: 1px solid #edf1f6; }
+      .stats-row strong { text-align: right; }
+      @media (max-width: 860px) { .stats-controls, .stats-heading, .stats-row { grid-template-columns: 1fr; } .stats-period { display: grid; } }
     `;
     document.head.appendChild(style);
   }
 
-  window.renderAdminReports = function renderAdminReportsCompact() {
-    ensureStyle();
-    const select = document.getElementById("adminReportLocalSelect");
-    const list = document.getElementById("adminReportList");
-    if (!select || !list) return;
+  function ensureStatsDates() {
+    const fromInput = document.getElementById("adminStatsFromInput");
+    const toInput = document.getElementById("adminStatsToInput");
+    const today = new Date();
+    const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+    if (fromInput && !fromInput.value) fromInput.value = dateInputValue(monthStart);
+    if (toInput && !toInput.value) toInput.value = dateInputValue(today);
+  }
 
-    const selectedLocal = select.value;
+  function formatStatsQuantity(value, weighable) {
+    const quantity = Number(value || 0);
+    if (!weighable) return `${quantity.toLocaleString("es-AR")} un.`;
+    if (quantity < 1) return `${Math.round(quantity * 1000).toLocaleString("es-AR")} g`;
+    return `${quantity.toLocaleString("es-AR", { maximumFractionDigits: 3 })} kg`;
+  }
+
+  function buildProductStats(sales) {
+    const products = readList("panaderia_josue_productos_v1");
+    const productsById = new Map(products.map((product) => [product.id, product]));
+    const groups = { weighable: new Map(), unit: new Map() };
+
+    sales.forEach((sale) => {
+      (sale.items || []).forEach((item) => {
+        const product = productsById.get(item.productId);
+        const isWeighable = Boolean(item.weighable || product?.weighable);
+        const target = isWeighable ? groups.weighable : groups.unit;
+        const key = item.productId || item.name;
+        const current = target.get(key) || {
+          name: item.name || product?.name || "Producto",
+          quantity: 0,
+          revenue: 0,
+          saleCount: 0,
+          weighable: isWeighable,
+        };
+        current.quantity += Number(item.quantity || 0);
+        current.revenue += Number(item.total || 0);
+        current.saleCount += 1;
+        target.set(key, current);
+      });
+    });
+
+    const sortBy = document.getElementById("adminStatsSortInput")?.value || "quantity";
+    const sorter = (a, b) => sortBy === "revenue" ? b.revenue - a.revenue : b.quantity - a.quantity;
+    return {
+      weighable: Array.from(groups.weighable.values()).sort(sorter),
+      unit: Array.from(groups.unit.values()).sort(sorter),
+    };
+  }
+
+  function renderStatsCard(title, items, weighable) {
+    const best = items[0];
+    const rows = items.map((item, index) => `
+      <div class="stats-row">
+        <span>${index + 1}. ${esc(item.name)}</span>
+        <strong>${formatStatsQuantity(item.quantity, weighable)}</strong>
+        <strong>${money(item.revenue)}</strong>
+      </div>
+    `).join("");
+
+    return `
+      <details class="report-card stats-card">
+        <summary class="report-summary">
+          <span><strong>${title}</strong><small>${best ? esc(best.name) : "Sin ventas en este rango"}</small></span>
+          <span class="report-summary-total">${best ? formatStatsQuantity(best.quantity, weighable) : "-"} <span class="report-arrow">&gt;</span></span>
+        </summary>
+        <div class="report-body">
+          <div class="stats-heading"><span>Producto</span><span>Cantidad</span><span>Ingreso</span></div>
+          ${rows || "<p class='muted'>No hay productos para mostrar.</p>"}
+        </div>
+      </details>
+    `;
+  }
+
+  function renderStatistics() {
+    ensureStyle();
+    ensureStatsDates();
+    document.getElementById("adminStatsControls")?.classList.remove("hidden");
+    const fromInput = document.getElementById("adminStatsFromInput");
+    const toInput = document.getElementById("adminStatsToInput");
+    const list = document.getElementById("adminReportList");
+    if (!fromInput || !toInput || !list) return;
+
+    const from = new Date(`${fromInput.value}T00:00:00`);
+    const to = new Date(`${toInput.value}T23:59:59`);
+    const sales = readList("panaderia_josue_ventas_v1").filter((sale) => {
+      const date = new Date(sale.date);
+      return date >= from && date <= to;
+    });
+    const stats = buildProductStats(sales);
+    const totalSales = sales.reduce((sum, sale) => sum + Number(sale.total || 0), 0);
+
+    list.innerHTML = `
+      <div class="stats-period"><strong>Periodo</strong><span>${dateOnly(from)} al ${dateOnly(to)}</span><span>${sales.length} venta${sales.length === 1 ? "" : "s"} - ${money(totalSales)}</span></div>
+      ${renderStatsCard("Mejor producto pesable", stats.weighable, true)}
+      ${renderStatsCard("Mejor producto por unidad", stats.unit, false)}
+    `;
+  }
+
+  function renderClosedShiftReports(selectedLocal) {
+    document.getElementById("adminStatsControls")?.classList.add("hidden");
+    const list = document.getElementById("adminReportList");
     const sales = readList("panaderia_josue_ventas_v1");
     const shifts = readList("panaderia_josue_turnos_v1");
     const closedShifts = shifts
       .filter((shift) => shift.local === selectedLocal && shift.status === "closed")
       .sort((a, b) => new Date(b.closedAt) - new Date(a.closedAt));
 
+    if (!list) return;
     if (closedShifts.length === 0) {
       list.innerHTML = `<p class="muted">Todavia no hay turnos cerrados para ${esc(selectedLocal)}.</p>`;
       return;
@@ -185,10 +293,7 @@
       return `
         <details class="report-card">
           <summary class="report-summary">
-            <span>
-              <strong>${esc(selectedLocal)}</strong>
-              <small>${dateOnly(shift.openedAt)} - ${timeOnly(shift.openedAt)} h - Hasta ${timeOnly(shift.closedAt)} h - ${shiftSales.length} venta${shiftSales.length === 1 ? "" : "s"}</small>
-            </span>
+            <span><strong>${esc(selectedLocal)}</strong><small>${dateOnly(shift.openedAt)} - ${timeOnly(shift.openedAt)} h - Hasta ${timeOnly(shift.closedAt)} h - ${shiftSales.length} venta${shiftSales.length === 1 ? "" : "s"}</small></span>
             <span class="report-summary-total">${money(totalSales)} <span class="report-arrow">&gt;</span></span>
           </summary>
           <div class="report-body">
@@ -206,12 +311,26 @@
         </details>
       `;
     }).join("");
+  }
+
+  window.renderAdminReports = function renderAdminReportsCompact() {
+    ensureStyle();
+    const select = document.getElementById("adminReportLocalSelect");
+    if (!select) return;
+    if (select.value === "Estadisticas") {
+      renderStatistics();
+      return;
+    }
+    renderClosedShiftReports(select.value);
   };
 
   window.addEventListener("DOMContentLoaded", () => {
     ensureStyle();
     document.getElementById("adminReportsButton")?.addEventListener("click", () => setTimeout(window.renderAdminReports, 0));
     document.getElementById("adminReportLocalSelect")?.addEventListener("change", window.renderAdminReports);
+    document.getElementById("adminStatsFromInput")?.addEventListener("change", window.renderAdminReports);
+    document.getElementById("adminStatsToInput")?.addEventListener("change", window.renderAdminReports);
+    document.getElementById("adminStatsSortInput")?.addEventListener("change", window.renderAdminReports);
   });
 })();
 </script>
