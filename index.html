@@ -77,7 +77,7 @@
             <div class="actions"><button class="ghost-button" type="button" id="clearFormButton">Limpiar</button><button class="primary-button" type="submit">Guardar cambios</button></div>
           </form>
 
-          <div class="whatsapp-box"><div class="panel-header"><div><h3>Mensaje para WhatsApp</h3><p class="muted">Se agregan los productos que guardaste o modificaste.</p></div><button class="ghost-button" id="copyWhatsappButton">Copiar</button></div><textarea id="whatsappMessage" readonly placeholder="Todavia no guardaste cambios."></textarea></div>
+          <div class="whatsapp-box"><div class="panel-header"><div><h3>Mensaje para WhatsApp</h3><p class="muted">Se agregan los productos que guardaste o modificaste.</p></div><div class="actions"><button class="ghost-button" type="button" id="clearWhatsappButton">Limpiar</button><button class="ghost-button" id="copyWhatsappButton">Copiar</button></div></div><textarea id="whatsappMessage" readonly placeholder="Todavia no guardaste cambios."></textarea></div>
         </section>
       </div>
 
@@ -92,7 +92,12 @@
 <script src="firebase.js"></script>
 <script src="app.js?v=20260519-4"></script>
 <script>
-(function installCompactAdminReports() {
+(function installAdminPatches() {
+  const SALES_KEY = "panaderia_josue_ventas_v1";
+  const SHIFTS_KEY = "panaderia_josue_turnos_v1";
+  const PRODUCTS_KEY = "panaderia_josue_productos_v1";
+  const WHATSAPP_KEY = "panaderia_josue_whatsapp_v1";
+
   function readList(key) {
     try {
       const value = JSON.parse(localStorage.getItem(key) || "[]");
@@ -103,11 +108,7 @@
   }
 
   function money(value) {
-    return Number(value || 0).toLocaleString("es-AR", {
-      style: "currency",
-      currency: "ARS",
-      maximumFractionDigits: 0,
-    });
+    return Number(value || 0).toLocaleString("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 });
   }
 
   function dateOnly(value) {
@@ -178,7 +179,7 @@
   }
 
   function buildProductStats(sales) {
-    const products = readList("panaderia_josue_productos_v1");
+    const products = readList(PRODUCTS_KEY);
     const productsById = new Map(products.map((product) => [product.id, product]));
     const groups = { weighable: new Map(), unit: new Map() };
 
@@ -188,13 +189,7 @@
         const isWeighable = Boolean(item.weighable || product?.weighable);
         const target = isWeighable ? groups.weighable : groups.unit;
         const key = item.productId || item.name;
-        const current = target.get(key) || {
-          name: item.name || product?.name || "Producto",
-          quantity: 0,
-          revenue: 0,
-          saleCount: 0,
-          weighable: isWeighable,
-        };
+        const current = target.get(key) || { name: item.name || product?.name || "Producto", quantity: 0, revenue: 0, saleCount: 0 };
         current.quantity += Number(item.quantity || 0);
         current.revenue += Number(item.total || 0);
         current.saleCount += 1;
@@ -204,32 +199,19 @@
 
     const sortBy = document.getElementById("adminStatsSortInput")?.value || "quantity";
     const sorter = (a, b) => sortBy === "revenue" ? b.revenue - a.revenue : b.quantity - a.quantity;
-    return {
-      weighable: Array.from(groups.weighable.values()).sort(sorter),
-      unit: Array.from(groups.unit.values()).sort(sorter),
-    };
+    return { weighable: Array.from(groups.weighable.values()).sort(sorter), unit: Array.from(groups.unit.values()).sort(sorter) };
   }
 
   function renderStatsCard(title, items, weighable) {
     const best = items[0];
     const rows = items.map((item, index) => `
-      <div class="stats-row">
-        <span>${index + 1}. ${esc(item.name)}</span>
-        <strong>${formatStatsQuantity(item.quantity, weighable)}</strong>
-        <strong>${money(item.revenue)}</strong>
-      </div>
+      <div class="stats-row"><span>${index + 1}. ${esc(item.name)}</span><strong>${formatStatsQuantity(item.quantity, weighable)}</strong><strong>${money(item.revenue)}</strong></div>
     `).join("");
 
     return `
       <details class="report-card stats-card">
-        <summary class="report-summary">
-          <span><strong>${title}</strong><small>${best ? esc(best.name) : "Sin ventas en este rango"}</small></span>
-          <span class="report-summary-total">${best ? formatStatsQuantity(best.quantity, weighable) : "-"} <span class="report-arrow">&gt;</span></span>
-        </summary>
-        <div class="report-body">
-          <div class="stats-heading"><span>Producto</span><span>Cantidad</span><span>Ingreso</span></div>
-          ${rows || "<p class='muted'>No hay productos para mostrar.</p>"}
-        </div>
+        <summary class="report-summary"><span><strong>${title}</strong><small>${best ? esc(best.name) : "Sin ventas en este rango"}</small></span><span class="report-summary-total">${best ? formatStatsQuantity(best.quantity, weighable) : "-"} <span class="report-arrow">&gt;</span></span></summary>
+        <div class="report-body"><div class="stats-heading"><span>Producto</span><span>Cantidad</span><span>Ingreso</span></div>${rows || "<p class='muted'>No hay productos para mostrar.</p>"}</div>
       </details>
     `;
   }
@@ -245,7 +227,7 @@
 
     const from = new Date(`${fromInput.value}T00:00:00`);
     const to = new Date(`${toInput.value}T23:59:59`);
-    const sales = readList("panaderia_josue_ventas_v1").filter((sale) => {
+    const sales = readList(SALES_KEY).filter((sale) => {
       const date = new Date(sale.date);
       return date >= from && date <= to;
     });
@@ -262,11 +244,9 @@
   function renderClosedShiftReports(selectedLocal) {
     document.getElementById("adminStatsControls")?.classList.add("hidden");
     const list = document.getElementById("adminReportList");
-    const sales = readList("panaderia_josue_ventas_v1");
-    const shifts = readList("panaderia_josue_turnos_v1");
-    const closedShifts = shifts
-      .filter((shift) => shift.local === selectedLocal && shift.status === "closed")
-      .sort((a, b) => new Date(b.closedAt) - new Date(a.closedAt));
+    const sales = readList(SALES_KEY);
+    const shifts = readList(SHIFTS_KEY);
+    const closedShifts = shifts.filter((shift) => shift.local === selectedLocal && shift.status === "closed").sort((a, b) => new Date(b.closedAt) - new Date(a.closedAt));
 
     if (!list) return;
     if (closedShifts.length === 0) {
@@ -292,25 +272,25 @@
 
       return `
         <details class="report-card">
-          <summary class="report-summary">
-            <span><strong>${esc(selectedLocal)}</strong><small>${dateOnly(shift.openedAt)} - ${timeOnly(shift.openedAt)} h - Hasta ${timeOnly(shift.closedAt)} h - ${shiftSales.length} venta${shiftSales.length === 1 ? "" : "s"}</small></span>
-            <span class="report-summary-total">${money(totalSales)} <span class="report-arrow">&gt;</span></span>
-          </summary>
-          <div class="report-body">
-            <p class="muted">Fecha ${dateOnly(shift.openedAt)} - Desde ${timeOnly(shift.openedAt)} h hasta ${timeOnly(shift.closedAt)} h</p>
-            <div class="report-row"><span>Total vendido</span><strong>${money(totalSales)}</strong></div>
-            <div class="report-row"><span>Efectivo</span><strong>${money(cashSales)}</strong></div>
-            <div class="report-row"><span>Digital</span><strong>${money(digitalSales)}</strong></div>
-            <div class="report-row"><span>Gastos</span><strong>${money(expenseTotal)}</strong></div>
-            <div class="report-row"><span>Refuerzos</span><strong>${money(reinforcementTotal)}</strong></div>
-            <div class="report-row"><span>Cierre de caja teorico</span><strong>${money(expectedCash)}</strong></div>
-            <div class="report-row"><span>Cerro realmente con</span><strong>${money(shift.countedCash)}</strong></div>
-            <div class="report-row"><span>Diferencia</span><strong>${money(difference)}</strong></div>
-            <div class="report-detail"><strong>Detalle</strong><ul>${detail || "<li>Sin ventas en este turno.</li>"}</ul></div>
-          </div>
+          <summary class="report-summary"><span><strong>${esc(selectedLocal)}</strong><small>${dateOnly(shift.openedAt)} - ${timeOnly(shift.openedAt)} h - Hasta ${timeOnly(shift.closedAt)} h - ${shiftSales.length} venta${shiftSales.length === 1 ? "" : "s"}</small></span><span class="report-summary-total">${money(totalSales)} <span class="report-arrow">&gt;</span></span></summary>
+          <div class="report-body"><p class="muted">Fecha ${dateOnly(shift.openedAt)} - Desde ${timeOnly(shift.openedAt)} h hasta ${timeOnly(shift.closedAt)} h</p><div class="report-row"><span>Total vendido</span><strong>${money(totalSales)}</strong></div><div class="report-row"><span>Efectivo</span><strong>${money(cashSales)}</strong></div><div class="report-row"><span>Digital</span><strong>${money(digitalSales)}</strong></div><div class="report-row"><span>Gastos</span><strong>${money(expenseTotal)}</strong></div><div class="report-row"><span>Refuerzos</span><strong>${money(reinforcementTotal)}</strong></div><div class="report-row"><span>Cierre de caja teorico</span><strong>${money(expectedCash)}</strong></div><div class="report-row"><span>Cerro realmente con</span><strong>${money(shift.countedCash)}</strong></div><div class="report-row"><span>Diferencia</span><strong>${money(difference)}</strong></div><div class="report-detail"><strong>Detalle</strong><ul>${detail || "<li>Sin ventas en este turno.</li>"}</ul></div></div>
         </details>
       `;
     }).join("");
+  }
+
+  function installWhatsappClear() {
+    const button = document.getElementById("clearWhatsappButton");
+    if (!button || button.dataset.installed === "true") return;
+    button.dataset.installed = "true";
+    button.addEventListener("click", () => {
+      const ok = confirm("Seguro que queres limpiar el mensaje de WhatsApp?");
+      if (!ok) return;
+      localStorage.setItem(WHATSAPP_KEY, "[]");
+      if (typeof saveOnline === "function") saveOnline(WHATSAPP_KEY, []);
+      const message = document.getElementById("whatsappMessage");
+      if (message) message.value = "";
+    });
   }
 
   window.renderAdminReports = function renderAdminReportsCompact() {
@@ -326,6 +306,7 @@
 
   window.addEventListener("DOMContentLoaded", () => {
     ensureStyle();
+    installWhatsappClear();
     document.getElementById("adminReportsButton")?.addEventListener("click", () => setTimeout(window.renderAdminReports, 0));
     document.getElementById("adminReportLocalSelect")?.addEventListener("change", window.renderAdminReports);
     document.getElementById("adminStatsFromInput")?.addEventListener("change", window.renderAdminReports);
