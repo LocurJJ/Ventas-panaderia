@@ -143,9 +143,12 @@ function listenOnline(key, callback) {
         .app { height: 100vh !important; overflow: hidden !important; }
         .sidebar { height: 100vh !important; overflow: auto !important; flex-shrink: 0 !important; }
         .content { height: 100vh !important; overflow: hidden !important; }
-        #sellView .cart { height: calc(100vh - 40px) !important; flex-shrink: 0 !important; }
+        #sellView .cart { height: calc(100vh - 40px) !important; min-height: 0 !important; flex-shrink: 0 !important; }
         #sellView .products { height: calc(100vh - 40px) !important; max-height: calc(100vh - 40px) !important; overflow-y: auto !important; overflow-x: hidden !important; }
         #sellView .product-grid { padding-bottom: 24px !important; }
+        #sellView .cart-table { display: block !important; flex: 1 1 auto !important; min-height: 0 !important; overflow-y: auto !important; overflow-x: hidden !important; padding-right: 4px !important; margin-bottom: 12px !important; }
+        #sellView .cart-table thead, #sellView .cart-table tbody { display: table !important; width: 100% !important; table-layout: fixed !important; }
+        #sellView .total { flex-shrink: 0 !important; margin-top: 12px !important; }
         #shiftView .shift-panel,
         #notebookView .notebook,
         #productManageView .product-manage-panel,
