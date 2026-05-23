@@ -24,13 +24,8 @@ function listenOnline(key, callback) {
   db.ref(dbPath(key)).on("value", (snapshot) => {
     const value = snapshot.val();
     let list = [];
-
-    if (Array.isArray(value)) {
-      list = value.filter(Boolean);
-    } else if (value && typeof value === "object") {
-      list = Object.values(value);
-    }
-
+    if (Array.isArray(value)) list = value.filter(Boolean);
+    else if (value && typeof value === "object") list = Object.values(value);
     localStorage.setItem(key, JSON.stringify(list));
     callback(list);
   });
@@ -65,11 +60,7 @@ function listenOnline(key, callback) {
   }
 
   function money(value) {
-    return Number(value || 0).toLocaleString("es-AR", {
-      style: "currency",
-      currency: "ARS",
-      maximumFractionDigits: 0,
-    });
+    return Number(value || 0).toLocaleString("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 });
   }
 
   function esc(value) {
@@ -83,19 +74,17 @@ function listenOnline(key, callback) {
 
   function dateTime(value) {
     if (!value) return "-";
-    return new Date(value).toLocaleString("es-AR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    return new Date(value).toLocaleString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
   }
 
   function formatKg(value) {
     const quantity = Number(value || 0);
     if (quantity < 1) return `${Math.round(quantity * 1000)} g`;
     return `${quantity.toLocaleString("es-AR", { maximumFractionDigits: 3 })} kg`;
+  }
+
+  function getLocalName() {
+    return new URLSearchParams(window.location.search).get("local") || "Central";
   }
 
   function getCurrentPrice(item, products) {
@@ -105,10 +94,6 @@ function listenOnline(key, callback) {
 
   function getCurrentItemValue(item, products) {
     return getCurrentPrice(item, products) * Number(item.quantity || 0);
-  }
-
-  function getLocalName() {
-    return new URLSearchParams(window.location.search).get("local") || "Central";
   }
 
   function getOpenShift(shifts) {
@@ -149,14 +134,117 @@ function listenOnline(key, callback) {
         #sellView .cart-table { display: block !important; flex: 1 1 auto !important; min-height: 0 !important; overflow-y: auto !important; overflow-x: hidden !important; padding-right: 4px !important; margin-bottom: 12px !important; }
         #sellView .cart-table thead, #sellView .cart-table tbody { display: table !important; width: 100% !important; table-layout: fixed !important; }
         #sellView .total { flex-shrink: 0 !important; margin-top: 12px !important; }
-        #shiftView .shift-panel,
-        #notebookView .notebook,
-        #productManageView .product-manage-panel,
-        #clientsView .notebook { max-height: calc(100vh - 40px) !important; overflow: auto !important; }
+        #shiftView .shift-panel, #notebookView .notebook, #productManageView .product-manage-panel, #clientsView .notebook { max-height: calc(100vh - 40px) !important; overflow: auto !important; }
       }
       .account-settle { width: auto !important; margin: 10px 0 4px; padding: 10px 14px !important; border-radius: 10px !important; font-size: 14px !important; }
     `;
     document.head.appendChild(style);
+  }
+
+  function ensureReinforcementUi() {
+    const expectedCash = document.getElementById("shiftExpectedCash");
+    if (expectedCash && !document.getElementById("shiftReinforcements")) {
+      const row = document.createElement("div");
+      row.className = "shift-row";
+      row.innerHTML = '<span>Refuerzos</span><strong id="shiftReinforcements">$0</strong>';
+      expectedCash.closest(".shift-row")?.before(row);
+    }
+
+    const expenseList = document.getElementById("expenseList");
+    if (expenseList && !document.getElementById("reinforcementList")) {
+      const form = document.createElement("div");
+      form.className = "shift-form";
+      form.innerHTML = '<input id="reinforcementDescriptionInput" placeholder="Detalle del refuerzo"><input id="reinforcementAmountInput" type="number" min="0" step="1" placeholder="Importe"><button class="secondary-btn" type="button" onclick="addReinforcement()">Agregar refuerzo</button>';
+      const title = document.createElement("h3");
+      title.textContent = "Refuerzos";
+      const list = document.createElement("div");
+      list.className = "sale-list";
+      list.id = "reinforcementList";
+      expenseList.after(form, title, list);
+    }
+  }
+
+  function persistShifts(shifts) {
+    saveList(SHIFTS_KEY, shifts);
+  }
+
+  window.addReinforcement = function addReinforcement() {
+    const shifts = readList(SHIFTS_KEY);
+    const shift = getOpenShift(shifts);
+    if (!shift) return;
+    const descriptionInput = document.getElementById("reinforcementDescriptionInput");
+    const amountInput = document.getElementById("reinforcementAmountInput");
+    const amount = Number(amountInput?.value || 0);
+    if (amount <= 0) {
+      alert("Carga el importe del refuerzo.");
+      return;
+    }
+    shift.reinforcements = Array.isArray(shift.reinforcements) ? shift.reinforcements : [];
+    shift.reinforcements.push({ id: makeId(), description: descriptionInput?.value.trim() || "Refuerzo", amount, date: new Date().toISOString() });
+    persistShifts(shifts);
+    if (descriptionInput) descriptionInput.value = "";
+    if (amountInput) amountInput.value = "";
+    renderShiftPatched();
+    alert("Refuerzo agregado.");
+  };
+
+  window.deleteReinforcement = function deleteReinforcement(id) {
+    const shifts = readList(SHIFTS_KEY);
+    const shift = getOpenShift(shifts);
+    if (!shift) return;
+    shift.reinforcements = (shift.reinforcements || []).filter((item) => item.id !== id);
+    persistShifts(shifts);
+    renderShiftPatched();
+  };
+
+  function renderShiftPatched() {
+    ensureReinforcementUi();
+    const shifts = readList(SHIFTS_KEY);
+    const sales = readList(SALES_KEY);
+    const shift = getOpenShift(shifts);
+    const closedBox = document.getElementById("closedShiftBox");
+    const openBox = document.getElementById("openShiftBox");
+    if (!closedBox || !openBox) return;
+
+    if (!shift) {
+      closedBox.classList.remove("hidden");
+      openBox.classList.add("hidden");
+      return;
+    }
+
+    closedBox.classList.add("hidden");
+    openBox.classList.remove("hidden");
+    const shiftSales = sales.filter((sale) => sale.shiftId === shift.id);
+    const expenses = Array.isArray(shift.expenses) ? shift.expenses : [];
+    const reinforcements = Array.isArray(shift.reinforcements) ? shift.reinforcements : [];
+    const expenseTotal = expenses.reduce((sum, expense) => sum + Number(expense.amount || 0), 0);
+    const reinforcementTotal = reinforcements.reduce((sum, reinforcement) => sum + Number(reinforcement.amount || 0), 0);
+    const cashSales = shiftSales.reduce((sum, sale) => sum + Number(sale.cash || 0) - Number(sale.change || 0), 0);
+    const digitalSales = shiftSales.reduce((sum, sale) => sum + Number(sale.transfer || 0), 0);
+    const expectedCash = Number(shift.initialCash || 0) + cashSales + reinforcementTotal - expenseTotal;
+
+    const setText = (id, value) => { const element = document.getElementById(id); if (element) element.textContent = value; };
+    setText("shiftOpenedAt", dateTime(shift.openedAt));
+    setText("shiftInitialCash", money(shift.initialCash));
+    setText("shiftExpenses", money(expenseTotal));
+    setText("shiftReinforcements", money(reinforcementTotal));
+    setText("shiftCashSales", money(cashSales));
+    setText("shiftDigitalSales", money(digitalSales));
+    setText("shiftExpectedCash", money(expectedCash));
+
+    const expenseList = document.getElementById("expenseList");
+    if (expenseList) {
+      expenseList.innerHTML = expenses.length
+        ? expenses.map((expense) => `<div class="sale-item"><div class="sale-main"><strong>${esc(expense.description)}</strong><strong>${money(expense.amount)}</strong><button class="delete-btn" type="button" onclick="deleteExpense('${expense.id}')">X</button></div></div>`).join("")
+        : "<p class='empty'>Sin gastos cargados.</p>";
+    }
+
+    const reinforcementList = document.getElementById("reinforcementList");
+    if (reinforcementList) {
+      reinforcementList.innerHTML = reinforcements.length
+        ? reinforcements.map((reinforcement) => `<div class="sale-item"><div class="sale-main"><strong>${esc(reinforcement.description)}</strong><strong>${money(reinforcement.amount)}</strong><button class="delete-btn" type="button" onclick="deleteReinforcement('${reinforcement.id}')">X</button></div></div>`).join("")
+        : "<p class='empty'>Sin refuerzos cargados.</p>";
+    }
   }
 
   function openImageDb() {
@@ -235,22 +323,13 @@ function listenOnline(key, callback) {
     await Promise.all(products.map((product) => getLocalImage(product.id).catch(() => "")));
     const search = document.getElementById("searchInput")?.value.trim().toLowerCase() || "";
     const filtered = products.filter((product) => `${product.name} ${product.barcode || ""}`.toLowerCase().includes(search));
-
     if (!filtered.length) {
       grid.innerHTML = "<p class='empty'>No hay productos para mostrar.</p>";
       return;
     }
-
     grid.innerHTML = filtered.map((product) => {
       const image = imageCache.get(product.id);
-      return `
-        <button class="product ${product.weighable ? "weighable" : ""} ${image ? "local-image-card" : ""}" type="button" onclick="addProduct('${product.id}')">
-          ${image ? `<img class="product-local-thumb" src="${image}" alt="${esc(product.name)}">` : ""}
-          <strong>${esc(product.name)}</strong>
-          <span>${money(product.salePrice)}${product.weighable ? "/kg" : ""}</span>
-          <small>Stock: ${Number(product.stock || 0).toLocaleString("es-AR")}${product.weighable ? " kg" : ""}</small>
-        </button>
-      `;
+      return `<button class="product ${product.weighable ? "weighable" : ""} ${image ? "local-image-card" : ""}" type="button" onclick="addProduct('${product.id}')">${image ? `<img class="product-local-thumb" src="${image}" alt="${esc(product.name)}">` : ""}<strong>${esc(product.name)}</strong><span>${money(product.salePrice)}${product.weighable ? "/kg" : ""}</span><small>Stock: ${Number(product.stock || 0).toLocaleString("es-AR")}${product.weighable ? " kg" : ""}</small></button>`;
     }).join("");
   }
 
@@ -258,16 +337,7 @@ function listenOnline(key, callback) {
     if (document.getElementById("local-product-images-style")) return;
     const style = document.createElement("style");
     style.id = "local-product-images-style";
-    style.textContent = `
-      .product.local-image-card { padding: 12px !important; overflow: hidden !important; }
-      .product-local-thumb { width: 100%; height: 84px; object-fit: cover; border-radius: 10px; display: block; margin-bottom: 10px; background: rgba(255,255,255,.18); }
-      .local-image-box { border: 1px solid #dbe2ef; border-radius: 12px; padding: 12px; display: grid; gap: 10px; background: #f8fafc; }
-      .local-image-preview { width: 100%; max-height: 180px; object-fit: contain; border-radius: 10px; display: none; background: white; border: 1px solid #e5e7eb; }
-      .local-image-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-      .local-image-actions input { flex: 1; min-width: 220px; }
-      .local-image-note { color: #64748b; font-size: 13px; }
-      .local-image-remove { border: 0; border-radius: 10px; padding: 10px 14px; background: #fee2e2; color: #b91c1c; cursor: pointer; }
-    `;
+    style.textContent = `.product.local-image-card{padding:12px!important;overflow:hidden!important}.product-local-thumb{width:100%;height:84px;object-fit:cover;border-radius:10px;display:block;margin-bottom:10px;background:rgba(255,255,255,.18)}.local-image-box{border:1px solid #dbe2ef;border-radius:12px;padding:12px;display:grid;gap:10px;background:#f8fafc}.local-image-preview{width:100%;max-height:180px;object-fit:contain;border-radius:10px;display:none;background:white;border:1px solid #e5e7eb}.local-image-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.local-image-actions input{flex:1;min-width:220px}.local-image-note{color:#64748b;font-size:13px}.local-image-remove{border:0;border-radius:10px;padding:10px 14px;background:#fee2e2;color:#b91c1c;cursor:pointer}`;
     document.head.appendChild(style);
   }
 
@@ -291,18 +361,9 @@ function listenOnline(key, callback) {
     if (!form || document.getElementById("productLocalImageInput")) return;
     const box = document.createElement("div");
     box.className = "local-image-box";
-    box.innerHTML = `
-      <strong>Imagen local</strong>
-      <img class="local-image-preview" id="productLocalImagePreview" alt="Vista previa">
-      <div class="local-image-actions">
-        <input id="productLocalImageInput" type="file" accept="image/*">
-        <button class="local-image-remove" id="removeProductLocalImage" type="button">Quitar imagen</button>
-      </div>
-      <span class="local-image-note">La imagen se guarda solo en esta computadora. Los datos del producto siguen en la base de datos.</span>
-    `;
+    box.innerHTML = `<strong>Imagen local</strong><img class="local-image-preview" id="productLocalImagePreview" alt="Vista previa"><div class="local-image-actions"><input id="productLocalImageInput" type="file" accept="image/*"><button class="local-image-remove" id="removeProductLocalImage" type="button">Quitar imagen</button></div><span class="local-image-note">La imagen se guarda solo en esta computadora. Los datos del producto siguen en la base de datos.</span>`;
     const stockTools = form.querySelector(".stock-tools");
     if (stockTools) stockTools.before(box); else form.appendChild(box);
-
     document.getElementById("productLocalImageInput").addEventListener("change", async (event) => {
       const productId = document.getElementById("productManageId")?.value;
       const file = event.currentTarget.files?.[0];
@@ -318,7 +379,6 @@ function listenOnline(key, callback) {
       await renderProductsWithImages();
       alert("Imagen guardada solo en esta computadora.");
     });
-
     document.getElementById("removeProductLocalImage").addEventListener("click", async () => {
       const productId = document.getElementById("productManageId")?.value;
       if (!productId) return;
@@ -329,12 +389,8 @@ function listenOnline(key, callback) {
   }
 
   function printAccountReceipt(customerName, items, total, payment) {
-    const detailRows = items.map((item) => `
-      <tr><td>${esc(item.name)}</td><td>${item.weighable ? formatKg(item.quantity) : `${Number(item.quantity || 0).toLocaleString("es-AR")} un.`}</td><td>${money(item.unitPrice)}${item.weighable ? "/kg" : ""}</td><td>${money(item.total)}</td></tr>
-    `).join("");
-    const paymentRows = payment
-      ? `<tr><td>Efectivo</td><td>${money(payment.cash)}</td></tr><tr><td>Transferencia / QR</td><td>${money(payment.transfer)}</td></tr><tr><td>Vuelto</td><td>${money(payment.change)}</td></tr>`
-      : `<tr><td>Cuenta limpiada</td><td>${money(total)}</td></tr>`;
+    const detailRows = items.map((item) => `<tr><td>${esc(item.name)}</td><td>${item.weighable ? formatKg(item.quantity) : `${Number(item.quantity || 0).toLocaleString("es-AR")} un.`}</td><td>${money(item.unitPrice)}${item.weighable ? "/kg" : ""}</td><td>${money(item.total)}</td></tr>`).join("");
+    const paymentRows = payment ? `<tr><td>Efectivo</td><td>${money(payment.cash)}</td></tr><tr><td>Transferencia / QR</td><td>${money(payment.transfer)}</td></tr><tr><td>Vuelto</td><td>${money(payment.change)}</td></tr>` : `<tr><td>Cuenta limpiada</td><td>${money(total)}</td></tr>`;
     const win = window.open("", "_blank", "width=720,height=900");
     if (!win) {
       alert("No se pudo abrir la impresion. Revisa si el navegador bloqueo ventanas emergentes.");
@@ -349,9 +405,7 @@ function listenOnline(key, callback) {
 
   function accountEntries() {
     const accounts = readList(ACCOUNTS_KEY).map((entry) => ({ ...entry, source: "account" }));
-    const legacy = readList(SALES_KEY)
-      .filter((sale) => sale.customerType && sale.customerType !== "normal")
-      .map((sale) => ({ ...sale, source: "sale" }));
+    const legacy = readList(SALES_KEY).filter((sale) => sale.customerType && sale.customerType !== "normal").map((sale) => ({ ...sale, source: "sale" }));
     return [...accounts, ...legacy].sort((a, b) => new Date(b.date) - new Date(a.date));
   }
 
@@ -377,7 +431,6 @@ function listenOnline(key, callback) {
       window.renderProducts?.();
       return;
     }
-
     const sales = readList(SALES_KEY);
     const sale = sales.find((entry) => entry.id === id);
     if (!sale) return;
@@ -390,18 +443,10 @@ function listenOnline(key, callback) {
 
   window.settleCustomerAccount = function settleCustomerAccount(encodedName) {
     const customerName = decodeURIComponent(encodedName);
-    const customers = [
-      { name: "Lorena", type: "account" },
-      { name: "Ulices", type: "account" },
-      { name: "Josue", type: "family" },
-      { name: "Juan y bety", type: "family" },
-      { name: "Gera", type: "family" },
-      { name: "Laura", type: "family" },
-    ];
+    const customers = [{ name: "Lorena", type: "account" }, { name: "Ulices", type: "account" }, { name: "Josue", type: "family" }, { name: "Juan y bety", type: "family" }, { name: "Gera", type: "family" }, { name: "Laura", type: "family" }];
     const customer = customers.find((entry) => entry.name === customerName);
     const { entries, items, total } = currentAccountItems(customerName);
     if (!entries.length) return;
-
     if (customer?.type === "account") {
       const shifts = readList(SHIFTS_KEY);
       const shift = getOpenShift(shifts);
@@ -425,25 +470,9 @@ function listenOnline(key, callback) {
         alert(`Faltan ${money(total - paid)}.`);
         return;
       }
-
       const sales = readList(SALES_KEY).filter((sale) => !(sale.customer === customerName && sale.customerType && sale.customerType !== "normal"));
       const shiftSales = sales.filter((sale) => sale.shiftId === shift.id);
-      sales.unshift({
-        id: makeId(),
-        shiftId: shift.id,
-        saleNumber: shiftSales.length + 1,
-        local: getLocalName(),
-        date: new Date().toISOString(),
-        customer: customerName,
-        customerType: "normal",
-        items,
-        total,
-        cash,
-        transfer,
-        change: Math.max(0, paid - total),
-        method: paymentMethod(cash, transfer),
-        accountPayment: true,
-      });
+      sales.unshift({ id: makeId(), shiftId: shift.id, saleNumber: shiftSales.length + 1, local: getLocalName(), date: new Date().toISOString(), customer: customerName, customerType: "normal", items, total, cash, transfer, change: Math.max(0, paid - total), method: paymentMethod(cash, transfer), accountPayment: true });
       saveList(SALES_KEY, sales);
       printAccountReceipt(customerName, items, total, { cash, transfer, change: Math.max(0, paid - total) });
     } else {
@@ -452,7 +481,6 @@ function listenOnline(key, callback) {
       const sales = readList(SALES_KEY).filter((sale) => !(sale.customer === customerName && sale.customerType && sale.customerType !== "normal"));
       saveList(SALES_KEY, sales);
     }
-
     saveList(ACCOUNTS_KEY, readList(ACCOUNTS_KEY).filter((entry) => entry.customer !== customerName));
     window.renderNotebook?.();
     window.renderShift?.();
@@ -462,22 +490,12 @@ function listenOnline(key, callback) {
   function renderClientsPatched() {
     const list = document.getElementById("clientList");
     if (!list) return;
-    const customers = [
-      { name: "Lorena", type: "account" },
-      { name: "Ulices", type: "account" },
-      { name: "Josue", type: "family" },
-      { name: "Juan y bety", type: "family" },
-      { name: "Gera", type: "family" },
-      { name: "Laura", type: "family" },
-    ];
+    const customers = [{ name: "Lorena", type: "account" }, { name: "Ulices", type: "account" }, { name: "Josue", type: "family" }, { name: "Juan y bety", type: "family" }, { name: "Gera", type: "family" }, { name: "Laura", type: "family" }];
     const entries = accountEntries();
     const products = readList(PRODUCTS_KEY);
-
     list.innerHTML = customers.map((customer) => {
       const customerEntries = entries.filter((entry) => entry.customer === customer.name);
-      if (!customerEntries.length) {
-        return `<article class="sale-item"><div class="sale-main"><strong>${esc(customer.name)}</strong><span class="item-note">${customer.type === "family" ? "Familia" : "Cuenta corriente"}</span><strong>${money(0)}</strong></div></article>`;
-      }
+      if (!customerEntries.length) return `<article class="sale-item"><div class="sale-main"><strong>${esc(customer.name)}</strong><span class="item-note">${customer.type === "family" ? "Familia" : "Cuenta corriente"}</span><strong>${money(0)}</strong></div></article>`;
       const total = customerEntries.reduce((sum, entry) => sum + (entry.items || []).reduce((itemSum, item) => itemSum + getCurrentItemValue(item, products), 0), 0);
       const detail = customerEntries.map((entry) => {
         const items = (entry.items || []).map((item) => {
@@ -504,18 +522,7 @@ function listenOnline(key, callback) {
         const newAccountSales = sales.filter((sale) => !beforeIds.has(sale.id) && sale.customerType && sale.customerType !== "normal");
         if (!newAccountSales.length) return;
         const accounts = readList(ACCOUNTS_KEY);
-        newAccountSales.forEach((sale) => {
-          accounts.unshift({
-            id: sale.id,
-            shiftId: sale.shiftId,
-            local: sale.local,
-            date: sale.date,
-            customer: sale.customer,
-            customerType: sale.customerType,
-            items: sale.items || [],
-            note: sale.customerType === "family" ? "Familia" : "Cuenta corriente",
-          });
-        });
+        newAccountSales.forEach((sale) => accounts.unshift({ id: sale.id, shiftId: sale.shiftId, local: sale.local, date: sale.date, customer: sale.customer, customerType: sale.customerType, items: sale.items || [], note: sale.customerType === "family" ? "Familia" : "Cuenta corriente" }));
         saveList(ACCOUNTS_KEY, accounts);
         saveList(SALES_KEY, sales.filter((sale) => !newAccountSales.some((accountSale) => accountSale.id === sale.id)));
         renderClientsPatched();
@@ -561,8 +568,15 @@ function listenOnline(key, callback) {
     renderProductsWithImages();
   }
 
+  function installShiftPatch() {
+    window.renderShift = renderShiftPatched;
+    ensureReinforcementUi();
+    renderShiftPatched();
+  }
+
   function install() {
     installLayoutPatch();
+    installShiftPatch();
     installImagePatch();
     installAccountPatch();
   }
