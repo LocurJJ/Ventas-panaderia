@@ -168,6 +168,35 @@ function listenOnline(key, callback) {
     saveList(SHIFTS_KEY, shifts);
   }
 
+  window.addExpense = function addExpense() {
+    const shifts = readList(SHIFTS_KEY);
+    const shift = getOpenShift(shifts);
+    if (!shift) return;
+    const descriptionInput = document.getElementById("expenseDescriptionInput");
+    const amountInput = document.getElementById("expenseAmountInput");
+    const amount = Number(amountInput?.value || 0);
+    if (amount <= 0) {
+      alert("Carga el importe del gasto.");
+      return;
+    }
+    shift.expenses = Array.isArray(shift.expenses) ? shift.expenses : [];
+    shift.expenses.push({ id: makeId(), description: descriptionInput?.value.trim() || "Gasto", amount, date: new Date().toISOString() });
+    persistShifts(shifts);
+    if (descriptionInput) descriptionInput.value = "";
+    if (amountInput) amountInput.value = "";
+    renderShiftPatched();
+    alert("Gasto agregado.");
+  };
+
+  window.deleteExpense = function deleteExpense(id) {
+    const shifts = readList(SHIFTS_KEY);
+    const shift = getOpenShift(shifts);
+    if (!shift) return;
+    shift.expenses = (shift.expenses || []).filter((item) => item.id !== id);
+    persistShifts(shifts);
+    renderShiftPatched();
+  };
+
   window.addReinforcement = function addReinforcement() {
     const shifts = readList(SHIFTS_KEY);
     const shift = getOpenShift(shifts);
