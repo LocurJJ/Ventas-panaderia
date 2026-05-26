@@ -106,11 +106,7 @@ document.write('<script src="https://cdn.jsdelivr.net/gh/LocurJJ/Ventas-panaderi
   }
 
   function money(value) {
-    return Number(value || 0).toLocaleString("es-AR", {
-      style: "currency",
-      currency: "ARS",
-      maximumFractionDigits: 0,
-    });
+    return Number(value || 0).toLocaleString("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 });
   }
 
   function dateOnly(value) {
@@ -161,41 +157,12 @@ document.write('<script src="https://cdn.jsdelivr.net/gh/LocurJJ/Ventas-panaderi
     }, 0);
 
     list.innerHTML = `
-      <div class="stats-period">
-        <strong>Total de gastos</strong>
-        <span>${closedShifts.length} turno${closedShifts.length === 1 ? "" : "s"} con gastos</span>
-        <span>${money(total)}</span>
-      </div>
+      <div class="stats-period"><strong>Total de gastos</strong><span>${closedShifts.length} turno${closedShifts.length === 1 ? "" : "s"} con gastos</span><span>${money(total)}</span></div>
       ${closedShifts.map((shift) => {
         const expenses = movements(shift.expenses);
         const shiftTotal = expenses.reduce((sum, expense) => sum + Number(expense.amount || 0), 0);
-        const detail = expenses.map((expense) => `
-          <li>${timeOnly(expense.date || shift.closedAt || shift.openedAt)} h - ${esc(expense.description || "Gasto")} - ${money(expense.amount)}</li>
-        `).join("");
-
-        return `
-          <details class="report-card">
-            <summary class="report-summary">
-              <span>
-                <strong>${esc(shift.local || "Local")}</strong>
-                <small>${dateOnly(shift.closedAt || shift.openedAt)} - Cierre ${timeOnly(shift.closedAt || shift.openedAt)} h</small>
-              </span>
-              <span class="report-summary-total">
-                ${money(shiftTotal)}
-                <span class="report-arrow">&gt;</span>
-              </span>
-            </summary>
-            <div class="report-body">
-              <p class="muted">Turno desde ${timeOnly(shift.openedAt)} h hasta ${timeOnly(shift.closedAt)} h</p>
-              <div class="report-row"><span>Cantidad de gastos</span><strong>${expenses.length}</strong></div>
-              <div class="report-row"><span>Total gastado</span><strong>${money(shiftTotal)}</strong></div>
-              <div class="report-detail">
-                <strong>Detalle</strong>
-                <ul>${detail}</ul>
-              </div>
-            </div>
-          </details>
-        `;
+        const detail = expenses.map((expense) => `<li>${timeOnly(expense.date || shift.closedAt || shift.openedAt)} h - ${esc(expense.description || "Gasto")} - ${money(expense.amount)}</li>`).join("");
+        return `<details class="report-card"><summary class="report-summary"><span><strong>${esc(shift.local || "Local")}</strong><small>${dateOnly(shift.closedAt || shift.openedAt)} - Cierre ${timeOnly(shift.closedAt || shift.openedAt)} h</small></span><span class="report-summary-total">${money(shiftTotal)} <span class="report-arrow">&gt;</span></span></summary><div class="report-body"><p class="muted">Turno desde ${timeOnly(shift.openedAt)} h hasta ${timeOnly(shift.closedAt)} h</p><div class="report-row"><span>Cantidad de gastos</span><strong>${expenses.length}</strong></div><div class="report-row"><span>Total gastado</span><strong>${money(shiftTotal)}</strong></div><div class="report-detail"><strong>Detalle</strong><ul>${detail}</ul></div></div></details>`;
       }).join("")}
     `;
   }
@@ -232,6 +199,79 @@ document.write('<script src="https://cdn.jsdelivr.net/gh/LocurJJ/Ventas-panaderi
     setTimeout(install, 800);
     setTimeout(install, 1600);
     setTimeout(install, 2600);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", installLater);
+  } else {
+    installLater();
+  }
+})();
+
+(function installCartQuantityPatch() {
+  function installStyle() {
+    if (document.getElementById("cart-quantity-style-patch")) return;
+    const style = document.createElement("style");
+    style.id = "cart-quantity-style-patch";
+    style.textContent = `
+      .quantity-edit{width:64px;padding:7px;border:1px solid #ddd;border-radius:8px;text-align:center}
+      .cart-delete-btn{width:28px;height:28px;border:0;border-radius:999px;background:#fee2e2;color:#b91c1c;font-size:20px;font-weight:800;line-height:1;display:inline-grid;place-items:center;transition:background .15s ease,transform .15s ease}
+      .cart-delete-btn:hover{background:#fecaca;transform:scale(1.05)}
+    `;
+    document.head.appendChild(style);
+  }
+
+  function install() {
+    installStyle();
+    if (typeof window.renderCart !== "function" || window.renderCart.__quantityPatch) return;
+    const originalRenderCart = window.renderCart;
+
+    window.changeQuantity = function changeQuantity(id, newQuantity) {
+      try {
+        const item = cart.find((product) => product.id === id);
+        if (!item || item.weighable) return;
+        const quantity = Math.max(1, Math.floor(Number(newQuantity || 1)));
+        item.quantity = quantity;
+        item.total = Number(item.unitPrice || 0) * quantity;
+        window.renderCart();
+      } catch (error) {
+        console.warn("No se pudo cambiar la cantidad.", error);
+      }
+    };
+
+    window.renderCart = function renderCartWithEditableQuantity() {
+      originalRenderCart.apply(this, arguments);
+      try {
+        const rows = document.querySelectorAll("#cartItems tr");
+        rows.forEach((row) => {
+          const priceInput = row.querySelector(".price-edit");
+          const quantityCell = row.children[1];
+          const deleteCell = row.children[3];
+          if (!priceInput || !quantityCell) return;
+          const idMatch = String(priceInput.getAttribute("onchange") || "").match(/changePrice\('([^']+)'/);
+          const id = idMatch?.[1];
+          const quantityText = quantityCell.textContent.trim();
+          if (id && /^\d+$/.test(quantityText)) {
+            quantityCell.innerHTML = `<input class="quantity-edit" type="number" min="1" step="1" value="${quantityText}" onchange="changeQuantity('${id}', this.value)">`;
+          }
+          const deleteButton = deleteCell?.querySelector("button");
+          if (deleteButton && !deleteButton.classList.contains("cart-delete-btn")) {
+            deleteButton.className = "cart-delete-btn";
+            deleteButton.innerHTML = "&times;";
+            deleteButton.setAttribute("aria-label", "Quitar producto");
+          }
+        });
+      } catch (error) {
+        console.warn("No se pudo mejorar el carrito.", error);
+      }
+    };
+    window.renderCart.__quantityPatch = true;
+    window.renderCart();
+  }
+
+  function installLater() {
+    setTimeout(install, 900);
+    setTimeout(install, 1800);
   }
 
   if (document.readyState === "loading") {
