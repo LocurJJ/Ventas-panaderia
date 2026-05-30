@@ -159,3 +159,78 @@ document.write('<script src="https://cdn.jsdelivr.net/gh/LocurJJ/Ventas-panaderi
   function installLater() { setTimeout(install, 1000); setTimeout(install, 2200); }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", installLater); else installLater();
 })();
+
+(function installArcaPrepPatch() {
+  function money(value) { return Number(value || 0).toLocaleString("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }); }
+  function esc(value) { return String(value ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;"); }
+  function kg(value) { const quantity = Number(value || 0); if (quantity < 1) return `${Math.round(quantity * 1000)} g`; return `${quantity.toLocaleString("es-AR", { maximumFractionDigits: 3 })} kg`; }
+  function installStyle() {
+    if (document.getElementById("arca-prep-style-patch")) return;
+    const style = document.createElement("style");
+    style.id = "arca-prep-style-patch";
+    style.textContent = `.arca-btn{width:100%;border:1px solid #2563eb;background:#eff6ff;color:#1d4ed8;padding:13px;border-radius:12px;font-size:16px;font-weight:800;margin-top:10px;cursor:pointer}.arca-btn:hover{background:#dbeafe}.arca-summary{display:grid;gap:8px;margin:12px 0}.arca-row{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid #e5e7eb;padding:7px 0}.arca-row span:first-child{color:#475569}.arca-copy{width:100%;min-height:170px;border:1px solid #d1d5db;border-radius:12px;padding:12px;font:14px/1.45 Consolas,monospace;resize:vertical}`;
+    document.head.appendChild(style);
+  }
+  function getTotal() {
+    if (typeof getCartTotal === "function") return Number(getCartTotal() || 0);
+    try { return (cart || []).reduce((sum, item) => sum + Number(item.total || 0), 0); } catch (error) { return 0; }
+  }
+  function getItems() {
+    try { return Array.isArray(cart) ? cart : []; } catch (error) { return []; }
+  }
+  function prepData() {
+    const items = getItems();
+    const total = getTotal();
+    const detail = items.map((item) => `${item.name} (${item.weighable ? kg(item.quantity) : `${Number(item.quantity || 0).toLocaleString("es-AR")} un.`})`).join(", ") || "Productos";
+    return {
+      puntoVenta: "00003",
+      comprobante: "Factura B",
+      concepto: "Productos",
+      receptor: "Consumidor Final",
+      condicionVenta: "Contado",
+      productoServicio: "Productos",
+      detalleInterno: detail,
+      cantidad: "1",
+      unidadMedida: "unidades",
+      precioUnitario: total,
+      alicuotaIva: "10,5%",
+      total
+    };
+  }
+  function installModal() {
+    if (document.getElementById("arcaModal")) return;
+    document.body.insertAdjacentHTML("beforeend", `<div class="modal-backdrop hidden" id="arcaModal"><div class="payment-modal"><div class="modal-head"><h2>Preparar ARCA</h2><button type="button" onclick="closeArcaPrep()">×</button></div><p class="muted">Estos datos son para copiar en RCEL. No se envia nada a ARCA automaticamente.</p><h3 id="arcaTotal">Total: $0</h3><div class="arca-summary" id="arcaSummary"></div><textarea class="arca-copy" id="arcaCopyText" readonly></textarea><button class="confirm-pay" type="button" onclick="copyArcaPrep()">Copiar datos</button></div></div>`);
+  }
+  function installButton() {
+    installStyle(); installModal();
+    if (document.getElementById("arcaPrepButton")) return;
+    const totalBox = document.querySelector(".total");
+    if (!totalBox) return;
+    totalBox.insertAdjacentHTML("beforeend", `<button class="arca-btn" id="arcaPrepButton" type="button" onclick="openArcaPrep()">Preparar ARCA</button>`);
+  }
+  window.openArcaPrep = function openArcaPrep() {
+    installButton();
+    const data = prepData();
+    if (data.total <= 0) { alert("Agrega productos a la venta antes de preparar ARCA."); return; }
+    const rows = [
+      ["Punto de venta", data.puntoVenta], ["Comprobante", data.comprobante], ["Concepto", data.concepto], ["Receptor", data.receptor],
+      ["Condicion de venta", data.condicionVenta], ["Producto/Servicio", data.productoServicio], ["Cantidad", data.cantidad],
+      ["Unidad de medida", data.unidadMedida], ["Precio unitario", money(data.precioUnitario)], ["Alicuota IVA", data.alicuotaIva]
+    ];
+    const summary = document.getElementById("arcaSummary");
+    const textarea = document.getElementById("arcaCopyText");
+    document.getElementById("arcaTotal").textContent = `Total: ${money(data.total)}`;
+    summary.innerHTML = rows.map(([label, value]) => `<div class="arca-row"><span>${esc(label)}</span><strong>${esc(value)}</strong></div>`).join("") + `<div class="arca-row"><span>Detalle interno</span><strong>${esc(data.detalleInterno)}</strong></div>`;
+    textarea.value = `Punto de venta: ${data.puntoVenta}\nTipo de comprobante: ${data.comprobante}\nConcepto: ${data.concepto}\nReceptor: ${data.receptor}\nCondicion de venta: ${data.condicionVenta}\nProducto/Servicio: ${data.productoServicio}\nDetalle interno: ${data.detalleInterno}\nCantidad: ${data.cantidad}\nUnidad de medida: ${data.unidadMedida}\nPrecio unitario: ${data.total}\nAlicuota IVA: ${data.alicuotaIva}\nTotal: ${data.total}`;
+    document.getElementById("arcaModal").classList.remove("hidden");
+  };
+  window.closeArcaPrep = function closeArcaPrep() { document.getElementById("arcaModal")?.classList.add("hidden"); };
+  window.copyArcaPrep = async function copyArcaPrep() {
+    const text = document.getElementById("arcaCopyText")?.value || "";
+    if (!text.trim()) return;
+    try { await navigator.clipboard.writeText(text); alert("Datos de ARCA copiados."); }
+    catch (error) { document.getElementById("arcaCopyText")?.select(); alert("No se pudo copiar automatico. Quedo seleccionado para copiarlo manualmente."); }
+  };
+  function installLater() { setTimeout(installButton, 900); setTimeout(installButton, 1800); setTimeout(installButton, 2800); }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", installLater); else installLater();
+})();
