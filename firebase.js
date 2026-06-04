@@ -156,7 +156,7 @@ document.write('<script src="https://cdn.jsdelivr.net/gh/LocurJJ/Ventas-panaderi
   let saving = false;
   function readList(key) { try { const value = JSON.parse(localStorage.getItem(key) || "[]"); return Array.isArray(value) ? value : []; } catch (error) { return []; } }
   function writeLocal(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
-  function safeOnline(key, value) { try { if (typeof saveOnline === "function") saveOnline(key, value); } catch (error) { console.warn("No se pudo sincronizar online. Queda guardado local.", error); } }
+  function safeOnline(key, value) { try { if (typeof saveOnline !== "function") return; const result = saveOnline(key, value); if (result && typeof result.catch === "function") result.catch((error) => console.warn("No se pudo sincronizar online. Queda guardado local.", error)); } catch (error) { console.warn("No se pudo sincronizar online. Queda guardado local.", error); } }
   function safeCall(fn) { try { if (typeof fn === "function") fn(); } catch (error) { console.warn("Accion secundaria fallida.", error); } }
   function deletedIds() { return new Set(readList(DELETED_SALES_KEY).map((entry) => entry.id || entry).filter(Boolean)); }
   function rememberDeletedSale(id) { const deleted = readList(DELETED_SALES_KEY).filter((entry) => entry.id !== id); deleted.unshift({ id, deletedAt: new Date().toISOString() }); writeLocal(DELETED_SALES_KEY, deleted.slice(0, 500)); }
@@ -207,7 +207,7 @@ document.write('<script src="https://cdn.jsdelivr.net/gh/LocurJJ/Ventas-panaderi
         setButtonSaving(button, true);
         saleNumber = nextSaleNumber(shift.id);
         const sale = {
-          id: makeId(), shiftId: shift.id, saleNumber, local, date: now, updatedAt: now,
+          id: makeId(), shiftId: shift.id, saleNumber, local: new URLSearchParams(window.location.search).get("local") || "Central", date: now, updatedAt: now,
           customer: customer.name, customerType: customer.type, items, total,
           cash: customer.type === "normal" ? cash : 0,
           transfer: customer.type === "normal" ? transfer : 0,
@@ -252,7 +252,19 @@ document.write('<script src="https://cdn.jsdelivr.net/gh/LocurJJ/Ventas-panaderi
       safeCall(renderNotebook); safeCall(renderClients); safeCall(renderShift);
     });
   }
-  function install() { installConfirmOverride(); installDeleteOverride(); installOnlineMerge(); }
-  function installLater() { setTimeout(install, 500); setTimeout(install, 1500); setTimeout(install, 3000); setTimeout(install, 5000); }
+  function reconcileSales() {
+    const currentSales = typeof sales !== "undefined" && Array.isArray(sales) ? sales : readList(SALES_KEY);
+    const merged = mergeSalesById(currentSales, readList(SALES_KEY), readList(SALES_BACKUP_KEY));
+    const currentIds = currentSales.map((sale) => sale.id).join("|");
+    const mergedIds = merged.map((sale) => sale.id).join("|");
+    if (currentIds === mergedIds && currentSales.length === merged.length) return;
+    sales = merged;
+    writeLocal(SALES_KEY, merged);
+    writeLocal(SALES_BACKUP_KEY, merged);
+    safeOnline(SALES_KEY, merged);
+    safeCall(renderNotebook); safeCall(renderClients); safeCall(renderShift);
+  }
+  function install() { installConfirmOverride(); installDeleteOverride(); installOnlineMerge(); reconcileSales(); }
+  function installLater() { setTimeout(install, 500); setTimeout(install, 1500); setTimeout(install, 3000); setTimeout(install, 5000); const interval = setInterval(reconcileSales, 2500); setTimeout(() => clearInterval(interval), 60000); }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", installLater); else installLater();
 })();
