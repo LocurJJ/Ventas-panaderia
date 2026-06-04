@@ -156,6 +156,8 @@ document.write('<script src="https://cdn.jsdelivr.net/gh/LocurJJ/Ventas-panaderi
   let saving = false;
   function readList(key) { try { const value = JSON.parse(localStorage.getItem(key) || "[]"); return Array.isArray(value) ? value : []; } catch (error) { return []; } }
   function writeLocal(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
+  function safeOnline(key, value) { try { if (typeof saveOnline === "function") saveOnline(key, value); } catch (error) { console.warn("No se pudo sincronizar online. Queda guardado local.", error); } }
+  function safeCall(fn) { try { if (typeof fn === "function") fn(); } catch (error) { console.warn("Accion secundaria fallida.", error); } }
   function deletedIds() { return new Set(readList(DELETED_SALES_KEY).map((entry) => entry.id || entry).filter(Boolean)); }
   function rememberDeletedSale(id) { const deleted = readList(DELETED_SALES_KEY).filter((entry) => entry.id !== id); deleted.unshift({ id, deletedAt: new Date().toISOString() }); writeLocal(DELETED_SALES_KEY, deleted.slice(0, 500)); }
   function mergeSalesById(...lists) {
@@ -171,41 +173,39 @@ document.write('<script src="https://cdn.jsdelivr.net/gh/LocurJJ/Ventas-panaderi
     return [...map.values()].sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
   }
   function persistSales(nextSales) {
-    sales = mergeSalesById(nextSales, sales, readList(SALES_BACKUP_KEY));
+    const currentSales = typeof sales !== "undefined" && Array.isArray(sales) ? sales : readList(SALES_KEY);
+    sales = mergeSalesById(nextSales, currentSales, readList(SALES_BACKUP_KEY));
     writeLocal(SALES_KEY, sales);
     writeLocal(SALES_BACKUP_KEY, sales);
-    if (typeof saveOnline === "function") saveOnline(SALES_KEY, sales);
+    safeOnline(SALES_KEY, sales);
+    return sales;
   }
   function nextSaleNumber(shiftId) {
-    const list = typeof getShiftSales === "function" ? getShiftSales(shiftId) : sales.filter((sale) => sale.shiftId === shiftId);
+    const list = typeof getShiftSales === "function" ? getShiftSales(shiftId) : readList(SALES_KEY).filter((sale) => sale.shiftId === shiftId);
     return Math.max(0, ...list.map((sale) => Number(sale.saleNumber || 0))) + 1;
   }
-  function setButtonSaving(button, isSaving) {
-    if (!button) return;
-    button.disabled = isSaving;
-    button.textContent = isSaving ? "Guardando..." : "Guardar venta";
-  }
+  function setButtonSaving(button, isSaving) { if (!button) return; button.disabled = isSaving; button.textContent = isSaving ? "Guardando..." : "Guardar venta"; }
   function installConfirmOverride() {
     const confirmButton = document.getElementById("confirmPaymentButton") || document.querySelector(".payment-actions .confirm-pay");
     if (confirmButton && !confirmButton.id) confirmButton.id = "confirmPaymentButton";
-    if (typeof window.confirmPayment !== "function" || window.confirmPayment.__salesGuard) return;
     window.confirmPayment = function confirmPaymentGuarded() {
       if (saving) return;
-      const shift = getOpenShift();
-      if (!shift) { alert("Primero tenes que abrir un turno de caja."); closePayment(); showShiftView(); return; }
-      const total = getCartTotal();
-      const customer = getSelectedCustomer();
-      const cash = Number(document.getElementById("cashInput").value || 0);
-      const transfer = Number(document.getElementById("transferInput").value || 0);
-      const paid = cash + transfer;
-      if (customer.type === "normal" && paid < total) { alert(`Faltan ${formatMoney(total - paid)}.`); return; }
-      const items = cart.map((item) => ({ ...item }));
-      const now = new Date().toISOString();
+      let saleNumber = 0;
       const button = document.getElementById("confirmPaymentButton") || document.querySelector(".payment-actions .confirm-pay");
-      saving = true;
-      setButtonSaving(button, true);
       try {
-        const saleNumber = nextSaleNumber(shift.id);
+        const shift = getOpenShift();
+        if (!shift) { alert("Primero tenes que abrir un turno de caja."); safeCall(closePayment); safeCall(showShiftView); return; }
+        const total = Number(getCartTotal() || 0);
+        const customer = getSelectedCustomer();
+        const cash = Number(document.getElementById("cashInput")?.value || 0);
+        const transfer = Number(document.getElementById("transferInput")?.value || 0);
+        const paid = cash + transfer;
+        if (customer.type === "normal" && paid < total) { alert(`Faltan ${formatMoney(total - paid)}.`); return; }
+        const items = cart.map((item) => ({ ...item }));
+        const now = new Date().toISOString();
+        saving = true;
+        setButtonSaving(button, true);
+        saleNumber = nextSaleNumber(shift.id);
         const sale = {
           id: makeId(), shiftId: shift.id, saleNumber, local, date: now, updatedAt: now,
           customer: customer.name, customerType: customer.type, items, total,
@@ -215,15 +215,16 @@ document.write('<script src="https://cdn.jsdelivr.net/gh/LocurJJ/Ventas-panaderi
           method: getPaymentMethod(customer, cash, transfer)
         };
         persistSales([sale]);
-        adjustProductsStock(items, -1);
+        safeCall(() => adjustProductsStock(items, -1));
         cart = [];
-        document.getElementById("customerSelect").value = "Consumidor final";
-        closePayment();
-        renderCart(); renderProducts(); renderProductManageList(); renderNotebook(); renderClients(); renderShift();
+        const customerSelect = document.getElementById("customerSelect");
+        if (customerSelect) customerSelect.value = "Consumidor final";
+        safeCall(closePayment);
+        safeCall(renderCart); safeCall(renderProducts); safeCall(renderProductManageList); safeCall(renderNotebook); safeCall(renderClients); safeCall(renderShift);
         alert(customer.type === "normal" ? `Venta ${saleNumber} guardada en Cuaderno.` : "Consumo anotado en Cuaderno.");
       } catch (error) {
         console.error("No se pudo guardar la venta.", error);
-        alert("No se pudo guardar la venta. No cierres la pagina y avisame para revisarlo.");
+        alert(`No se pudo guardar la venta: ${error?.message || error}. Avisame con esta foto.`);
       } finally {
         saving = false;
         setButtonSaving(button, false);
@@ -232,29 +233,26 @@ document.write('<script src="https://cdn.jsdelivr.net/gh/LocurJJ/Ventas-panaderi
     window.confirmPayment.__salesGuard = true;
   }
   function installDeleteOverride() {
-    if (typeof window.deleteSale !== "function" || window.deleteSale.__salesGuard) return;
+    if (typeof window.deleteSale !== "function" || window.deleteSale.__salesGuardV2) return;
     const originalDeleteSale = window.deleteSale;
-    window.deleteSale = function deleteSaleGuarded(id) {
-      rememberDeletedSale(id);
-      originalDeleteSale(id);
-      writeLocal(SALES_BACKUP_KEY, readList(SALES_KEY));
-    };
-    window.deleteSale.__salesGuard = true;
+    window.deleteSale = function deleteSaleGuarded(id) { rememberDeletedSale(id); originalDeleteSale(id); writeLocal(SALES_BACKUP_KEY, readList(SALES_KEY)); };
+    window.deleteSale.__salesGuardV2 = true;
   }
   function installOnlineMerge() {
-    if (typeof listenOnline !== "function" || window.__salesNotebookGuardListening) return;
-    window.__salesNotebookGuardListening = true;
+    if (typeof listenOnline !== "function" || window.__salesNotebookGuardListeningV2) return;
+    window.__salesNotebookGuardListeningV2 = true;
     listenOnline(SALES_KEY, (onlineSales) => {
       const incoming = Array.isArray(onlineSales) ? onlineSales : [];
-      const merged = mergeSalesById(incoming, sales, readList(SALES_BACKUP_KEY));
+      const currentSales = typeof sales !== "undefined" && Array.isArray(sales) ? sales : readList(SALES_KEY);
+      const merged = mergeSalesById(incoming, currentSales, readList(SALES_BACKUP_KEY));
       sales = merged;
       writeLocal(SALES_KEY, merged);
       writeLocal(SALES_BACKUP_KEY, merged);
-      if (incoming.length !== merged.length && typeof saveOnline === "function") saveOnline(SALES_KEY, merged);
-      window.renderNotebook?.(); window.renderClients?.(); window.renderShift?.();
+      if (incoming.length !== merged.length) safeOnline(SALES_KEY, merged);
+      safeCall(renderNotebook); safeCall(renderClients); safeCall(renderShift);
     });
   }
   function install() { installConfirmOverride(); installDeleteOverride(); installOnlineMerge(); }
-  function installLater() { setTimeout(install, 1000); setTimeout(install, 2000); setTimeout(install, 3500); }
+  function installLater() { setTimeout(install, 500); setTimeout(install, 1500); setTimeout(install, 3000); setTimeout(install, 5000); }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", installLater); else installLater();
 })();
