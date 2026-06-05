@@ -155,9 +155,12 @@ document.write('<script src="https://cdn.jsdelivr.net/gh/LocurJJ/Ventas-panaderi
   const DELETED_SALES_KEY = "panaderia_josue_ventas_borradas_v1";
   let saving = false;
   function readList(key) { try { const value = JSON.parse(localStorage.getItem(key) || "[]"); return Array.isArray(value) ? value : []; } catch (error) { return []; } }
-  function writeLocal(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
+  function writeLocal(key, value) { const prepared = (key === SALES_KEY || key === SALES_BACKUP_KEY) ? compactSales(value) : value; try { localStorage.setItem(key, JSON.stringify(prepared)); } catch (error) { if (key === SALES_BACKUP_KEY) { try { localStorage.setItem(key, JSON.stringify(compactSales(prepared).slice(0, 80))); return; } catch (innerError) { try { localStorage.removeItem(key); } catch (removeError) {} return; } } if (key === SALES_KEY) { try { localStorage.setItem(key, JSON.stringify(compactSales(prepared).slice(0, 1500))); return; } catch (innerError) {} } throw error; } }
   function safeOnline(key, value) { try { if (typeof saveOnline !== "function") return; const result = saveOnline(key, value); if (result && typeof result.catch === "function") result.catch((error) => console.warn("No se pudo sincronizar online. Queda guardado local.", error)); } catch (error) { console.warn("No se pudo sincronizar online. Queda guardado local.", error); } }
   function safeCall(fn) { try { if (typeof fn === "function") fn(); } catch (error) { console.warn("Accion secundaria fallida.", error); } }
+  function compactItem(item) { return { productId: item.productId || item.id || "", id: item.productId || item.id || "", name: item.name || "Producto", quantity: Number(item.quantity || 0), unitPrice: Number(item.unitPrice || item.price || 0), total: Number(item.total || 0), weighable: !!item.weighable }; }
+  function compactSale(sale) { return { id: sale.id, shiftId: sale.shiftId, saleNumber: sale.saleNumber, local: sale.local, date: sale.date, updatedAt: sale.updatedAt || sale.date, customer: sale.customer || "Consumidor final", customerType: sale.customerType || "normal", items: Array.isArray(sale.items) ? sale.items.map(compactItem) : [], total: Number(sale.total || 0), cash: Number(sale.cash || 0), transfer: Number(sale.transfer || 0), change: Number(sale.change || 0), method: sale.method || "Efectivo" }; }
+  function compactSales(list) { return (Array.isArray(list) ? list : []).filter(Boolean).map(compactSale); }
   function deletedIds() { return new Set(readList(DELETED_SALES_KEY).map((entry) => entry.id || entry).filter(Boolean)); }
   function rememberDeletedSale(id) { const deleted = readList(DELETED_SALES_KEY).filter((entry) => entry.id !== id); deleted.unshift({ id, deletedAt: new Date().toISOString() }); writeLocal(DELETED_SALES_KEY, deleted.slice(0, 500)); }
   function mergeSalesById(...lists) {
@@ -170,7 +173,7 @@ document.write('<script src="https://cdn.jsdelivr.net/gh/LocurJJ/Ventas-panaderi
       const saleTime = new Date(sale.updatedAt || sale.date || 0).getTime();
       if (!current || saleTime >= currentTime) map.set(sale.id, sale);
     });
-    return [...map.values()].sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+    return compactSales([...map.values()]).sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
   }
   function persistSales(nextSales) {
     const currentSales = typeof sales !== "undefined" && Array.isArray(sales) ? sales : readList(SALES_KEY);
@@ -201,7 +204,7 @@ document.write('<script src="https://cdn.jsdelivr.net/gh/LocurJJ/Ventas-panaderi
         const transfer = Number(document.getElementById("transferInput")?.value || 0);
         const paid = cash + transfer;
         if (customer.type === "normal" && paid < total) { alert(`Faltan ${formatMoney(total - paid)}.`); return; }
-        const items = cart.map((item) => ({ ...item }));
+        const items = cart.map(compactItem);
         const now = new Date().toISOString();
         saving = true;
         setButtonSaving(button, true);
