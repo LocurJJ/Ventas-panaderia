@@ -297,3 +297,124 @@ document.write('<script src="https://cdn.jsdelivr.net/gh/LocurJJ/Ventas-panaderi
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", installLater);
   else installLater();
 })();
+
+(function installSafeShiftMovements() {
+  const SHIFTS_KEY = "panaderia_josue_turnos_v1";
+  const SALES_KEY = "panaderia_josue_ventas_v1";
+  const SALES_BACKUP_KEY = "panaderia_josue_ventas_respaldo_v1";
+
+  function asList(value) {
+    if (Array.isArray(value)) return value.filter(Boolean);
+    if (value && typeof value === "object") return Object.values(value).filter(Boolean);
+    return [];
+  }
+
+  function readList(key) {
+    try { return asList(JSON.parse(localStorage.getItem(key) || "[]")); }
+    catch (error) { return []; }
+  }
+
+  function getLocalName() {
+    return new URLSearchParams(window.location.search).get("local") || "Central";
+  }
+
+  function getOpenShiftFrom(shifts) {
+    const local = getLocalName();
+    return shifts.find((shift) => shift.local === local && shift.status === "open");
+  }
+
+  function makeLocalId() {
+    if (typeof makeId === "function") return makeId();
+    return crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  }
+
+  function freeSalesSpace() {
+    try { localStorage.removeItem(SALES_BACKUP_KEY); } catch (error) {}
+    try {
+      const sales = readList(SALES_KEY);
+      localStorage.removeItem(SALES_KEY);
+      localStorage.setItem(SALES_KEY, JSON.stringify(sales.slice(0, 300)));
+    } catch (error) {
+      try { localStorage.removeItem(SALES_KEY); } catch (removeError) {}
+    }
+  }
+
+  function writeLocalShifts(shifts) {
+    try { localStorage.setItem(SHIFTS_KEY, JSON.stringify(shifts)); return true; }
+    catch (error) {}
+    freeSalesSpace();
+    try { localStorage.setItem(SHIFTS_KEY, JSON.stringify(shifts)); return true; }
+    catch (error) { console.warn("No se pudo guardar turnos localmente", error); return false; }
+  }
+
+  function saveRemoteShifts(shifts) {
+    try {
+      if (typeof db !== "undefined" && typeof dbPath === "function") return db.ref(dbPath(SHIFTS_KEY)).set(shifts);
+      if (typeof saveOnline === "function") return saveOnline(SHIFTS_KEY, shifts);
+    } catch (error) {
+      console.warn("No se pudieron sincronizar los turnos", error);
+    }
+    return Promise.resolve();
+  }
+
+  function persistShiftsSafe(shifts) {
+    writeLocalShifts(shifts);
+    saveRemoteShifts(shifts);
+  }
+
+  function refreshShift() {
+    if (typeof window.renderShift === "function") window.renderShift();
+  }
+
+  function addMovement(type) {
+    const shifts = readList(SHIFTS_KEY);
+    const shift = getOpenShiftFrom(shifts);
+    if (!shift) { alert("Primero tenes que abrir un turno de caja."); return; }
+    const isExpense = type === "expenses";
+    const descriptionInput = document.getElementById(isExpense ? "expenseDescriptionInput" : "reinforcementDescriptionInput");
+    const amountInput = document.getElementById(isExpense ? "expenseAmountInput" : "reinforcementAmountInput");
+    const amount = Number(amountInput?.value || 0);
+    if (amount <= 0) { alert(isExpense ? "Carga el importe del gasto." : "Carga el importe del refuerzo."); return; }
+    shift[type] = Array.isArray(shift[type]) ? shift[type] : [];
+    shift[type].push({
+      id: makeLocalId(),
+      description: descriptionInput?.value.trim() || (isExpense ? "Gasto" : "Refuerzo"),
+      amount,
+      date: new Date().toISOString()
+    });
+    persistShiftsSafe(shifts);
+    if (descriptionInput) descriptionInput.value = "";
+    if (amountInput) amountInput.value = "";
+    refreshShift();
+    alert(isExpense ? "Gasto agregado." : "Refuerzo agregado.");
+  }
+
+  function deleteMovement(type, id) {
+    const shifts = readList(SHIFTS_KEY);
+    const shift = getOpenShiftFrom(shifts);
+    if (!shift) return;
+    shift[type] = asList(shift[type]).filter((item) => item.id !== id);
+    persistShiftsSafe(shifts);
+    refreshShift();
+  }
+
+  function install() {
+    window.addExpense = function addExpenseSafe() { addMovement("expenses"); };
+    window.deleteExpense = function deleteExpenseSafe(id) { deleteMovement("expenses", id); };
+    window.addReinforcement = function addReinforcementSafe() { addMovement("reinforcements"); };
+    window.deleteReinforcement = function deleteReinforcementSafe(id) { deleteMovement("reinforcements", id); };
+
+    document.querySelectorAll("button").forEach((button) => {
+      const text = (button.textContent || "").trim().toLowerCase();
+      if (text === "agregar gasto") button.onclick = window.addExpense;
+      if (text === "agregar refuerzo") button.onclick = window.addReinforcement;
+    });
+  }
+
+  function installLater() {
+    [900, 1800, 3200, 5200, 8000, 12000].forEach((delay) => setTimeout(install, delay));
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", installLater);
+  else installLater();
+})();
