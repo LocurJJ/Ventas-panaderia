@@ -12,15 +12,15 @@
       <div class="brand-box">
         <p class="eyebrow">Sistema de ventas</p>
         <h1>Panaderia Josue</h1>
-        <p class="muted">Elegi donde vas a trabajar.</p>
+        <p class="muted">Elegi donde vas a trabajar. Por ahora dejamos lista la parte de productos, precios y mensaje para WhatsApp.</p>
       </div>
 
       <div class="location-grid">
-        <button class="location-card" onclick="window.location.href='ventas.html?local=Central&v=20260519-5'">
+        <button class="location-card" onclick="window.location.href='ventas.html?local=Central&v=20260616-2'">
           <span>Central</span>
           <small>Vender en central</small>
         </button>
-        <button class="location-card" onclick="window.location.href='ventas.html?local=Sucursal&v=20260519-5'">
+        <button class="location-card" onclick="window.location.href='ventas.html?local=Sucursal&v=20260616-2'">
           <span>Sucursal</span>
           <small>Vender en sucursal</small>
         </button>
@@ -70,251 +70,138 @@
               <button class="danger-button hidden" type="button" id="deleteProductButton">Borrar</button>
             </div>
 
-            <label>Nombre del producto<input id="nameInput" required autocomplete="off"></label>
-            <div class="form-grid"><label>Precio de compra<input id="costInput" type="number" min="0" step="0.01" required></label><label>Precio de venta<input id="saleInput" type="number" min="0" step="100" required></label></div>
-            <div class="form-grid"><label>Codigo de barra<input id="barcodeInput" autocomplete="off"></label><label>Stock<input id="stockInput" type="number" min="0" step="0.01" value="0"></label></div>
-            <div class="form-grid"><label>Proveedor<select id="supplierInput" required></select></label><label class="checkbox-label"><input id="weighableInput" type="checkbox">Producto pesable</label></div>
-            <div class="actions"><button class="ghost-button" type="button" id="clearFormButton">Limpiar</button><button class="primary-button" type="submit">Guardar cambios</button></div>
+            <label>
+              Nombre del producto
+              <input id="nameInput" required autocomplete="off">
+            </label>
+
+            <div class="form-grid">
+              <label>
+                Precio de compra
+                <input id="costInput" type="number" min="0" step="0.01" required>
+              </label>
+              <label>
+                Precio de venta
+                <input id="saleInput" type="number" min="0" step="100" required>
+              </label>
+            </div>
+
+            <div class="form-grid">
+              <label>
+                Codigo de barra
+                <input id="barcodeInput" inputmode="numeric" autocomplete="off" placeholder="Escanea o escribi el codigo">
+              </label>
+              <label>
+                Stock
+                <div class="stock-control">
+                  <button class="ghost-button stock-button" type="button" id="decreaseStockButton">-1</button>
+                  <input id="stockInput" type="number" min="0" step="0.01" value="0">
+                  <button class="ghost-button stock-button" type="button" id="increaseStockButton">+1</button>
+                  <button class="ghost-button stock-button" type="button" id="increaseStockTenButton">+10</button>
+                </div>
+              </label>
+            </div>
+
+            <div class="form-grid">
+              <label>
+                Proveedor
+                <select id="supplierInput" required></select>
+              </label>
+              <label class="checkbox-label">
+                <input id="weighableInput" type="checkbox">
+                Producto pesable
+              </label>
+            </div>
+
+            <div class="actions">
+              <button class="ghost-button" type="button" id="clearFormButton">Limpiar</button>
+              <button class="primary-button" type="submit">Guardar cambios</button>
+            </div>
           </form>
 
-          <div class="whatsapp-box"><div class="panel-header"><div><h3>Mensaje para WhatsApp</h3><p class="muted">Se agregan los productos que guardaste o modificaste.</p></div><div class="actions"><button class="ghost-button" type="button" id="clearWhatsappButton">Limpiar</button><button class="ghost-button" id="copyWhatsappButton">Copiar</button></div></div><textarea id="whatsappMessage" readonly placeholder="Todavia no guardaste cambios."></textarea></div>
+          <div class="whatsapp-box">
+            <div class="panel-header">
+              <div>
+                <h3>Mensaje para WhatsApp</h3>
+                <p class="muted">Se agregan los productos que guardaste o modificaste.</p>
+              </div>
+              <div class="actions">
+                <button class="ghost-button" id="clearWhatsappButton">Limpiar</button>
+                <button class="ghost-button" id="copyWhatsappButton">Copiar</button>
+              </div>
+            </div>
+            <textarea id="whatsappMessage" readonly placeholder="Todavia no guardaste cambios."></textarea>
+          </div>
         </section>
       </div>
 
-      <section class="report-panel hidden" id="adminReportsView"><div class="panel-header"><div><h3>Reporte de turnos</h3><p class="muted">Elegi el local o estadisticas.</p></div><label class="compact-label">Ver<select id="adminReportLocalSelect"><option value="Central">Central</option><option value="Sucursal">Sucursal</option><option value="Estadisticas">Estadisticas</option></select></label></div><div class="stats-controls hidden" id="adminStatsControls"><label>Desde<input id="adminStatsFromInput" type="date"></label><label>Hasta<input id="adminStatsToInput" type="date"></label><label>Ordenar por<select id="adminStatsSortInput"><option value="quantity">Cantidad vendida</option><option value="revenue">Ingreso</option></select></label></div><div class="report-list" id="adminReportList"></div></section>
+      <section class="report-panel hidden" id="adminReportsView">
+        <div class="panel-header">
+          <div>
+            <h3>Reporte de turnos</h3>
+            <p class="muted">Elegi el local para ver los turnos cerrados.</p>
+          </div>
+          <label class="compact-label">
+            Local
+            <select id="adminReportLocalSelect">
+              <option value="Central">Central</option>
+              <option value="Sucursal">Sucursal</option>
+              <option value="Estadisticas">Estadisticas</option>
+              <option value="Gastos">Gastos</option>
+            </select>
+          </label>
+        </div>
+        <div class="stats-controls hidden" id="adminStatsControls">
+          <label>
+            Desde
+            <input id="adminStatsFromInput" type="date">
+          </label>
+          <label>
+            Hasta
+            <input id="adminStatsToInput" type="date">
+          </label>
+          <label>
+            Ordenar por
+            <select id="adminStatsSortInput">
+              <option value="quantity">Cantidad vendida</option>
+              <option value="revenue">Ingreso</option>
+            </select>
+          </label>
+        </div>
+        <div class="report-list" id="adminReportList"></div>
+      </section>
     </section>
   </main>
 
-  <dialog id="passwordDialog"><form method="dialog" class="dialog-card" id="passwordForm"><h3>Ingresar a Admin</h3><label>Contrasena<input id="passwordInput" type="password" inputmode="numeric" maxlength="4" autocomplete="off"></label><p class="error hidden" id="passwordError">Contrasena incorrecta.</p><div class="actions"><button class="ghost-button" type="button" id="cancelPasswordButton">Cancelar</button><button class="primary-button" type="submit">Entrar</button></div></form></dialog>
-  <dialog id="confirmDialog"><form method="dialog" class="dialog-card"><h3>Guardar cambios?</h3><p class="muted" id="confirmText">Se actualizara la lista de productos.</p><div class="actions"><button class="ghost-button" value="no">No</button><button class="primary-button" value="yes">Si, guardar</button></div></form></dialog>
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
-<script src="firebase.js"></script>
-<script src="app.js?v=20260519-4"></script>
-<script>
-(function installAdminPatches() {
-  const SALES_KEY = "panaderia_josue_ventas_v1";
-  const SHIFTS_KEY = "panaderia_josue_turnos_v1";
-  const PRODUCTS_KEY = "panaderia_josue_productos_v1";
-  const WHATSAPP_KEY = "panaderia_josue_whatsapp_v1";
+  <dialog id="passwordDialog">
+    <form method="dialog" class="dialog-card" id="passwordForm">
+      <h3>Ingresar a Admin</h3>
+      <label>
+        Contrasena
+        <input id="passwordInput" type="password" inputmode="numeric" maxlength="4" autocomplete="off">
+      </label>
+      <p class="error hidden" id="passwordError">Contrasena incorrecta.</p>
+      <div class="actions">
+        <button class="ghost-button" type="button" id="cancelPasswordButton">Cancelar</button>
+        <button class="primary-button" type="submit">Entrar</button>
+      </div>
+    </form>
+  </dialog>
 
-  function readList(key) {
-    try {
-      const value = JSON.parse(localStorage.getItem(key) || "[]");
-      return Array.isArray(value) ? value : [];
-    } catch (error) {
-      return [];
-    }
-  }
+  <dialog id="confirmDialog">
+    <form method="dialog" class="dialog-card">
+      <h3>Guardar cambios?</h3>
+      <p class="muted" id="confirmText">Se actualizara la lista de productos.</p>
+      <div class="actions">
+        <button class="ghost-button" value="no">No</button>
+        <button class="primary-button" value="yes">Si, guardar</button>
+      </div>
+    </form>
+  </dialog>
 
-  function money(value) {
-    return Number(value || 0).toLocaleString("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 });
-  }
-
-  function dateOnly(value) {
-    if (!value) return "-";
-    return new Date(value).toLocaleDateString("es-AR");
-  }
-
-  function timeOnly(value) {
-    if (!value) return "-";
-    return new Date(value).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" });
-  }
-
-  function dateInputValue(value) {
-    const date = value ? new Date(value) : new Date();
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-  }
-
-  function esc(value) {
-    return String(value ?? "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
-
-  function ensureStyle() {
-    if (document.getElementById("compact-admin-reports-style")) return;
-    const style = document.createElement("style");
-    style.id = "compact-admin-reports-style";
-    style.textContent = `
-      .report-card { padding: 0 !important; overflow: hidden; }
-      .report-card summary { list-style: none; }
-      .report-card summary::-webkit-details-marker { display: none; }
-      .report-summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px; cursor: pointer; }
-      .report-summary strong, .report-summary small { display: block; }
-      .report-summary small { margin-top: 4px; color: var(--muted); font-size: 14px; }
-      .report-summary-total { display: inline-flex; align-items: center; gap: 12px; font-weight: 850; white-space: nowrap; }
-      .report-arrow { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 999px; background: #eef4ff; color: var(--blue); font-size: 22px; line-height: 1; transition: transform .18s ease; }
-      .report-card[open] .report-arrow { transform: rotate(90deg); }
-      .report-body { padding: 0 16px 16px; border-top: 1px solid #edf1f6; }
-      .stats-controls { display: grid; grid-template-columns: repeat(3, minmax(180px, 1fr)); gap: 12px; margin-top: 18px; padding-top: 18px; border-top: 1px solid #edf1f6; }
-      .stats-period { display: flex; justify-content: space-between; gap: 12px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 8px; background: #f8fafc; color: var(--muted); }
-      .stats-period strong { color: var(--text); }
-      .stats-heading, .stats-row { display: grid; grid-template-columns: 1fr 150px 150px; gap: 12px; align-items: center; }
-      .stats-heading { padding: 12px 0 8px; color: var(--muted); font-weight: 800; font-size: 14px; }
-      .stats-row { padding: 10px 0; border-top: 1px solid #edf1f6; }
-      .stats-row strong { text-align: right; }
-      @media (max-width: 860px) { .stats-controls, .stats-heading, .stats-row { grid-template-columns: 1fr; } .stats-period { display: grid; } }
-    `;
-    document.head.appendChild(style);
-  }
-
-  function ensureStatsDates() {
-    const fromInput = document.getElementById("adminStatsFromInput");
-    const toInput = document.getElementById("adminStatsToInput");
-    const today = new Date();
-    const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-    if (fromInput && !fromInput.value) fromInput.value = dateInputValue(monthStart);
-    if (toInput && !toInput.value) toInput.value = dateInputValue(today);
-  }
-
-  function formatStatsQuantity(value, weighable) {
-    const quantity = Number(value || 0);
-    if (!weighable) return `${quantity.toLocaleString("es-AR")} un.`;
-    if (quantity < 1) return `${Math.round(quantity * 1000).toLocaleString("es-AR")} g`;
-    return `${quantity.toLocaleString("es-AR", { maximumFractionDigits: 3 })} kg`;
-  }
-
-  function buildProductStats(sales) {
-    const products = readList(PRODUCTS_KEY);
-    const productsById = new Map(products.map((product) => [product.id, product]));
-    const groups = { weighable: new Map(), unit: new Map() };
-
-    sales.forEach((sale) => {
-      (sale.items || []).forEach((item) => {
-        const product = productsById.get(item.productId);
-        const isWeighable = Boolean(item.weighable || product?.weighable);
-        const target = isWeighable ? groups.weighable : groups.unit;
-        const key = item.productId || item.name;
-        const current = target.get(key) || { name: item.name || product?.name || "Producto", quantity: 0, revenue: 0, saleCount: 0 };
-        current.quantity += Number(item.quantity || 0);
-        current.revenue += Number(item.total || 0);
-        current.saleCount += 1;
-        target.set(key, current);
-      });
-    });
-
-    const sortBy = document.getElementById("adminStatsSortInput")?.value || "quantity";
-    const sorter = (a, b) => sortBy === "revenue" ? b.revenue - a.revenue : b.quantity - a.quantity;
-    return { weighable: Array.from(groups.weighable.values()).sort(sorter), unit: Array.from(groups.unit.values()).sort(sorter) };
-  }
-
-  function renderStatsCard(title, items, weighable) {
-    const best = items[0];
-    const rows = items.map((item, index) => `
-      <div class="stats-row"><span>${index + 1}. ${esc(item.name)}</span><strong>${formatStatsQuantity(item.quantity, weighable)}</strong><strong>${money(item.revenue)}</strong></div>
-    `).join("");
-
-    return `
-      <details class="report-card stats-card">
-        <summary class="report-summary"><span><strong>${title}</strong><small>${best ? esc(best.name) : "Sin ventas en este rango"}</small></span><span class="report-summary-total">${best ? formatStatsQuantity(best.quantity, weighable) : "-"} <span class="report-arrow">&gt;</span></span></summary>
-        <div class="report-body"><div class="stats-heading"><span>Producto</span><span>Cantidad</span><span>Ingreso</span></div>${rows || "<p class='muted'>No hay productos para mostrar.</p>"}</div>
-      </details>
-    `;
-  }
-
-  function renderStatistics() {
-    ensureStyle();
-    ensureStatsDates();
-    document.getElementById("adminStatsControls")?.classList.remove("hidden");
-    const fromInput = document.getElementById("adminStatsFromInput");
-    const toInput = document.getElementById("adminStatsToInput");
-    const list = document.getElementById("adminReportList");
-    if (!fromInput || !toInput || !list) return;
-
-    const from = new Date(`${fromInput.value}T00:00:00`);
-    const to = new Date(`${toInput.value}T23:59:59`);
-    const sales = readList(SALES_KEY).filter((sale) => {
-      const date = new Date(sale.date);
-      return date >= from && date <= to;
-    });
-    const stats = buildProductStats(sales);
-    const totalSales = sales.reduce((sum, sale) => sum + Number(sale.total || 0), 0);
-
-    list.innerHTML = `
-      <div class="stats-period"><strong>Periodo</strong><span>${dateOnly(from)} al ${dateOnly(to)}</span><span>${sales.length} venta${sales.length === 1 ? "" : "s"} - ${money(totalSales)}</span></div>
-      ${renderStatsCard("Mejor producto pesable", stats.weighable, true)}
-      ${renderStatsCard("Mejor producto por unidad", stats.unit, false)}
-    `;
-  }
-
-  function renderClosedShiftReports(selectedLocal) {
-    document.getElementById("adminStatsControls")?.classList.add("hidden");
-    const list = document.getElementById("adminReportList");
-    const sales = readList(SALES_KEY);
-    const shifts = readList(SHIFTS_KEY);
-    const closedShifts = shifts.filter((shift) => shift.local === selectedLocal && shift.status === "closed").sort((a, b) => new Date(b.closedAt) - new Date(a.closedAt));
-
-    if (!list) return;
-    if (closedShifts.length === 0) {
-      list.innerHTML = `<p class="muted">Todavia no hay turnos cerrados para ${esc(selectedLocal)}.</p>`;
-      return;
-    }
-
-    list.innerHTML = closedShifts.map((shift) => {
-      const shiftSales = sales.filter((sale) => sale.shiftId === shift.id);
-      const expenses = shift.expenses || [];
-      const reinforcements = shift.reinforcements || [];
-      const totalSales = shiftSales.reduce((sum, sale) => sum + Number(sale.total || 0), 0);
-      const cashSales = shiftSales.reduce((sum, sale) => sum + Number(sale.cash || 0) - Number(sale.change || 0), 0);
-      const digitalSales = shiftSales.reduce((sum, sale) => sum + Number(sale.transfer || 0), 0);
-      const expenseTotal = expenses.reduce((sum, expense) => sum + Number(expense.amount || 0), 0);
-      const reinforcementTotal = reinforcements.reduce((sum, reinforcement) => sum + Number(reinforcement.amount || 0), 0);
-      const expectedCash = Number(shift.initialCash || 0) + cashSales + reinforcementTotal - expenseTotal;
-      const difference = Number(shift.countedCash || 0) - expectedCash;
-      const detail = shiftSales.map((sale) => {
-        const items = (sale.items || []).map((item) => item.name).join(", ");
-        return `<li>Venta ${sale.saleNumber || "-"}: ${esc(items)} - ${money(sale.total)} - ${esc(sale.method)}</li>`;
-      }).join("");
-
-      return `
-        <details class="report-card">
-          <summary class="report-summary"><span><strong>${esc(selectedLocal)}</strong><small>${dateOnly(shift.openedAt)} - ${timeOnly(shift.openedAt)} h - Hasta ${timeOnly(shift.closedAt)} h - ${shiftSales.length} venta${shiftSales.length === 1 ? "" : "s"}</small></span><span class="report-summary-total">${money(totalSales)} <span class="report-arrow">&gt;</span></span></summary>
-          <div class="report-body"><p class="muted">Fecha ${dateOnly(shift.openedAt)} - Desde ${timeOnly(shift.openedAt)} h hasta ${timeOnly(shift.closedAt)} h</p><div class="report-row"><span>Total vendido</span><strong>${money(totalSales)}</strong></div><div class="report-row"><span>Efectivo</span><strong>${money(cashSales)}</strong></div><div class="report-row"><span>Digital</span><strong>${money(digitalSales)}</strong></div><div class="report-row"><span>Gastos</span><strong>${money(expenseTotal)}</strong></div><div class="report-row"><span>Refuerzos</span><strong>${money(reinforcementTotal)}</strong></div><div class="report-row"><span>Cierre de caja teorico</span><strong>${money(expectedCash)}</strong></div><div class="report-row"><span>Cerro realmente con</span><strong>${money(shift.countedCash)}</strong></div><div class="report-row"><span>Diferencia</span><strong>${money(difference)}</strong></div><div class="report-detail"><strong>Detalle</strong><ul>${detail || "<li>Sin ventas en este turno.</li>"}</ul></div></div>
-        </details>
-      `;
-    }).join("");
-  }
-
-  function installWhatsappClear() {
-    const button = document.getElementById("clearWhatsappButton");
-    if (!button || button.dataset.installed === "true") return;
-    button.dataset.installed = "true";
-    button.addEventListener("click", () => {
-      const ok = confirm("Seguro que queres limpiar el mensaje de WhatsApp?");
-      if (!ok) return;
-      localStorage.setItem(WHATSAPP_KEY, "[]");
-      if (typeof saveOnline === "function") saveOnline(WHATSAPP_KEY, []);
-      const message = document.getElementById("whatsappMessage");
-      if (message) message.value = "";
-    });
-  }
-
-  window.renderAdminReports = function renderAdminReportsCompact() {
-    ensureStyle();
-    const select = document.getElementById("adminReportLocalSelect");
-    if (!select) return;
-    if (select.value === "Estadisticas") {
-      renderStatistics();
-      return;
-    }
-    renderClosedShiftReports(select.value);
-  };
-
-  window.addEventListener("DOMContentLoaded", () => {
-    ensureStyle();
-    installWhatsappClear();
-    document.getElementById("adminReportsButton")?.addEventListener("click", () => setTimeout(window.renderAdminReports, 0));
-    document.getElementById("adminReportLocalSelect")?.addEventListener("change", window.renderAdminReports);
-    document.getElementById("adminStatsFromInput")?.addEventListener("change", window.renderAdminReports);
-    document.getElementById("adminStatsToInput")?.addEventListener("change", window.renderAdminReports);
-    document.getElementById("adminStatsSortInput")?.addEventListener("change", window.renderAdminReports);
-  });
-})();
-</script>
- 
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
+  <script src="firebase.js?v=20260520-2"></script>
+  <script src="app.js?v=20260616-2"></script>
 </body>
 </html>
