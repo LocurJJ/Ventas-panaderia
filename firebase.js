@@ -1,4 +1,5 @@
 document.write('<script src="https://cdn.jsdelivr.net/gh/LocurJJ/Ventas-panaderia@61056808b91c2bf004732abd052ee3e7f3c5b832/firebase.js"><\/script>');
+document.write('<link rel="stylesheet" href="night-sales.css?v=20260618-1">');
 
 (function installPanaderiaSafeguards() {
   const SALES_KEY = "panaderia_josue_ventas_v1";
