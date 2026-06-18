@@ -27,7 +27,7 @@
 
 .purchase-table {
   width: 100%;
-  min-width: 1180px;
+  min-width: 1280px;
   border-collapse: collapse;
 }
 
@@ -73,6 +73,16 @@
   color: var(--text);
 }
 
+.purchase-supplier-select {
+  min-width: 150px;
+  min-height: 36px;
+  padding: 0 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #111827;
+  color: var(--text);
+}
+
 .purchase-suggestion {
   min-width: 150px;
   color: var(--green);
@@ -93,6 +103,19 @@
 .purchase-list {
   display: grid;
   gap: 12px;
+}
+
+.purchase-supplier-group {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, .35);
+}
+
+.purchase-supplier-group h3 {
+  color: var(--green);
 }
 
 .purchase-order-item {
