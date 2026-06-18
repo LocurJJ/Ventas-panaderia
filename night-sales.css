@@ -119,6 +119,40 @@ body {
   color: #cbd5e1 !important;
 }
 
+.sale-main button:not(.delete-btn):not(.invoice-btn),
+.sale-main button:not(.delete-btn):not(.invoice-btn) strong,
+.sale-main button:not(.delete-btn):not(.invoice-btn) span {
+  color: #f8fafc !important;
+}
+
+.sale-main > strong {
+  color: #ffffff !important;
+}
+
+.cart-table button,
+.cart-delete-btn {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: #7f1d1d !important;
+  color: #fee2e2 !important;
+  font-size: 20px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+  display: inline-grid !important;
+  place-items: center !important;
+  padding: 0 !important;
+  box-shadow: 0 6px 14px rgba(127, 29, 29, .35) !important;
+}
+
+.cart-table button:hover,
+.cart-delete-btn:hover {
+  background: #dc2626 !important;
+  color: #ffffff !important;
+}
+
 input::placeholder {
   color: #94a3b8 !important;
 }
