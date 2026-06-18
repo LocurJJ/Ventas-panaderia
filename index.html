@@ -6,6 +6,7 @@
   <title>Ventas - Panaderia Josue</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="night.css?v=20260618-1">
+  <link rel="stylesheet" href="purchase.css?v=20260618-1">
 </head>
 <body>
   <main class="app-shell">
@@ -28,6 +29,14 @@
         <button class="location-card admin" id="adminOpenButton">
           <span>Admin</span>
           <small>Productos y precios</small>
+        </button>
+        <button class="location-card" id="purchaseOpenButton" type="button">
+          <span>Compra</span>
+          <small>Armar sugerencia de compra</small>
+        </button>
+        <button class="location-card" id="purchaseListOpenButton" type="button">
+          <span>Lista de compra</span>
+          <small>Ver orden armada</small>
         </button>
       </div>
     </section>
@@ -172,6 +181,77 @@
         <div class="report-list" id="adminReportList"></div>
       </section>
     </section>
+
+    <section class="hidden page" id="purchaseView">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Compras</p>
+          <h2>Compra</h2>
+          <p class="muted">Sugerencias segun ventas, stock, lote minimo y lead time.</p>
+        </div>
+        <div class="actions">
+          <button class="ghost-button" id="goPurchaseListButton" type="button">Lista de compra</button>
+          <button class="ghost-button" id="backHomeFromPurchase" type="button">Inicio</button>
+        </div>
+      </header>
+
+      <section class="purchase-panel">
+        <div class="purchase-toolbar">
+          <input class="search-input" id="purchaseSearchInput" type="search" placeholder="Buscar producto o proveedor">
+          <label>
+            Ordenar
+            <select id="purchaseSortInput">
+              <option value="suggested">Sugerencia mayor</option>
+              <option value="average">Promedio vendido</option>
+              <option value="stock">Menor stock</option>
+              <option value="name">Nombre</option>
+            </select>
+          </label>
+        </div>
+        <div class="purchase-table-wrap">
+          <table class="purchase-table">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Stock</th>
+                <th>Total</th>
+                <th>Min</th>
+                <th>Max</th>
+                <th>Rango</th>
+                <th>Promedio</th>
+                <th>Desv.</th>
+                <th>Frec.</th>
+                <th>Proveedor</th>
+                <th>Lead</th>
+                <th>Lote</th>
+                <th>Sugerencia</th>
+                <th>Anadir</th>
+              </tr>
+            </thead>
+            <tbody id="purchaseProductList"></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+
+    <section class="hidden page" id="purchaseListView">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Compras</p>
+          <h2>Lista de compra</h2>
+          <p class="muted">Orden armada para que el comprador la revise.</p>
+        </div>
+        <div class="actions">
+          <button class="ghost-button" id="goPurchaseButton" type="button">Compra</button>
+          <button class="ghost-button" id="clearPurchaseOrderButton" type="button">Limpiar lista</button>
+          <button class="ghost-button" id="backHomeFromPurchaseList" type="button">Inicio</button>
+        </div>
+      </header>
+
+      <section class="purchase-panel">
+        <div class="purchase-list" id="purchaseOrderList"></div>
+      </section>
+    </section>
   </main>
 
   <dialog id="passwordDialog">
@@ -205,5 +285,6 @@
   <script src="firebase.js?v=20260618-1"></script>
   <script src="app.js?v=20260616-2"></script>
   <script src="admin-fixes.js?v=20260618-1"></script>
+  <script src="purchase.js?v=20260618-1"></script>
 </body>
 </html>
