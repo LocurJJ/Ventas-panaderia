@@ -1,0 +1,377 @@
+(function () {
+  const PRODUCTS_KEY = "panaderia_josue_productos_v1";
+  const SALES_KEY = "panaderia_josue_ventas_v1";
+  const SETTINGS_KEY = "panaderia_josue_compra_config_v1";
+  const ORDER_KEY = "panaderia_josue_lista_compra_v1";
+
+  const state = {
+    products: [],
+    sales: [],
+    settings: {},
+    order: [],
+  };
+
+  const $ = (id) => document.getElementById(id);
+
+  function readList(key) {
+    try {
+      const value = JSON.parse(localStorage.getItem(key) || "[]");
+      return Array.isArray(value) ? value : [];
+    } catch (error) {
+      console.warn("No se pudo leer", key, error);
+      return [];
+    }
+  }
+
+  function readObject(key) {
+    try {
+      const value = JSON.parse(localStorage.getItem(key) || "{}");
+      return value && typeof value === "object" && !Array.isArray(value) ? value : {};
+    } catch (error) {
+      console.warn("No se pudo leer", key, error);
+      return {};
+    }
+  }
+
+  function saveData(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
+    if (typeof window.saveOnline === "function") window.saveOnline(key, value);
+  }
+
+  function loadData() {
+    state.products = readList(PRODUCTS_KEY);
+    state.sales = readList(SALES_KEY);
+    state.settings = readObject(SETTINGS_KEY);
+    state.order = readList(ORDER_KEY);
+  }
+
+  function hideMainViews() {
+    ["welcomeView", "adminView", "purchaseView", "purchaseListView"].forEach((id) => {
+      const view = $(id);
+      if (view) view.classList.add("hidden");
+    });
+  }
+
+  function showPurchaseView() {
+    loadData();
+    hideMainViews();
+    $("purchaseView")?.classList.remove("hidden");
+    renderPurchaseProducts();
+  }
+
+  function showPurchaseListView() {
+    loadData();
+    hideMainViews();
+    $("purchaseListView")?.classList.remove("hidden");
+    renderPurchaseOrder();
+  }
+
+  function showHomeView() {
+    hideMainViews();
+    $("welcomeView")?.classList.remove("hidden");
+  }
+
+  function formatQty(value, weighable) {
+    const number = Number(value || 0);
+    const text = number.toLocaleString("es-AR", {
+      maximumFractionDigits: weighable ? 3 : 0,
+    });
+    return `${text}${weighable ? " kg" : " un."}`;
+  }
+
+  function dayKey(value) {
+    const date = value ? new Date(value) : new Date();
+    if (Number.isNaN(date.getTime())) return "";
+    return date.toISOString().slice(0, 10);
+  }
+
+  function itemProductId(item) {
+    return String(item.productId || item.id || "");
+  }
+
+  function buildStats() {
+    const byProduct = new Map();
+
+    state.sales.forEach((sale) => {
+      const dateKey = dayKey(sale.date || sale.createdAt);
+      (sale.items || []).forEach((item) => {
+        const id = itemProductId(item);
+        if (!id) return;
+
+        if (!byProduct.has(id)) {
+          byProduct.set(id, {
+            total: 0,
+            revenue: 0,
+            frequency: 0,
+            days: new Map(),
+          });
+        }
+
+        const quantity = Number(item.quantity || item.qty || 0);
+        const total = Number(item.total || 0);
+        const stats = byProduct.get(id);
+        stats.total += quantity;
+        stats.revenue += total;
+        stats.frequency += 1;
+        stats.days.set(dateKey, Number(stats.days.get(dateKey) || 0) + quantity);
+      });
+    });
+
+    return byProduct;
+  }
+
+  function summarizeProduct(product, statsByProduct) {
+    const settings = state.settings[product.id] || {};
+    const stats = statsByProduct.get(String(product.id)) || {
+      total: 0,
+      revenue: 0,
+      frequency: 0,
+      days: new Map(),
+    };
+    const dailyValues = Array.from(stats.days.values());
+    const min = dailyValues.length ? Math.min(...dailyValues) : 0;
+    const max = dailyValues.length ? Math.max(...dailyValues) : 0;
+    const average = dailyValues.length ? stats.total / dailyValues.length : 0;
+    const variance = dailyValues.length
+      ? dailyValues.reduce((sum, value) => sum + Math.pow(value - average, 2), 0) / dailyValues.length
+      : 0;
+    const deviation = Math.sqrt(variance);
+    const leadTime = Number(settings.leadTime || 1);
+    const packSize = Number(settings.packSize || defaultPackSize(product));
+    const stock = Number(product.stock || 0);
+    const target = Math.max(max, average * (leadTime + 3));
+    const suggestedUnits = Math.max(0, target - stock);
+    const suggestedPacks = suggestedUnits > 0 ? Math.ceil(suggestedUnits / Math.max(1, packSize)) : 0;
+
+    return {
+      product,
+      total: stats.total,
+      revenue: stats.revenue,
+      min,
+      max,
+      range: max - min,
+      average,
+      deviation,
+      frequency: stats.frequency,
+      leadTime,
+      packSize,
+      stock,
+      suggestedPacks,
+      suggestedUnits: suggestedPacks * packSize,
+    };
+  }
+
+  function defaultPackSize(product) {
+    const name = String(product.name || "").toLowerCase();
+    if (name.includes("leche") || name.includes("yogur") || name.includes("baggio")) return 12;
+    if (name.includes("gaseosa") || name.includes("manaos") || name.includes("coca")) return 6;
+    return 1;
+  }
+
+  function updateSetting(productId, field, value) {
+    const current = state.settings[productId] || {};
+    state.settings[productId] = {
+      ...current,
+      [field]: Math.max(1, Number(value || 1)),
+    };
+    saveData(SETTINGS_KEY, state.settings);
+    renderPurchaseProducts();
+  }
+
+  function addToOrder(productId, packs) {
+    loadData();
+    const statsByProduct = buildStats();
+    const product = state.products.find((item) => String(item.id) === String(productId));
+    if (!product) return;
+
+    const summary = summarizeProduct(product, statsByProduct);
+    const packCount = Math.max(1, Number(packs || summary.suggestedPacks || 1));
+    const existingIndex = state.order.findIndex((item) => String(item.productId) === String(productId));
+    const orderItem = {
+      id: `${productId}-${Date.now()}`,
+      productId,
+      name: product.name,
+      supplier: product.supplier || "Otro",
+      packSize: summary.packSize,
+      leadTime: summary.leadTime,
+      packs: packCount,
+      units: packCount * summary.packSize,
+      stock: summary.stock,
+      status: "pendiente",
+      createdAt: new Date().toISOString(),
+    };
+
+    if (existingIndex >= 0) {
+      state.order[existingIndex] = {
+        ...state.order[existingIndex],
+        ...orderItem,
+        id: state.order[existingIndex].id,
+      };
+    } else {
+      state.order.push(orderItem);
+    }
+
+    saveData(ORDER_KEY, state.order);
+    renderPurchaseProducts();
+    alert("Producto agregado a la lista de compra.");
+  }
+
+  function removeOrderItem(id) {
+    state.order = state.order.filter((item) => item.id !== id);
+    saveData(ORDER_KEY, state.order);
+    renderPurchaseOrder();
+  }
+
+  function clearOrder() {
+    if (!state.order.length) return;
+    if (!confirm("Seguro que queres limpiar la lista de compra?")) return;
+    state.order = [];
+    saveData(ORDER_KEY, state.order);
+    renderPurchaseOrder();
+  }
+
+  function renderPurchaseProducts() {
+    const list = $("purchaseProductList");
+    if (!list) return;
+
+    const search = String($("purchaseSearchInput")?.value || "").trim().toLowerCase();
+    const sort = $("purchaseSortInput")?.value || "suggested";
+    const statsByProduct = buildStats();
+    const rows = state.products
+      .map((product) => summarizeProduct(product, statsByProduct))
+      .filter((summary) => {
+        const text = `${summary.product.name || ""} ${summary.product.supplier || ""}`.toLowerCase();
+        return text.includes(search);
+      })
+      .sort((a, b) => {
+        if (sort === "average") return b.average - a.average;
+        if (sort === "stock") return a.stock - b.stock;
+        if (sort === "name") return String(a.product.name || "").localeCompare(String(b.product.name || ""));
+        return b.suggestedUnits - a.suggestedUnits;
+      });
+
+    if (!rows.length) {
+      list.innerHTML = `<tr><td colspan="14">No hay productos para mostrar.</td></tr>`;
+      return;
+    }
+
+    list.innerHTML = rows.map((row) => {
+      const id = String(row.product.id);
+      const packsValue = row.suggestedPacks || 1;
+      const suggestion = row.suggestedPacks
+        ? `${row.suggestedPacks} pack${row.suggestedPacks === 1 ? "" : "s"} (${formatQty(row.suggestedUnits, row.product.weighable)})`
+        : "Sin compra";
+
+      return `
+        <tr>
+          <td class="purchase-product-name">${escapeHtml(row.product.name)}</td>
+          <td class="purchase-number">${formatQty(row.stock, row.product.weighable)}</td>
+          <td class="purchase-number">${formatQty(row.total, row.product.weighable)}</td>
+          <td class="purchase-number">${formatQty(row.min, row.product.weighable)}</td>
+          <td class="purchase-number">${formatQty(row.max, row.product.weighable)}</td>
+          <td class="purchase-number">${formatQty(row.range, row.product.weighable)}</td>
+          <td class="purchase-number">${formatQty(row.average, row.product.weighable)}</td>
+          <td class="purchase-number">${formatQty(row.deviation, row.product.weighable)}</td>
+          <td class="purchase-number">${row.frequency}</td>
+          <td>${escapeHtml(row.product.supplier || "Otro")}</td>
+          <td><input class="purchase-small-input" type="number" min="1" value="${row.leadTime}" data-setting-id="${id}" data-setting-field="leadTime"></td>
+          <td><input class="purchase-small-input" type="number" min="1" value="${row.packSize}" data-setting-id="${id}" data-setting-field="packSize"></td>
+          <td class="purchase-suggestion">${suggestion}</td>
+          <td>
+            <input class="purchase-small-input" type="number" min="1" value="${packsValue}" data-pack-id="${id}">
+            <button class="purchase-add-button" type="button" data-add-id="${id}">Anadir</button>
+          </td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  function renderPurchaseOrder() {
+    const list = $("purchaseOrderList");
+    if (!list) return;
+
+    if (!state.order.length) {
+      list.innerHTML = `<p class="muted">Todavia no agregaste productos a la lista.</p>`;
+      return;
+    }
+
+    list.innerHTML = state.order.map((item) => `
+      <article class="purchase-order-item">
+        <div>
+          <strong>${escapeHtml(item.name)}</strong>
+          <span class="purchase-order-meta">
+            Proveedor: ${escapeHtml(item.supplier || "Otro")} | ${item.packs} pack${Number(item.packs) === 1 ? "" : "s"} x ${item.packSize} = ${item.units} unidades | Stock al pedir: ${item.stock}
+          </span>
+        </div>
+        <span class="purchase-status">Pendiente</span>
+        <button class="purchase-delete-button" type="button" data-remove-order="${item.id}">X</button>
+      </article>
+    `).join("");
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function wireEvents() {
+    $("purchaseOpenButton")?.addEventListener("click", showPurchaseView);
+    $("purchaseListOpenButton")?.addEventListener("click", showPurchaseListView);
+    $("goPurchaseListButton")?.addEventListener("click", showPurchaseListView);
+    $("goPurchaseButton")?.addEventListener("click", showPurchaseView);
+    $("backHomeFromPurchase")?.addEventListener("click", showHomeView);
+    $("backHomeFromPurchaseList")?.addEventListener("click", showHomeView);
+    $("clearPurchaseOrderButton")?.addEventListener("click", clearOrder);
+    $("purchaseSearchInput")?.addEventListener("input", renderPurchaseProducts);
+    $("purchaseSortInput")?.addEventListener("change", renderPurchaseProducts);
+
+    $("purchaseProductList")?.addEventListener("change", (event) => {
+      const input = event.target.closest("[data-setting-id]");
+      if (!input) return;
+      updateSetting(input.dataset.settingId, input.dataset.settingField, input.value);
+    });
+
+    $("purchaseProductList")?.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-add-id]");
+      if (!button) return;
+      const input = document.querySelector(`[data-pack-id="${CSS.escape(button.dataset.addId)}"]`);
+      addToOrder(button.dataset.addId, input?.value);
+    });
+
+    $("purchaseOrderList")?.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-remove-order]");
+      if (!button) return;
+      removeOrderItem(button.dataset.removeOrder);
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    loadData();
+    wireEvents();
+
+    if (typeof window.listenOnline === "function") {
+      window.listenOnline(PRODUCTS_KEY, (value) => {
+        if (Array.isArray(value)) {
+          state.products = value;
+          renderPurchaseProducts();
+        }
+      });
+      window.listenOnline(SALES_KEY, (value) => {
+        if (Array.isArray(value)) {
+          state.sales = value;
+          renderPurchaseProducts();
+        }
+      });
+      window.listenOnline(ORDER_KEY, (value) => {
+        if (Array.isArray(value)) {
+          state.order = value;
+          renderPurchaseOrder();
+        }
+      });
+    }
+  });
+})();
