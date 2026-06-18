@@ -3,6 +3,19 @@
   const SALES_KEY = "panaderia_josue_ventas_v1";
   const SETTINGS_KEY = "panaderia_josue_compra_config_v1";
   const ORDER_KEY = "panaderia_josue_lista_compra_v1";
+  const suppliers = [
+    "Oscar",
+    "Baqueano",
+    "de Quesos (Leo)",
+    "Grupo MAX",
+    "Maxi Consumo",
+    "Don angel",
+    "Golosinas",
+    "Serenisima",
+    "Pastas",
+    "Tapas",
+    "Otro",
+  ];
 
   const state = {
     products: [],
@@ -36,6 +49,10 @@
   function saveData(key, value) {
     localStorage.setItem(key, JSON.stringify(value));
     if (typeof window.saveOnline === "function") window.saveOnline(key, value);
+  }
+
+  function saveProducts() {
+    saveData(PRODUCTS_KEY, state.products);
   }
 
   function loadData() {
@@ -178,6 +195,21 @@
     renderPurchaseProducts();
   }
 
+  function updateProductField(productId, field, value) {
+    const product = state.products.find((item) => String(item.id) === String(productId));
+    if (!product) return;
+
+    if (field === "stock") {
+      product.stock = Number(value || 0);
+    } else if (field === "supplier") {
+      product.supplier = value || "Otro";
+    }
+
+    product.updatedAt = new Date().toISOString();
+    saveProducts();
+    renderPurchaseProducts();
+  }
+
   function addToOrder(productId, packs) {
     loadData();
     const statsByProduct = buildStats();
@@ -265,7 +297,9 @@
       return `
         <tr>
           <td class="purchase-product-name">${escapeHtml(row.product.name)}</td>
-          <td class="purchase-number">${formatQty(row.stock, row.product.weighable)}</td>
+          <td>
+            <input class="purchase-small-input" type="number" step="0.01" value="${row.stock}" data-product-id="${id}" data-product-field="stock">
+          </td>
           <td class="purchase-number">${formatQty(row.total, row.product.weighable)}</td>
           <td class="purchase-number">${formatQty(row.min, row.product.weighable)}</td>
           <td class="purchase-number">${formatQty(row.max, row.product.weighable)}</td>
@@ -273,7 +307,11 @@
           <td class="purchase-number">${formatQty(row.average, row.product.weighable)}</td>
           <td class="purchase-number">${formatQty(row.deviation, row.product.weighable)}</td>
           <td class="purchase-number">${row.frequency}</td>
-          <td>${escapeHtml(row.product.supplier || "Otro")}</td>
+          <td>
+            <select class="purchase-supplier-select" data-product-id="${id}" data-product-field="supplier">
+              ${supplierOptions(row.product.supplier)}
+            </select>
+          </td>
           <td><input class="purchase-small-input" type="number" min="1" value="${row.leadTime}" data-setting-id="${id}" data-setting-field="leadTime"></td>
           <td><input class="purchase-small-input" type="number" min="1" value="${row.packSize}" data-setting-id="${id}" data-setting-field="packSize"></td>
           <td class="purchase-suggestion">${suggestion}</td>
@@ -295,17 +333,37 @@
       return;
     }
 
-    list.innerHTML = state.order.map((item) => `
-      <article class="purchase-order-item">
-        <div>
-          <strong>${escapeHtml(item.name)}</strong>
-          <span class="purchase-order-meta">
-            Proveedor: ${escapeHtml(item.supplier || "Otro")} | ${item.packs} pack${Number(item.packs) === 1 ? "" : "s"} x ${item.packSize} = ${item.units} unidades | Stock al pedir: ${item.stock}
-          </span>
-        </div>
-        <span class="purchase-status">Pendiente</span>
-        <button class="purchase-delete-button" type="button" data-remove-order="${item.id}">X</button>
-      </article>
+    const groups = state.order.reduce((acc, item) => {
+      const supplier = item.supplier || "Otro";
+      if (!acc[supplier]) acc[supplier] = [];
+      acc[supplier].push(item);
+      return acc;
+    }, {});
+
+    list.innerHTML = Object.entries(groups).map(([supplier, items]) => `
+      <section class="purchase-supplier-group">
+        <h3>${escapeHtml(supplier)}</h3>
+        ${items.map((item) => `
+          <article class="purchase-order-item">
+            <div>
+              <strong>${escapeHtml(item.name)}</strong>
+              <span class="purchase-order-meta">
+                ${item.packs} pack${Number(item.packs) === 1 ? "" : "s"} x ${item.packSize} = ${item.units} unidades | Stock al pedir: ${item.stock}
+              </span>
+            </div>
+            <span class="purchase-status">Pendiente</span>
+            <button class="purchase-delete-button" type="button" data-remove-order="${item.id}">X</button>
+          </article>
+        `).join("")}
+      </section>
+    `).join("");
+  }
+
+  function supplierOptions(selectedSupplier) {
+    const selected = selectedSupplier || "Otro";
+    const options = suppliers.includes(selected) ? suppliers : [...suppliers, selected];
+    return options.map((supplier) => `
+      <option value="${escapeHtml(supplier)}"${supplier === selected ? " selected" : ""}>${escapeHtml(supplier)}</option>
     `).join("");
   }
 
@@ -330,6 +388,12 @@
     $("purchaseSortInput")?.addEventListener("change", renderPurchaseProducts);
 
     $("purchaseProductList")?.addEventListener("change", (event) => {
+      const productInput = event.target.closest("[data-product-id]");
+      if (productInput) {
+        updateProductField(productInput.dataset.productId, productInput.dataset.productField, productInput.value);
+        return;
+      }
+
       const input = event.target.closest("[data-setting-id]");
       if (!input) return;
       updateSetting(input.dataset.settingId, input.dataset.settingField, input.value);
