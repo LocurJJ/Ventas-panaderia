@@ -1,0 +1,143 @@
+.location-grid {
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+}
+
+.purchase-panel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  padding: 18px;
+}
+
+.purchase-toolbar {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(170px, 240px);
+  gap: 14px;
+  align-items: end;
+  margin-bottom: 16px;
+}
+
+.purchase-table-wrap {
+  overflow: auto;
+  max-height: calc(100vh - 240px);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.purchase-table {
+  width: 100%;
+  min-width: 1180px;
+  border-collapse: collapse;
+}
+
+.purchase-table th,
+.purchase-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.purchase-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.purchase-table td {
+  font-size: 14px;
+}
+
+.purchase-product-name {
+  min-width: 210px;
+  font-weight: 850;
+}
+
+.purchase-number {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.purchase-small-input {
+  width: 76px;
+  min-height: 36px;
+  padding: 0 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #111827;
+  color: var(--text);
+}
+
+.purchase-suggestion {
+  min-width: 150px;
+  color: var(--green);
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.purchase-add-button {
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--blue);
+  border-radius: 8px;
+  background: var(--blue);
+  color: white;
+  font-weight: 850;
+}
+
+.purchase-list {
+  display: grid;
+  gap: 12px;
+}
+
+.purchase-order-item {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 14px;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #111827;
+}
+
+.purchase-order-item strong,
+.purchase-order-item span {
+  display: block;
+}
+
+.purchase-order-meta {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.purchase-status {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #172554;
+  color: #dbeafe;
+  font-weight: 850;
+}
+
+.purchase-delete-button {
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 999px;
+  background: #7f1d1d;
+  color: #fecaca;
+  font-weight: 900;
+}
+
+@media (max-width: 860px) {
+  .purchase-toolbar,
+  .purchase-order-item {
+    grid-template-columns: 1fr;
+  }
+}
