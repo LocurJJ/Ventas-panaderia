@@ -4,48 +4,2408 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ventas</title>
+  <link rel="stylesheet" href="night-sales.css?v=20260618-1">
   <style>
-    *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}body{background:#f4f6fb;color:#111827}button,input,select{font:inherit}button{cursor:pointer}.hidden{display:none!important}.app{display:flex;min-height:100vh}.sidebar{width:220px;background:#fff;border-right:1px solid #ddd;padding:20px}.logo{font-size:28px;font-weight:bold;color:#2563eb;margin-bottom:8px}.local-name{color:#6b7280;margin-bottom:24px;font-size:14px}.menu button{width:100%;padding:14px;border:none;border-radius:10px;margin-bottom:10px;text-align:left;background:#f3f4f6;font-size:16px}.menu button.active{background:#2563eb;color:#fff}.content{flex:1;padding:20px;display:flex;gap:20px}.cart{width:430px;background:#fff;border-radius:20px;padding:20px;display:flex;flex-direction:column}.products,.notebook,.shift-panel,.product-manage-panel{flex:1;background:#fff;border-radius:20px;padding:20px}.search{width:100%;padding:15px;border-radius:12px;border:1px solid #ddd;margin-bottom:20px;font-size:16px}.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:15px}.product{border:none;background:#2563eb;color:#fff;padding:20px;border-radius:15px;text-align:left;min-height:92px}.product strong,.product small{display:block}.product small{margin-top:10px;color:#dbeafe}.product.weighable{background:#0f766e}.cart-table{width:100%;border-collapse:collapse;margin-top:15px}.cart-table th{text-align:left;font-size:13px;color:#6b7280;padding-bottom:10px}.cart-table td{padding:10px 0;border-bottom:1px solid #eee;font-size:14px;vertical-align:top}.price-edit{width:92px;padding:7px;border:1px solid #ddd;border-radius:8px}.item-note{display:block;margin-top:4px;color:#6b7280;font-size:12px}.empty{margin-top:20px;color:#6b7280}.total{margin-top:auto;padding-top:20px}.total h2{margin-bottom:20px}.pay-btn,.confirm-pay{width:100%;background:#2563eb;color:#fff;border:none;padding:18px;border-radius:15px;font-size:18px}.back-link{display:block;margin-top:24px;color:#2563eb;text-decoration:none;font-weight:bold}.customer-select{display:grid;gap:7px;margin:14px 0 4px;font-weight:bold}.customer-select select{width:100%;padding:12px;border:1px solid #d1d5db;border-radius:10px;background:#fff}.modal-backdrop{position:fixed;inset:0;display:grid;place-items:center;background:rgba(17,24,39,.55);padding:16px}.payment-modal{width:min(560px,100%);background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 20px 55px rgba(0,0,0,.25)}.payment-head{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;border-bottom:1px solid #eee}.close-btn,.delete-btn{border:none;border-radius:999px;background:#f3f4f6;width:36px;height:36px;font-weight:bold}.payment-body{padding:24px;text-align:center}.payment-total-label{font-weight:bold;color:#374151}.payment-total{margin:8px 0 12px;font-size:48px;font-weight:bold}.payment-status{display:inline-block;margin-bottom:20px;padding:8px 14px;border-radius:999px;background:#f3f4f6;color:#9a6400;font-size:18px}.payment-status.ok{color:#166534}.payment-grid{display:grid;gap:12px;text-align:left}.payment-row{display:grid;grid-template-columns:1fr 170px;gap:12px;align-items:center;padding:16px;border:1px solid #dbe3ef;border-radius:12px}.payment-row label{font-weight:bold}.payment-row input{width:100%;padding:12px;border:1px solid #d1d5db;border-radius:10px;text-align:right}.payment-actions{margin-top:16px}.notebook h2,.shift-panel h2,.product-manage-panel h2{margin-bottom:16px}.shift-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,380px);gap:18px}.shift-box,.product-edit-card{border:1px solid #e5e7eb;border-radius:14px;padding:16px;background:#fff}.shift-row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #f0f2f5}.shift-row strong{text-align:right}.shift-form{display:grid;gap:10px;margin-top:12px}.shift-form input{width:100%;padding:12px;border:1px solid #d1d5db;border-radius:10px}.secondary-btn{border:none;border-radius:12px;background:#eef2ff;color:#1d4ed8;padding:12px;font-weight:bold}.danger-wide{width:100%;margin-top:14px;border:none;border-radius:14px;background:#dc2626;color:#fff;padding:15px;font-weight:bold}.sale-list,.product-edit-list{display:grid;gap:10px}.sale-item,.product-edit-item{border:1px solid #e5e7eb;border-radius:12px;background:#fff;overflow:hidden}.sale-main{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:14px}.sale-main button:not(.delete-btn){border:none;background:transparent;text-align:left}.sale-detail{display:none;padding:0 14px 14px;color:#4b5563;font-size:14px}.sale-item.open .sale-detail{display:block}.sale-detail ul{margin:8px 0 0 18px}.product-admin-layout{display:grid;grid-template-columns:minmax(280px,420px) 1fr;gap:18px}.product-edit-list{max-height:calc(100vh - 235px);overflow:auto;padding-right:4px}.product-edit-item{width:100%;padding:13px;text-align:left}.product-edit-item.active{border-color:#2563eb;background:#eef5ff}.product-edit-item strong,.product-edit-item small{display:block}.product-edit-item small{margin-top:4px;color:#6b7280}.product-edit-form{display:grid;gap:12px;margin-top:14px}.product-edit-form label{display:grid;gap:7px;font-weight:bold}.product-edit-form input,.product-edit-form select{width:100%;padding:12px;border:1px solid #d1d5db;border-radius:10px;background:#fff}.checkbox-line{display:flex!important;align-items:center;gap:10px}.checkbox-line input{width:auto!important}.stock-tools{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.new-product-btn{margin-bottom:12px}@media(max-width:900px){.app,.content{display:block}.sidebar,.cart{width:auto}.content{padding:12px}.products,.notebook,.shift-panel,.product-manage-panel{margin-top:14px}.payment-row,.shift-grid,.sale-main,.product-admin-layout,.stock-tools{grid-template-columns:1fr}}  </style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f6fb;
+      color: #111827;
+      overflow: hidden;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: .65;
+    }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: 220px;
+      background: white;
+      border-right: 1px solid #ddd;
+      padding: 20px;
+      height: 100vh;
+      overflow: auto;
+      flex-shrink: 0;
+    }
+
+    .logo {
+      font-size: 28px;
+      font-weight: bold;
+      color: #2563eb;
+      margin-bottom: 8px;
+    }
+
+    .local-name {
+      color: #6b7280;
+      margin-bottom: 24px;
+      font-size: 14px;
+    }
+
+    .menu button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      text-align: left;
+      background: #f3f4f6;
+      font-size: 16px;
+    }
+
+    .menu button.active {
+      background: #2563eb;
+      color: white;
+    }
+
+    .content {
+      flex: 1;
+      padding: 20px;
+      display: flex;
+      gap: 20px;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .cart {
+      width: 430px;
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 40px);
+      flex-shrink: 0;
+    }
+
+    .products,
+    .notebook,
+    .shift-panel,
+    .product-manage-panel {
+      flex: 1;
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .search {
+      width: 100%;
+      padding: 15px;
+      border-radius: 12px;
+      border: 1px solid #ddd;
+      margin-bottom: 20px;
+      font-size: 16px;
+    }
+
+    #newManagedProductButton {
+      margin-bottom: 12px;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 15px;
+    }
+
+    .product-admin-layout {
+      display: grid;
+      grid-template-columns: minmax(280px, 420px) 1fr;
+      gap: 18px;
+    }
+
+    .product-edit-list {
+      display: grid;
+      gap: 10px;
+      max-height: calc(100vh - 190px);
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .product-edit-item {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      background: white;
+      text-align: left;
+    }
+
+    .product-edit-item.active {
+      border-color: #2563eb;
+      background: #eef5ff;
+    }
+
+    .product-edit-item strong,
+    .product-edit-item small {
+      display: block;
+    }
+
+    .product-edit-item small {
+      margin-top: 4px;
+      color: #6b7280;
+    }
+
+    .product-edit-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 18px;
+      background: white;
+    }
+
+    .product-edit-form {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .product-edit-form label {
+      display: grid;
+      gap: 7px;
+      font-weight: bold;
+    }
+
+    .product-edit-form input,
+    .product-edit-form select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      background: white;
+    }
+
+    .product-edit-form .checkbox-line {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .product-edit-form .checkbox-line input {
+      width: auto;
+    }
+
+    .stock-tools {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .customer-select {
+      display: grid;
+      gap: 7px;
+      margin: 14px 0 4px;
+      font-weight: bold;
+    }
+
+    .customer-select select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      background: white;
+    }
+
+    .product {
+      border: none;
+      background: #2563eb;
+      color: white;
+      padding: 20px;
+      border-radius: 15px;
+      text-align: left;
+      min-height: 92px;
+    }
+
+    .product strong,
+    .product small {
+      display: block;
+    }
+
+    .product small {
+      margin-top: 10px;
+      color: #dbeafe;
+    }
+
+    .product.weighable {
+      background: #0f766e;
+    }
+
+    .cart-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      display: block;
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .cart-table thead,
+    .cart-table tbody {
+      display: table;
+      width: 100%;
+      table-layout: fixed;
+    }
+
+    .cart-table th {
+      text-align: left;
+      font-size: 13px;
+      color: #6b7280;
+      padding-bottom: 10px;
+    }
+
+    .cart-table td {
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+      vertical-align: top;
+    }
+
+    .price-edit {
+      width: 92px;
+      padding: 7px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+
+    .quantity-edit {
+      width: 64px;
+      padding: 7px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .cart-delete-btn {
+      width: 28px;
+      height: 28px;
+      border: none;
+      border-radius: 999px;
+      background: #fee2e2;
+      color: #b91c1c;
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1;
+      display: inline-grid;
+      place-items: center;
+      transition: background .15s ease, transform .15s ease;
+    }
+
+    .cart-delete-btn:hover {
+      background: #fecaca;
+      transform: scale(1.05);
+    }
+
+    .item-note {
+      display: block;
+      margin-top: 4px;
+      color: #6b7280;
+      font-size: 12px;
+    }
+
+    .empty {
+      margin-top: 20px;
+      color: #6b7280;
+    }
+
+    .total {
+      margin-top: auto;
+      padding-top: 20px;
+    }
+
+    .total h2 {
+      margin-bottom: 20px;
+    }
+
+    .pay-btn,
+    .confirm-pay {
+      width: 100%;
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 18px;
+      border-radius: 15px;
+      font-size: 18px;
+    }
+
+    .back-link {
+      display: block;
+      margin-top: 24px;
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: rgba(17, 24, 39, .55);
+      padding: 16px;
+    }
+
+    .payment-modal {
+      width: min(560px, 100%);
+      background: white;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 20px 55px rgba(0, 0, 0, .25);
+    }
+
+    .payment-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 24px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .close-btn,
+    .delete-btn {
+      border: none;
+      border-radius: 999px;
+      background: #f3f4f6;
+      width: 36px;
+      height: 36px;
+      font-weight: bold;
+    }
+
+    .payment-body {
+      padding: 24px;
+      text-align: center;
+    }
+
+    .payment-total-label {
+      font-weight: bold;
+      color: #374151;
+    }
+
+    .payment-total {
+      margin: 8px 0 12px;
+      font-size: 48px;
+      font-weight: bold;
+    }
+
+    .payment-status {
+      display: inline-block;
+      margin-bottom: 20px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      color: #9a6400;
+      font-size: 18px;
+    }
+
+    .payment-status.ok {
+      color: #166534;
+    }
+
+    .payment-grid {
+      display: grid;
+      gap: 12px;
+      text-align: left;
+    }
+
+    .payment-row {
+      display: grid;
+      grid-template-columns: 1fr 170px;
+      gap: 12px;
+      align-items: center;
+      padding: 16px;
+      border: 1px solid #dbe3ef;
+      border-radius: 12px;
+    }
+
+    .payment-row label {
+      font-weight: bold;
+    }
+
+    .payment-row input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      text-align: right;
+    }
+
+    .payment-actions {
+      margin-top: 16px;
+    }
+
+    .notebook h2,
+    .shift-panel h2 {
+      margin-bottom: 16px;
+    }
+
+    .notebook-summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .summary-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 14px;
+      background: #f9fafb;
+    }
+
+    .summary-card strong {
+      display: block;
+      margin-top: 6px;
+      font-size: 20px;
+    }
+
+    .shift-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 380px);
+      gap: 18px;
+    }
+
+    .shift-box {
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 16px;
+      background: #fff;
+    }
+
+    .shift-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f2f5;
+    }
+
+    .shift-row strong {
+      text-align: right;
+    }
+
+    .shift-form {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .shift-form input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+    }
+
+    .secondary-btn {
+      border: none;
+      border-radius: 12px;
+      background: #eef2ff;
+      color: #1d4ed8;
+      padding: 12px;
+      font-weight: bold;
+    }
+
+    .danger-wide {
+      width: 100%;
+      margin-top: 14px;
+      border: none;
+      border-radius: 14px;
+      background: #dc2626;
+      color: white;
+      padding: 15px;
+      font-weight: bold;
+    }
+
+    .sale-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .sale-item {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .sale-main {
+      display: grid;
+      grid-template-columns: 1fr auto auto auto;
+      gap: 12px;
+      align-items: center;
+      padding: 14px;
+    }
+
+    .sale-main button:not(.delete-btn):not(.invoice-btn) {
+      border: none;
+      background: transparent;
+      text-align: left;
+    }
+
+    .invoice-btn {
+      border: none;
+      border-radius: 10px;
+      background: #dcfce7;
+      color: #166534;
+      font-weight: 800;
+      padding: 8px 10px;
+    }
+
+    .invoice-btn.done {
+      background: #e5e7eb;
+      color: #4b5563;
+    }
+
+    .sale-detail {
+      display: none;
+      padding: 0 14px 14px;
+      color: #4b5563;
+      font-size: 14px;
+    }
+
+    .sale-item.open .sale-detail {
+      display: block;
+    }
+
+    .sale-detail ul {
+      margin: 8px 0 0 18px;
+    }
+
+    .account-settle {
+      width: auto;
+      margin: 10px 0 4px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+
+    /* Tema noche */
+    body {
+      background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, .18), transparent 34rem),
+        #111827;
+      color: #f8fafc;
+    }
+
+    .sidebar,
+    .cart,
+    .products,
+    .notebook,
+    .shift-panel,
+    .product-manage-panel,
+    .payment-modal,
+    .shift-box,
+    .product-edit-card,
+    .sale-item,
+    .summary-card {
+      background: #1f2937;
+      color: #f8fafc;
+      border-color: #334155;
+      box-shadow: 0 18px 42px rgba(0, 0, 0, .24);
+    }
+
+    .sidebar {
+      border-right-color: #334155;
+    }
+
+    .local-name,
+    .item-note,
+    .empty,
+    .sale-detail,
+    .product-edit-item small,
+    .cart-table th {
+      color: #cbd5e1;
+    }
+
+    .menu button,
+    .search,
+    .customer-select select,
+    .product-edit-item,
+    .product-edit-form input,
+    .product-edit-form select,
+    .shift-form input,
+    .price-edit,
+    .quantity-edit,
+    .payment-row input {
+      background: #111827;
+      color: #f8fafc;
+      border-color: #334155;
+    }
+
+    .menu button:not(.active):hover,
+    .product-edit-item:hover {
+      background: #172033;
+    }
+
+    .product-edit-item.active {
+      background: #172554;
+      border-color: #60a5fa;
+    }
+
+    .cart-table td,
+    .payment-head,
+    .shift-row {
+      border-color: #334155;
+    }
+
+    .product {
+      background: #1d4ed8;
+      box-shadow: inset 0 -1px 0 rgba(255, 255, 255, .08);
+    }
+
+    .product.weighable {
+      background: #0f766e;
+    }
+
+    .product small {
+      color: #dbeafe;
+    }
+
+    .payment-total-label {
+      color: #cbd5e1;
+    }
+
+    .payment-status {
+      background: #422006;
+      color: #fbbf24;
+    }
+
+    .payment-status.ok {
+      background: #052e16;
+      color: #86efac;
+    }
+
+    .payment-row {
+      background: #111827;
+      border-color: #334155;
+    }
+
+    .close-btn,
+    .delete-btn {
+      background: #334155;
+      color: #f8fafc;
+    }
+
+    .secondary-btn {
+      background: #1e3a8a;
+      color: #dbeafe;
+    }
+
+    .invoice-btn {
+      background: #064e3b;
+      color: #bbf7d0;
+    }
+
+    .invoice-btn.done {
+      background: #334155;
+      color: #cbd5e1;
+    }
+
+    input::placeholder {
+      color: #94a3b8;
+    }
+
+    @media (max-width: 900px) {
+      .app,
+      .content {
+        display: block;
+        height: auto;
+        overflow: auto;
+      }
+
+      .sidebar,
+      .cart {
+        width: auto;
+        height: auto;
+      }
+
+      .content {
+        padding: 12px;
+      }
+
+      .products,
+      .notebook,
+      .shift-panel,
+      .product-manage-panel {
+        margin-top: 14px;
+        max-height: none;
+      }
+
+      .payment-row,
+      .shift-grid,
+      .notebook-summary,
+      .sale-main,
+      .product-admin-layout,
+      .stock-tools {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
   <div class="app">
-    <aside class="sidebar"><div class="logo">Josue</div><div class="local-name" id="localName">Central</div><div class="menu"><button class="active" id="sellMenuButton" type="button">Vender</button><button id="shiftMenuButton" type="button">Turnos</button><button id="productsMenuButton" type="button">Productos</button><button id="notebookMenuButton" type="button">Cuaderno</button><button id="clientsMenuButton" type="button">Clientes</button></div><a class="back-link" href="index.html">Volver al inicio</a></aside>
-    <main class="content" id="sellView"><section class="cart"><h2>Venta</h2><label class="customer-select">Cliente<select id="customerSelect"></select></label><table class="cart-table"><thead><tr><th>Producto</th><th>Cant.</th><th>Precio</th><th></th></tr></thead><tbody id="cartItems"></tbody></table><p class="empty" id="emptyCart">Todavia no agregaste productos.</p><div class="total"><h2 id="total">Total: $0</h2><button class="pay-btn" type="button" onclick="openPayment()">Cobrar</button></div></section><section class="products"><input id="searchInput" type="text" class="search" placeholder="Buscar producto o codigo..." autofocus><div class="product-grid" id="productGrid"></div></section></main>
-    <main class="content hidden" id="shiftView"><section class="shift-panel"><h2>Turno de caja</h2><div id="closedShiftBox" class="shift-box"><h3>Abrir caja</h3><p class="empty">Carga el efectivo inicial para empezar el turno.</p><div class="shift-form"><input id="initialCashInput" type="number" min="0" step="1" placeholder="Efectivo inicial"><button class="pay-btn" type="button" onclick="openShift()">Abrir turno</button></div></div><div id="openShiftBox" class="shift-grid hidden"><section class="shift-box"><h3>Resumen</h3><div class="shift-row"><span>Abierto</span><strong id="shiftOpenedAt">-</strong></div><div class="shift-row"><span>Efectivo inicial</span><strong id="shiftInitialCash">$0</strong></div><div class="shift-row"><span>Gastos</span><strong id="shiftExpenses">$0</strong></div><div class="shift-row"><span>Ventas en efectivo</span><strong id="shiftCashSales">$0</strong></div><div class="shift-row"><span>Ventas digital</span><strong id="shiftDigitalSales">$0</strong></div><div class="shift-row"><span>Efectivo teorico en caja</span><strong id="shiftExpectedCash">$0</strong></div><button class="danger-wide" type="button" onclick="closeShift()">Cerrar caja</button></section><section class="shift-box"><h3>Gastos</h3><div class="shift-form"><input id="expenseDescriptionInput" placeholder="Detalle del gasto"><input id="expenseAmountInput" type="number" min="0" step="1" placeholder="Importe"><button class="secondary-btn" type="button" onclick="addExpense()">Agregar gasto</button></div><div class="sale-list" id="expenseList"></div></section></div></section></main>
-    <main class="content hidden" id="notebookView"><section class="notebook"><h2>Cuaderno</h2><p class="empty" id="notebookSubtitle">Historial de ventas del turno.</p><div class="sale-list" id="saleList"></div></section></main>
-    <main class="content hidden" id="productManageView"><section class="product-manage-panel"><h2>Productos</h2><div class="product-admin-layout"><section><button class="pay-btn new-product-btn" id="newManagedProductButton" type="button">Anadir producto</button><input id="productManageSearch" type="text" class="search" placeholder="Buscar producto, codigo o proveedor..."><div class="product-edit-list" id="productManageList"></div></section><section class="product-edit-card"><h3 id="productManageTitle">Elegi un producto</h3><p class="empty" id="productManageHelp">Aca la vendedora puede agregar productos y cambiar todos sus datos.</p><form class="product-edit-form hidden" id="productManageForm"><input id="productManageId" type="hidden"><label>Nombre del producto<input id="productManageName" autocomplete="off" placeholder="Nombre"></label><label>Codigo de barra<input id="productManageBarcode" inputmode="numeric" autocomplete="off" placeholder="Escanea o escribi el codigo"></label><label>Precio de compra<input id="productManageCost" type="number" min="0" step="0.01" placeholder="Costo"></label><label>Precio de venta<input id="productManageSalePrice" type="number" min="0" step="100" placeholder="Venta"></label><label>Stock<input id="productManageStock" type="number" min="0" step="0.01"></label><label>Proveedor<select id="productManageSupplier"></select></label><label class="checkbox-line"><input id="productManageWeighable" type="checkbox">Producto pesable</label><div class="stock-tools"><button class="secondary-btn" type="button" data-stock-adjust="-1">-1</button><button class="secondary-btn" type="button" data-stock-adjust="1">+1</button><button class="secondary-btn" type="button" data-stock-adjust="10">+10</button><button class="secondary-btn" type="button" data-stock-adjust="50">+50</button></div><button class="pay-btn" type="submit">Guardar producto</button></form></section></div></section></main>
-    <main class="content hidden" id="clientsView"><section class="notebook"><h2>Clientes</h2><p class="empty">Cuentas y familia del mes, calculado con los precios actuales.</p><div class="sale-list" id="clientList"></div></section></main>
+    <aside class="sidebar">
+      <div class="logo">Josue</div>
+      <div class="local-name" id="localName">Central</div>
+
+      <div class="menu">
+        <button class="active" id="sellMenuButton" type="button">Vender</button>
+        <button id="shiftMenuButton" type="button">Turnos</button>
+        <button id="productsMenuButton" type="button">Productos</button>
+        <button id="notebookMenuButton" type="button">Cuaderno</button>
+        <button id="clientsMenuButton" type="button">Clientes</button>
+      </div>
+
+      <a class="back-link" href="index.html">Volver al inicio</a>
+    </aside>
+
+    <main class="content" id="sellView">
+      <section class="cart">
+        <h2>Venta</h2>
+        <label class="customer-select">
+          Cliente
+          <select id="customerSelect"></select>
+        </label>
+
+        <table class="cart-table">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Cant.</th>
+              <th>Precio</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="cartItems"></tbody>
+        </table>
+
+        <p class="empty" id="emptyCart">Todavia no agregaste productos.</p>
+
+        <div class="total">
+          <h2 id="total">Total: $0</h2>
+          <button class="pay-btn" type="button" onclick="openPayment()">Cobrar</button>
+        </div>
+      </section>
+
+      <section class="products">
+        <input id="searchInput" type="text" class="search" placeholder="Buscar producto o codigo..." autofocus>
+        <div class="product-grid" id="productGrid"></div>
+      </section>
+    </main>
+
+    <main class="content hidden" id="shiftView">
+      <section class="shift-panel">
+        <h2>Turno de caja</h2>
+
+        <div id="closedShiftBox" class="shift-box">
+          <h3>Abrir caja</h3>
+          <p class="empty">Cargá el efectivo inicial para empezar el turno.</p>
+          <div class="shift-form">
+            <input id="initialCashInput" type="number" min="0" step="1" placeholder="Efectivo inicial">
+            <button class="pay-btn" type="button" onclick="openShift()">Abrir turno</button>
+          </div>
+        </div>
+
+        <div id="openShiftBox" class="shift-grid hidden">
+          <section class="shift-box">
+            <h3>Resumen</h3>
+            <div class="shift-row">
+              <span>Abierto</span>
+              <strong id="shiftOpenedAt">-</strong>
+            </div>
+            <div class="shift-row">
+              <span>Efectivo inicial</span>
+              <strong id="shiftInitialCash">$0</strong>
+            </div>
+            <div class="shift-row">
+              <span>Gastos</span>
+              <strong id="shiftExpenses">$0</strong>
+            </div>
+            <div class="shift-row">
+              <span>Refuerzos</span>
+              <strong id="shiftReinforcements">$0</strong>
+            </div>
+            <div class="shift-row">
+              <span>Ventas en efectivo</span>
+              <strong id="shiftCashSales">$0</strong>
+            </div>
+            <div class="shift-row">
+              <span>Ventas digital</span>
+              <strong id="shiftDigitalSales">$0</strong>
+            </div>
+            <div class="shift-row">
+              <span>Efectivo teorico en caja</span>
+              <strong id="shiftExpectedCash">$0</strong>
+            </div>
+            <button class="danger-wide" type="button" onclick="closeShift()">Cerrar caja</button>
+          </section>
+
+          <section class="shift-box">
+            <h3>Movimientos de caja</h3>
+            <div class="shift-form">
+              <input id="expenseDescriptionInput" placeholder="Detalle del gasto">
+              <input id="expenseAmountInput" type="number" min="0" step="1" placeholder="Importe">
+              <button class="secondary-btn" type="button" onclick="addExpense()">Agregar gasto</button>
+            </div>
+            <div class="shift-form">
+              <input id="reinforcementDescriptionInput" placeholder="Detalle del refuerzo">
+              <input id="reinforcementAmountInput" type="number" min="0" step="1" placeholder="Importe">
+              <button class="secondary-btn" type="button" onclick="addReinforcement()">Agregar refuerzo</button>
+            </div>
+            <h3>Gastos</h3>
+            <div class="sale-list" id="expenseList"></div>
+            <h3>Refuerzos</h3>
+            <div class="sale-list" id="reinforcementList"></div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <main class="content hidden" id="notebookView">
+      <section class="notebook">
+        <h2>Cuaderno</h2>
+        <p class="empty" id="notebookSubtitle">Historial de ventas del turno.</p>
+        <div class="sale-list" id="saleList"></div>
+      </section>
+    </main>
+
+    <main class="content hidden" id="productManageView">
+      <section class="product-manage-panel">
+        <h2>Productos</h2>
+        <div class="product-admin-layout">
+          <section>
+            <button class="pay-btn" id="newManagedProductButton" type="button">Añadir producto</button>
+            <input id="productManageSearch" type="text" class="search" placeholder="Buscar producto o codigo...">
+            <div class="product-edit-list" id="productManageList"></div>
+          </section>
+
+          <section class="product-edit-card">
+            <h3 id="productManageTitle">Elegí un producto</h3>
+            <p class="empty" id="productManageHelp">Acá la vendedora puede cambiar codigo de barra y stock.</p>
+            <form class="product-edit-form hidden" id="productManageForm">
+              <input id="productManageId" type="hidden">
+              <label>
+                Nombre del producto
+                <input id="productManageName" autocomplete="off" placeholder="Nombre">
+              </label>
+              <label>
+                Precio de compra
+                <input id="productManageCost" type="number" min="0" step="0.01" placeholder="Costo">
+              </label>
+              <label>
+                Precio de venta
+                <input id="productManageSalePrice" type="number" min="0" step="100" placeholder="Venta">
+              </label>
+              <label>
+                Codigo de barra
+                <input id="productManageBarcode" inputmode="numeric" autocomplete="off" placeholder="Escanea o escribi el codigo">
+              </label>
+              <label>
+                Stock
+                <input id="productManageStock" type="number" min="0" step="0.01">
+              </label>
+              <label>
+                Proveedor
+                <select id="productManageSupplier"></select>
+              </label>
+              <label class="checkbox-line">
+                <input id="productManageWeighable" type="checkbox">
+                Producto pesable
+              </label>
+              <div class="stock-tools">
+                <button class="secondary-btn" type="button" data-stock-adjust="-1">-1</button>
+                <button class="secondary-btn" type="button" data-stock-adjust="1">+1</button>
+                <button class="secondary-btn" type="button" data-stock-adjust="10">+10</button>
+                <button class="secondary-btn" type="button" data-stock-adjust="50">+50</button>
+              </div>
+              <button class="pay-btn" type="submit">Guardar producto</button>
+            </form>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <main class="content hidden" id="clientsView">
+      <section class="notebook">
+        <h2>Clientes</h2>
+        <p class="empty">Cuentas y familia del mes, calculado con los precios actuales.</p>
+        <div class="sale-list" id="clientList"></div>
+      </section>
+    </main>
+
   </div>
-  <div class="modal-backdrop hidden" id="paymentModal"><section class="payment-modal"><div class="payment-head"><h2>Pago</h2><button class="close-btn" type="button" onclick="closePayment()">X</button></div><div class="payment-body"><div class="payment-total-label">Total a pagar</div><div class="payment-total" id="paymentTotal">$0</div><div class="payment-status" id="paymentStatus">Faltan $0</div><div class="payment-grid"><div class="payment-row"><label for="cashInput">Efectivo</label><input id="cashInput" type="number" min="0" step="1" placeholder="$ 0"></div><div class="payment-row"><label for="transferInput">Transferencia / QR</label><input id="transferInput" type="number" min="0" step="1" placeholder="$ 0"></div></div><div class="payment-actions"><button class="confirm-pay" type="button" onclick="confirmPayment()">Guardar venta</button></div></div></section></div>
+
+  <div class="modal-backdrop hidden" id="paymentModal">
+    <section class="payment-modal">
+      <div class="payment-head">
+        <h2>Pago</h2>
+        <button class="close-btn" type="button" onclick="closePayment()">X</button>
+      </div>
+      <div class="payment-body">
+        <div class="payment-total-label">Total a pagar</div>
+        <div class="payment-total" id="paymentTotal">$0</div>
+        <div class="payment-status" id="paymentStatus">Faltan $0</div>
+
+        <div class="payment-grid">
+          <div class="payment-row">
+            <label for="cashInput">Efectivo</label>
+            <input id="cashInput" type="number" min="0" step="1" placeholder="$ 0">
+          </div>
+          <div class="payment-row">
+            <label for="transferInput">Transferencia / QR</label>
+            <input id="transferInput" type="number" min="0" step="1" placeholder="$ 0">
+          </div>
+        </div>
+
+        <div class="payment-actions">
+          <button class="confirm-pay" id="confirmPaymentButton" type="button" onclick="confirmPayment()">Guardar venta</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
-  <script src="firebase.js"></script>
+  <script src="firebase.js?v=20260520-2"></script>
+  <script src="enter-pay.js?v=20260618-1"></script>
+
   <script>
-    const STORAGE_KEY="panaderia_josue_productos_v1",SALES_KEY="panaderia_josue_ventas_v1",SHIFTS_KEY="panaderia_josue_turnos_v1";
-    const suppliers=["Oscar","Baqueano","de Quesos (Leo)","Grupo MAX","Maxi Consumo","Don angel","Golosinas","Serenisima","Pastas","Tapas","Otro"];
-    const customers=[{name:"Consumidor final",type:"normal"},{name:"Lorena",type:"account"},{name:"Ulices",type:"account"},{name:"Josue",type:"family"},{name:"Juan y bety",type:"family"},{name:"Gera",type:"family"},{name:"Laura",type:"family"}];
-    const params=new URLSearchParams(window.location.search),local=params.get("local")||"Central";let products=loadList(STORAGE_KEY),sales=loadList(SALES_KEY),shifts=loadList(SHIFTS_KEY),cart=[],selectedProductManageId=null;
-    document.getElementById("localName").textContent=local;document.getElementById("customerSelect").innerHTML=customers.map(c=>`<option value="${c.name}">${c.name}</option>`).join("");document.getElementById("productManageSupplier").innerHTML=suppliers.map(s=>`<option value="${s}">${s}</option>`).join("");
-    function loadList(key){try{const value=JSON.parse(localStorage.getItem(key)||"[]");return Array.isArray(value)?value:[]}catch(error){console.warn(`No se pudo leer ${key}.`,error);return[]}}
-    function saveList(key,value){localStorage.setItem(key,JSON.stringify(value));if(typeof saveOnline==="function")saveOnline(key,value)}function saveProducts(){saveList(STORAGE_KEY,products)}function saveSales(){saveList(SALES_KEY,sales)}function saveShifts(){saveList(SHIFTS_KEY,shifts)}
-    function makeId(){return crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random().toString(16).slice(2)}`}function formatMoney(value){return Number(value||0).toLocaleString("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0})}function roundToNearest100(value){return Math.round(Number(value||0)/100)*100}function escapeHtml(value){return String(value??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}function getCartTotal(){return cart.reduce((sum,item)=>sum+Number(item.total||0),0)}function getOpenShift(){return shifts.find(s=>s.local===local&&s.status==="open")}function getShiftSales(id){return sales.filter(s=>s.shiftId===id)}function getShiftExpenses(shift){return shift?.expenses||[]}function getSelectedCustomer(){const name=document.getElementById("customerSelect").value;return customers.find(c=>c.name===name)||customers[0]}function getCurrentItemValue(item){const product=products.find(p=>p.id===item.productId),unitPrice=Number(product?.salePrice??item.unitPrice??0);return unitPrice*Number(item.quantity||0)}function adjustProductsStock(items,direction){items.forEach(item=>{const product=products.find(p=>p.id===item.productId);if(!product)return;product.stock=Number(product.stock||0)+direction*Number(item.quantity||0);product.updatedAt=new Date().toISOString()});saveProducts()}
-    function renderProducts(){const search=document.getElementById("searchInput").value.trim().toLowerCase(),filtered=products.filter(p=>`${p.name} ${p.barcode||""}`.toLowerCase().includes(search)),grid=document.getElementById("productGrid");if(!filtered.length){grid.innerHTML="<p class='empty'>No hay productos cargados. Agregalos desde Productos.</p>";return}grid.innerHTML=filtered.map(p=>`<button class="product ${p.weighable?"weighable":""}" type="button" onclick="addProduct('${p.id}')"><strong>${escapeHtml(p.name)}</strong><small>${formatMoney(p.salePrice)}${p.weighable?"/kg":""}</small><small>Stock: ${p.stock||0}</small></button>`).join("")}
-    function addProduct(id){const p=products.find(i=>i.id===id);if(!p)return;if(p.weighable){cart.push({id:makeId(),productId:p.id,name:p.name,unitPrice:Number(p.salePrice),quantity:1,total:Number(p.salePrice),weighable:true})}else{const existing=cart.find(i=>i.productId===p.id&&!i.weighable);if(existing){existing.quantity+=1;existing.total=existing.quantity*existing.unitPrice}else{cart.push({id:makeId(),productId:p.id,name:p.name,unitPrice:Number(p.salePrice),quantity:1,total:Number(p.salePrice),weighable:false})}}renderCart()}
-    function renderCart(){const container=document.getElementById("cartItems"),emptyCart=document.getElementById("emptyCart");let total=0;emptyCart.style.display=cart.length?"none":"block";container.innerHTML="";cart.forEach(item=>{total+=item.total;const qt=item.weighable?formatKg(item.quantity):item.quantity,note=item.weighable?`<span class="item-note">${formatMoney(item.unitPrice)} por kg</span>`:"";container.innerHTML+=`<tr><td>${escapeHtml(item.name)}${note}</td><td>${qt}</td><td><input class="price-edit" type="number" value="${item.total}" onchange="changePrice('${item.id}', this.value)"></td><td><button type="button" onclick="removeItem('${item.id}')">X</button></td></tr>`});document.getElementById("total").innerText=`Total: ${formatMoney(total)}`}
-    function formatKg(q){const grams=Math.round(Number(q||0)*1000);if(grams<1000)return`${grams} g`;return`${Number(q||0).toFixed(3).replace(/\.?0+$/,'')} kg`}function changePrice(id,newPrice){const item=cart.find(p=>p.id===id);if(!item)return;item.total=Number(newPrice||0);if(item.weighable)item.quantity=item.unitPrice>0?item.total/item.unitPrice:0;renderCart()}function removeItem(id){cart=cart.filter(i=>i.id!==id);renderCart()}
-    function openPayment(){const total=getCartTotal(),customer=getSelectedCustomer();if(total<=0){alert("No hay productos para cobrar.");return}if(!getOpenShift()){alert("Primero tenes que abrir un turno de caja.");showShiftView();return}document.getElementById("paymentTotal").textContent=formatMoney(total);document.getElementById("cashInput").value="";document.getElementById("transferInput").value="";document.getElementById("cashInput").disabled=customer.type!=="normal";document.getElementById("transferInput").disabled=customer.type!=="normal";document.getElementById("paymentModal").classList.remove("hidden");updatePaymentStatus();if(customer.type==="normal")setTimeout(()=>document.getElementById("cashInput").focus(),50)}function closePayment(){document.getElementById("paymentModal").classList.add("hidden")}function updatePaymentStatus(){const total=getCartTotal(),customer=getSelectedCustomer(),cash=Number(document.getElementById("cashInput").value||0),transfer=Number(document.getElementById("transferInput").value||0),paid=cash+transfer,status=document.getElementById("paymentStatus");status.classList.remove("ok");if(customer.type==="family"){status.textContent="Familia: se anota sin cobrar";status.classList.add("ok");return}if(customer.type==="account"){status.textContent="Cuenta corriente: se anota para fin de mes";status.classList.add("ok");return}if(paid<total){status.textContent=`Faltan ${formatMoney(total-paid)}`;return}if(cash>0&&paid>total){status.textContent=`Vuelto ${formatMoney(paid-total)}`;status.classList.add("ok");return}status.textContent="Pago completo";status.classList.add("ok")}
-    function confirmPayment(){const shift=getOpenShift();if(!shift){alert("Primero tenes que abrir un turno de caja.");closePayment();showShiftView();return}const total=getCartTotal(),customer=getSelectedCustomer(),cash=Number(document.getElementById("cashInput").value||0),transfer=Number(document.getElementById("transferInput").value||0),paid=cash+transfer;if(customer.type==="normal"&&paid<total){alert(`Faltan ${formatMoney(total-paid)}.`);return}const items=cart.map(i=>({...i})),sale={id:makeId(),shiftId:shift.id,saleNumber:getShiftSales(shift.id).length+1,local,date:new Date().toISOString(),customer:customer.name,customerType:customer.type,items,total,cash:customer.type==="normal"?cash:0,transfer:customer.type==="normal"?transfer:0,change:customer.type==="normal"?Math.max(0,paid-total):0,method:getPaymentMethod(customer,cash,transfer)};adjustProductsStock(items,-1);sales.unshift(sale);saveSales();cart=[];document.getElementById("customerSelect").value="Consumidor final";closePayment();renderCart();renderProducts();renderProductManageList();renderNotebook();renderClients();renderShift();alert("Venta guardada.")}function getPaymentMethod(customer,cash,transfer){if(customer.type==="family")return"Familia";if(customer.type==="account")return"Cuenta corriente";if(cash>0&&transfer>0)return"Mixto";if(transfer>0)return"Transferencia";return"Efectivo"}
-    function setView(view){["sellView","shiftView","notebookView","productManageView","clientsView"].forEach(id=>document.getElementById(id).classList.toggle("hidden",id!==view));document.getElementById("sellMenuButton").classList.toggle("active",view==="sellView");document.getElementById("shiftMenuButton").classList.toggle("active",view==="shiftView");document.getElementById("notebookMenuButton").classList.toggle("active",view==="notebookView");document.getElementById("productsMenuButton").classList.toggle("active",view==="productManageView");document.getElementById("clientsMenuButton").classList.toggle("active",view==="clientsView")}function showSellView(){setView("sellView")}function showShiftView(){setView("shiftView");renderShift()}function showNotebookView(){setView("notebookView");renderNotebook()}function showProductManageView(){setView("productManageView");renderProductManageList()}function showClientsView(){setView("clientsView");renderClients()}
-    function openShift(){if(getOpenShift()){alert("Ya hay un turno abierto.");renderShift();return}const initialCash=Number(document.getElementById("initialCashInput").value||0);shifts.unshift({id:makeId(),local,status:"open",openedAt:new Date().toISOString(),closedAt:null,initialCash,expenses:[]});saveShifts();document.getElementById("initialCashInput").value="";renderShift();renderNotebook()}function addExpense(){const shift=getOpenShift();if(!shift)return;const desc=document.getElementById("expenseDescriptionInput"),amountInput=document.getElementById("expenseAmountInput"),amount=Number(amountInput.value||0);if(amount<=0){alert("Carga el importe del gasto.");return}shift.expenses.push({id:makeId(),description:desc.value.trim()||"Gasto",amount,date:new Date().toISOString()});saveShifts();desc.value="";amountInput.value="";renderShift()}function closeShift(){const shift=getOpenShift();if(!shift)return;const text=prompt("Con cuanto efectivo cerro realmente la caja?");if(text===null)return;const countedCash=Number(text);if(Number.isNaN(countedCash)||countedCash<0){alert("Carga un importe valido para cerrar la caja.");return}if(!confirm(`Seguro que queres cerrar la caja con ${formatMoney(countedCash)}?`))return;shift.status="closed";shift.closedAt=new Date().toISOString();shift.countedCash=countedCash;saveShifts();renderShift();renderNotebook()}
-    function renderShift(){const shift=getOpenShift(),closed=document.getElementById("closedShiftBox"),open=document.getElementById("openShiftBox");if(!shift){closed.classList.remove("hidden");open.classList.add("hidden");return}closed.classList.add("hidden");open.classList.remove("hidden");const shiftSales=getShiftSales(shift.id),expenses=getShiftExpenses(shift),expenseTotal=expenses.reduce((s,e)=>s+Number(e.amount||0),0),cashSales=shiftSales.reduce((s,sale)=>s+Number(sale.cash||0)-Number(sale.change||0),0),digitalSales=shiftSales.reduce((s,sale)=>s+Number(sale.transfer||0),0),expected=Number(shift.initialCash||0)+cashSales-expenseTotal;document.getElementById("shiftOpenedAt").textContent=formatDateTime(shift.openedAt);document.getElementById("shiftInitialCash").textContent=formatMoney(shift.initialCash);document.getElementById("shiftExpenses").textContent=formatMoney(expenseTotal);document.getElementById("shiftCashSales").textContent=formatMoney(cashSales);document.getElementById("shiftDigitalSales").textContent=formatMoney(digitalSales);document.getElementById("shiftExpectedCash").textContent=formatMoney(expected);document.getElementById("expenseList").innerHTML=expenses.length?expenses.map(e=>`<div class="sale-item"><div class="sale-main"><strong>${escapeHtml(e.description)}</strong><strong>${formatMoney(e.amount)}</strong><button class="delete-btn" type="button" onclick="deleteExpense('${e.id}')">X</button></div></div>`).join(""):"<p class='empty'>Sin gastos cargados.</p>"}function deleteExpense(id){const shift=getOpenShift();if(!shift)return;shift.expenses=getShiftExpenses(shift).filter(e=>e.id!==id);saveShifts();renderShift()}function formatDateTime(value){if(!value)return"-";return new Date(value).toLocaleString("es-AR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"})}
-    function renderNotebook(){const shift=getOpenShift(),localSales=shift?getShiftSales(shift.id):sales.filter(s=>s.local===local&&!s.shiftId);document.getElementById("notebookSubtitle").textContent=shift?`Historial del turno abierto desde ${formatDateTime(shift.openedAt)}.`:"No hay turno abierto. Se muestran ventas anteriores sin turno.";const list=document.getElementById("saleList");if(!localSales.length){list.innerHTML="<p class='empty'>Todavia no hay ventas guardadas.</p>";return}list.innerHTML=localSales.map(sale=>{const detail=sale.items.map(i=>`<li>${escapeHtml(i.name)} - ${i.weighable?formatKg(i.quantity):i.quantity} - ${formatMoney(i.total)}</li>`).join(""),pay=sale.method==="Transferencia"?"Digital":sale.method,customer=sale.customer&&sale.customer!=="Consumidor final"?` | ${sale.customer}`:"";return`<article class="sale-item" id="sale-${sale.id}"><div class="sale-main"><button type="button" onclick="toggleSaleDetail('${sale.id}')"><strong>Venta ${sale.saleNumber||localSales.length}</strong><span class="item-note">${formatDateTime(sale.date)} | ${pay}${customer}</span></button><strong>${formatMoney(sale.total)}</strong><button class="delete-btn" type="button" onclick="deleteSale('${sale.id}')">X</button></div><div class="sale-detail"><div>Cobrado: ${formatMoney(sale.total)} | Tipo de pago: ${pay}</div><div>Efectivo: ${formatMoney(sale.cash)} | Digital: ${formatMoney(sale.transfer)} | Vuelto: ${formatMoney(sale.change)}</div><ul>${detail}</ul></div></article>`}).join("")}function toggleSaleDetail(id){document.getElementById(`sale-${id}`)?.classList.toggle("open")}function deleteSale(id){if(!confirm("Seguro que queres borrar esta venta?"))return;const sale=sales.find(s=>s.id===id);if(sale)adjustProductsStock(sale.items||[],1);sales=sales.filter(s=>s.id!==id);saveSales();renderProducts();renderProductManageList();renderNotebook();renderClients();renderShift()}
-    function renderClients(){const tracked=customers.filter(c=>c.type!=="normal"),trackedSales=sales.filter(s=>s.customerType&&s.customerType!=="normal"),list=document.getElementById("clientList");if(!trackedSales.length){list.innerHTML="<p class='empty'>Todavia no hay consumos anotados.</p>";return}list.innerHTML=tracked.map(c=>{const cs=trackedSales.filter(s=>s.customer===c.name);if(!cs.length)return`<article class="sale-item"><div class="sale-main"><strong>${c.name}</strong><span class="item-note">${c.type==="family"?"Familia":"Cuenta corriente"}</span><strong>${formatMoney(0)}</strong></div></article>`;const total=cs.reduce((sum,s)=>sum+s.items.reduce((isum,i)=>isum+getCurrentItemValue(i),0),0),detail=cs.map(s=>`<li>${formatDateTime(s.date)} - ${escapeHtml(s.items.map(i=>`${i.name} x ${i.weighable?formatKg(i.quantity):i.quantity}`).join(", "))}</li>`).join("");return`<article class="sale-item open"><div class="sale-main"><strong>${c.name}</strong><span class="item-note">${c.type==="family"?"Familia sin cobrar":"Cuenta corriente"}</span><strong>${formatMoney(total)}</strong></div><div class="sale-detail"><div>Total con precios actuales: ${formatMoney(total)}</div><ul>${detail}</ul></div></article>`}).join("")}
-    function renderProductManageList(){const search=document.getElementById("productManageSearch").value.trim().toLowerCase(),filtered=products.filter(p=>`${p.name} ${p.barcode||""} ${p.supplier||""}`.toLowerCase().includes(search)).sort((a,b)=>a.name.localeCompare(b.name,"es")),list=document.getElementById("productManageList");if(!filtered.length){list.innerHTML="<p class='empty'>No hay productos para mostrar.</p>";return}list.innerHTML=filtered.map(p=>`<button class="product-edit-item ${p.id===selectedProductManageId?"active":""}" type="button" data-product-edit="${p.id}"><strong>${escapeHtml(p.name)}</strong><small>Venta: ${formatMoney(p.salePrice)} | Costo: ${formatMoney(p.cost)}</small><small>Stock: ${p.stock||0} ${p.weighable?"kg":"un."}</small><small>Proveedor: ${escapeHtml(p.supplier||"Otro")}</small><small>Codigo: ${escapeHtml(p.barcode||"Sin codigo")}</small></button>`).join("")}
-    function selectProductForEdit(id){const p=products.find(i=>i.id===id);if(!p)return;selectedProductManageId=id;document.getElementById("productManageTitle").textContent=p.name;document.getElementById("productManageHelp").textContent=`${formatMoney(p.salePrice)}${p.weighable?" por kg":""}`;document.getElementById("productManageId").value=p.id;document.getElementById("productManageName").value=p.name||"";document.getElementById("productManageBarcode").value=p.barcode||"";document.getElementById("productManageCost").value=p.cost||0;document.getElementById("productManageSalePrice").value=p.salePrice||0;document.getElementById("productManageStock").value=p.stock||0;document.getElementById("productManageSupplier").value=p.supplier||"Otro";document.getElementById("productManageWeighable").checked=!!p.weighable;document.getElementById("productManageForm").classList.remove("hidden");renderProductManageList()}
-    function startNewManagedProduct(){selectedProductManageId=null;document.getElementById("productManageTitle").textContent="Anadir producto";document.getElementById("productManageHelp").textContent="Completa los datos y guardalo para que aparezca en ventas.";document.getElementById("productManageId").value="";document.getElementById("productManageName").value="";document.getElementById("productManageBarcode").value="";document.getElementById("productManageCost").value="";document.getElementById("productManageSalePrice").value="";document.getElementById("productManageStock").value=0;document.getElementById("productManageSupplier").value="Otro";document.getElementById("productManageWeighable").checked=false;document.getElementById("productManageForm").classList.remove("hidden");renderProductManageList();document.getElementById("productManageName").focus()}function calculateManagedSalePrice(){const cost=Number(document.getElementById("productManageCost").value||0);if(cost<=0)return;document.getElementById("productManageSalePrice").value=roundToNearest100(cost*1.3)}function adjustManagedStock(amount){const input=document.getElementById("productManageStock"),current=Number(input.value||0);input.value=Number(Math.max(0,current+amount).toFixed(2))}
-    function saveManagedProduct(e){e.preventDefault();const id=document.getElementById("productManageId").value,name=document.getElementById("productManageName").value.trim();if(!name){alert("Falta el nombre del producto.");document.getElementById("productManageName").focus();return}const barcode=document.getElementById("productManageBarcode").value.trim(),repeated=barcode&&products.find(i=>i.id!==id&&i.barcode===barcode);if(repeated){alert(`Ese codigo de barra ya lo tiene ${repeated.name}.`);document.getElementById("productManageBarcode").focus();return}let p=products.find(i=>i.id===id);if(!p){p={id:makeId(),supplier:"Otro"};products.push(p)}p.name=name;p.barcode=barcode;p.cost=Number(document.getElementById("productManageCost").value||0);p.salePrice=Number(document.getElementById("productManageSalePrice").value||0);p.stock=Number(document.getElementById("productManageStock").value||0);p.supplier=document.getElementById("productManageSupplier").value||"Otro";p.weighable=document.getElementById("productManageWeighable").checked;p.updatedAt=new Date().toISOString();saveProducts();selectedProductManageId=p.id;renderProducts();renderProductManageList();selectProductForEdit(p.id);alert(id?"Producto actualizado.":"Producto agregado.")}
-    document.getElementById("searchInput").addEventListener("input",renderProducts);document.getElementById("searchInput").addEventListener("keydown",e=>{if(e.key!=="Enter")return;const search=e.target.value.trim().toLowerCase(),exact=products.find(p=>String(p.barcode||"").toLowerCase()===search);if(!exact)return;e.preventDefault();addProduct(exact.id);e.target.value="";renderProducts()});document.getElementById("cashInput").addEventListener("input",updatePaymentStatus);document.getElementById("transferInput").addEventListener("input",updatePaymentStatus);document.getElementById("customerSelect").addEventListener("change",updatePaymentStatus);document.getElementById("sellMenuButton").addEventListener("click",showSellView);document.getElementById("shiftMenuButton").addEventListener("click",showShiftView);document.getElementById("productsMenuButton").addEventListener("click",showProductManageView);document.getElementById("notebookMenuButton").addEventListener("click",showNotebookView);document.getElementById("clientsMenuButton").addEventListener("click",showClientsView);document.getElementById("newManagedProductButton").addEventListener("click",startNewManagedProduct);document.getElementById("productManageCost").addEventListener("input",calculateManagedSalePrice);document.getElementById("productManageSearch").addEventListener("input",renderProductManageList);document.getElementById("productManageList").addEventListener("click",e=>{const b=e.target.closest("[data-product-edit]");if(b)selectProductForEdit(b.dataset.productEdit)});document.getElementById("productManageForm").addEventListener("submit",saveManagedProduct);document.querySelectorAll("[data-stock-adjust]").forEach(b=>b.addEventListener("click",()=>adjustManagedStock(Number(b.dataset.stockAdjust))));
-    if(typeof listenOnline==="function"){listenOnline(STORAGE_KEY,data=>{products=data;renderProducts();renderProductManageList();renderClients()});listenOnline(SALES_KEY,data=>{sales=data;renderNotebook();renderClients();renderShift()});listenOnline(SHIFTS_KEY,data=>{shifts=data;renderShift();renderNotebook()})}renderProducts();renderCart();renderShift();renderNotebook();renderProductManageList();renderClients();
+    const STORAGE_KEY = "panaderia_josue_productos_v1";
+    const SALES_KEY = "panaderia_josue_ventas_v1";
+    const SALES_BACKUP_KEY = "panaderia_josue_ventas_respaldo_v1";
+    const DELETED_SALES_KEY = "panaderia_josue_ventas_borradas_v1";
+    const SHIFTS_KEY = "panaderia_josue_turnos_v1";
+    const ACCOUNTS_KEY = "panaderia_josue_fiados_v1";
+    const ARCA_FUNCTION_URL = "https://us-central1-panaderia-venta.cloudfunctions.net/facturarVenta";
+    const ARCA_INVOICE_TOKEN = "pkBnMlzyWGSjQVtouEhIHmr0ULT4qeigd5783Y9vN2R6Zwfx";
+    const suppliers = [
+      "Oscar",
+      "Baqueano",
+      "de Quesos (Leo)",
+      "Grupo MAX",
+      "Maxi Consumo",
+      "Don angel",
+      "Golosinas",
+      "Serenisima",
+      "Pastas",
+      "Tapas",
+      "Otro",
+    ];
+    const customers = [
+      { name: "Consumidor final", type: "normal" },
+      { name: "Lorena", type: "account" },
+      { name: "Ulices", type: "account" },
+      { name: "Josue", type: "family" },
+      { name: "Juan y bety", type: "family" },
+      { name: "Gera", type: "family" },
+      { name: "Laura", type: "family" },
+    ];
+    const params = new URLSearchParams(window.location.search);
+    const local = params.get("local") || "Central";
+    let products = loadList(STORAGE_KEY);
+    let sales = loadList(SALES_KEY);
+    let shifts = loadList(SHIFTS_KEY);
+    let accounts = loadList(ACCOUNTS_KEY);
+    let cart = [];
+    let selectedProductManageId = null;
+    let isSavingPayment = false;
+
+    document.getElementById("localName").textContent = local;
+    document.getElementById("customerSelect").innerHTML = customers
+      .map((customer) => `<option value="${customer.name}">${customer.name}</option>`)
+      .join("");
+    document.getElementById("productManageSupplier").innerHTML = suppliers
+      .map((supplier) => `<option value="${supplier}">${supplier}</option>`)
+      .join("");
+
+    function loadList(key) {
+      try {
+        const value = JSON.parse(localStorage.getItem(key) || "[]");
+        return Array.isArray(value) ? value : [];
+      } catch (error) {
+        console.warn(`No se pudo leer ${key}. Se inicia vacio.`, error);
+        return [];
+      }
+    }
+
+    function makeId() {
+      if (crypto.randomUUID) return crypto.randomUUID();
+      return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    }
+
+    function formatMoney(value) {
+      return Number(value || 0).toLocaleString("es-AR", {
+        style: "currency",
+        currency: "ARS",
+        maximumFractionDigits: 0,
+      });
+    }
+
+    function roundToNearest100(value) {
+      return Math.round(Number(value || 0) / 100) * 100;
+    }
+
+    function getCartTotal() {
+      return cart.reduce((sum, item) => sum + Number(item.total || 0), 0);
+    }
+
+    function saveSales() {
+      saveSalesBackup();
+      saveList(SALES_KEY, sales);
+    }
+
+    function saveProducts() {
+      saveList(STORAGE_KEY, products);
+    }
+
+    function saveShifts() {
+      saveList(SHIFTS_KEY, shifts);
+    }
+
+    function saveAccounts() {
+      accounts = dedupeAccountEntries(accounts);
+      saveList(ACCOUNTS_KEY, accounts);
+    }
+
+    function compactSaleItem(item){
+      return {
+        productId: item.productId || item.id || "",
+        id: item.productId || item.id || "",
+        name: item.name || "Producto",
+        quantity: Number(item.quantity || 0),
+        unitPrice: Number(item.unitPrice || item.price || 0),
+        total: Number(item.total || 0),
+        weighable: !!item.weighable
+      };
+    }
+
+    function compactSale(sale){
+      return {
+        id: sale.id,
+        shiftId: sale.shiftId,
+        saleNumber: sale.saleNumber,
+        local: sale.local,
+        date: sale.date,
+        updatedAt: sale.updatedAt || sale.date,
+        customer: sale.customer || "Consumidor final",
+        customerType: sale.customerType || "normal",
+        items: Array.isArray(sale.items) ? sale.items.map(compactSaleItem) : [],
+        total: Number(sale.total || 0),
+        cash: Number(sale.cash || 0),
+        transfer: Number(sale.transfer || 0),
+        change: Number(sale.change || 0),
+        method: sale.method || "Efectivo"
+      };
+    }
+
+    function compactSales(list){
+      return (Array.isArray(list) ? list : []).filter(Boolean).map(compactSale);
+    }
+
+    function setSalesStorage(key, value){
+      const prepared = key === SALES_KEY || key === SALES_BACKUP_KEY ? compactSales(value) : value;
+      try {
+        localStorage.setItem(key, JSON.stringify(prepared));
+      } catch (error) {
+        if (key === SALES_BACKUP_KEY) {
+          try {
+            localStorage.setItem(key, JSON.stringify(compactSales(prepared).slice(0, 80)));
+          } catch (innerError) {
+            localStorage.removeItem(key);
+          }
+          return;
+        }
+        if (key === SALES_KEY) {
+          localStorage.setItem(key, JSON.stringify(compactSales(prepared).slice(0, 1500)));
+          return;
+        }
+        throw error;
+      }
+    }
+
+    function saveList(key, value) {
+      if (key === SALES_KEY || key === SALES_BACKUP_KEY) {
+        setSalesStorage(key, value);
+      } else {
+        localStorage.setItem(key, JSON.stringify(value));
+      }
+      if (typeof saveOnline === "function") {
+        saveOnline(key, key === SALES_KEY || key === SALES_BACKUP_KEY ? compactSales(value) : value);
+      }
+    }
+
+    function getDeletedSaleIds() {
+      return new Set(loadList(DELETED_SALES_KEY).map((entry) => entry.id || entry).filter(Boolean));
+    }
+
+    function rememberDeletedSale(id) {
+      const deleted = loadList(DELETED_SALES_KEY).filter((entry) => entry.id !== id);
+      deleted.unshift({ id, deletedAt: new Date().toISOString() });
+      localStorage.setItem(DELETED_SALES_KEY, JSON.stringify(deleted.slice(0, 500)));
+    }
+
+    function saveSalesBackup() {
+      const deletedIds = getDeletedSaleIds();
+      const backup = mergeSalesById(sales, loadList(SALES_BACKUP_KEY)).filter((sale) => !deletedIds.has(sale.id));
+      setSalesStorage(SALES_BACKUP_KEY, backup);
+    }
+
+    function mergeSalesById(...lists) {
+      const deletedIds = getDeletedSaleIds();
+      const map = new Map();
+      lists.flat().filter(Boolean).forEach((sale) => {
+        if (!sale.id || deletedIds.has(sale.id)) return;
+        const current = map.get(sale.id);
+        const currentTime = new Date(current?.updatedAt || current?.date || 0).getTime();
+        const saleTime = new Date(sale.updatedAt || sale.date || 0).getTime();
+        if (!current || saleTime >= currentTime) map.set(sale.id, sale);
+      });
+      return compactSales([...map.values()]).sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+    }
+
+    function syncSalesFromOnline(onlineSales) {
+      const incoming = Array.isArray(onlineSales) ? onlineSales : [];
+      const merged = mergeSalesById(incoming, sales, loadList(SALES_BACKUP_KEY));
+      sales = merged;
+      setSalesStorage(SALES_KEY, sales);
+      saveSalesBackup();
+      if (incoming.length !== merged.length && typeof saveOnline === "function") {
+        saveOnline(SALES_KEY, merged);
+      }
+    }
+
+    function getOpenShift() {
+      return shifts.find((shift) => shift.local === local && shift.status === "open");
+    }
+
+    function getShiftSales(shiftId) {
+      return sales.filter((sale) => sale.shiftId === shiftId);
+    }
+
+    function normalizePaymentMethod(sale) {
+      return String(sale?.method || "").toLowerCase();
+    }
+
+    function getSaleCashNet(sale) {
+      const method = normalizePaymentMethod(sale);
+      const total = Number(sale.total || 0);
+      const cash = Number(sale.cash || 0);
+      const change = Number(sale.change || 0);
+
+      if (method === "efectivo") return total;
+      if (method === "transferencia" || method === "digital") return 0;
+      if (method === "mixto") return Math.max(0, cash - change);
+      if (method === "familia" || method === "cuenta corriente") return 0;
+
+      return cash > 0 ? Math.max(0, cash - change) : 0;
+    }
+
+    function getSaleDigitalNet(sale) {
+      const method = normalizePaymentMethod(sale);
+      const total = Number(sale.total || 0);
+      const transfer = Number(sale.transfer || 0);
+
+      if (method === "transferencia" || method === "digital") return total;
+      if (method === "efectivo") return 0;
+      if (method === "mixto") return Math.min(total, transfer);
+      if (method === "familia" || method === "cuenta corriente") return 0;
+
+      return transfer > 0 ? transfer : 0;
+    }
+
+    function getNextSaleNumber(shiftId) {
+      const numbers = getShiftSales(shiftId).map((sale) => Number(sale.saleNumber || 0));
+      return Math.max(0, ...numbers) + 1;
+    }
+
+    function getShiftExpenses(shift) {
+      return shift?.expenses || [];
+    }
+
+    function getShiftReinforcements(shift) {
+      return shift?.reinforcements || [];
+    }
+
+    function getSelectedCustomer() {
+      const name = document.getElementById("customerSelect").value;
+      return customers.find((customer) => customer.name === name) || customers[0];
+    }
+
+    function getCurrentItemValue(item) {
+      const product = products.find((entry) => entry.id === item.productId);
+      const unitPrice = Number(product?.salePrice ?? item.unitPrice ?? 0);
+      return unitPrice * Number(item.quantity || 0);
+    }
+
+    function getCurrentItemUnitPrice(item) {
+      const product = products.find((entry) => entry.id === item.productId);
+      return Number(product?.salePrice ?? item.unitPrice ?? 0);
+    }
+
+    function getAccountEntries() {
+      const activeAccounts = dedupeAccountEntries(accounts.map((entry) => ({ ...entry, source: "account" })));
+      const activeSignatures = new Set(activeAccounts.map(getAccountEntrySignature));
+      const legacySales = sales
+        .filter((sale) => sale.customerType && sale.customerType !== "normal")
+        .map((sale) => ({ ...sale, source: "sale" }))
+        .filter((sale) => !activeSignatures.has(getAccountEntrySignature(sale)))
+        .filter((sale) => !activeAccounts.some((entry) => isLikelySameAccountEntry(entry, sale)));
+      return dedupeAccountEntries([...activeAccounts, ...legacySales]).sort((a, b) => new Date(b.date) - new Date(a.date));
+    }
+
+    function getAccountEntrySignature(entry) {
+      const customer = entry.customer || "";
+      const date = entry.date ? new Date(entry.date) : null;
+      const minute = date && !Number.isNaN(date.getTime()) ? Math.floor(date.getTime() / 60000) : "";
+      const items = (entry.items || [])
+        .map((item) => `${item.productId || item.name}:${Number(item.quantity || 0)}`)
+        .sort()
+        .join("|");
+      return `${customer}|${minute}|${items}`;
+    }
+
+    function isLikelySameAccountEntry(a, b) {
+      if (!a || !b || a.customer !== b.customer) return false;
+      const aTime = new Date(a.date || 0).getTime();
+      const bTime = new Date(b.date || 0).getTime();
+      if (Number.isNaN(aTime) || Number.isNaN(bTime)) return false;
+      const closeInTime = Math.abs(aTime - bTime) <= 5 * 60 * 1000;
+      const aItems = (a.items || []).map((item) => `${item.productId || item.name}:${Number(item.quantity || 0)}`).sort().join("|");
+      const bItems = (b.items || []).map((item) => `${item.productId || item.name}:${Number(item.quantity || 0)}`).sort().join("|");
+      return closeInTime && aItems === bItems;
+    }
+
+    function dedupeAccountEntries(entries) {
+      const map = new Map();
+      (entries || []).filter(Boolean).forEach((entry) => {
+        const key = getAccountEntrySignature(entry) || entry.id;
+        const current = map.get(key);
+        const currentTime = new Date(current?.updatedAt || current?.date || 0).getTime();
+        const entryTime = new Date(entry.updatedAt || entry.date || 0).getTime();
+        if (!current || entryTime >= currentTime) map.set(key, entry);
+      });
+      return [...map.values()];
+    }
+
+    function hasRecentDuplicateAccount(customerName, items) {
+      const probe = {
+        customer: customerName,
+        date: new Date().toISOString(),
+        items,
+      };
+      return accounts.some((entry) => isLikelySameAccountEntry(entry, probe));
+    }
+
+    function formatReceiptQuantity(item) {
+      if (item.weighable) return formatKg(item.quantity);
+      return `${Number(item.quantity || 0).toLocaleString("es-AR")} un.`;
+    }
+
+    function printCustomerAccountReceipt(customerName, items, total, payment) {
+      const date = new Date().toLocaleString("es-AR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+      const detailRows = items.map((item) => `
+        <tr>
+          <td>${escapeHtml(item.name)}</td>
+          <td>${formatReceiptQuantity(item)}</td>
+          <td>${formatMoney(item.unitPrice)}${item.weighable ? "/kg" : ""}</td>
+          <td>${formatMoney(item.total)}</td>
+        </tr>
+      `).join("");
+      const paymentRows = payment
+        ? `
+          <tr><td>Efectivo</td><td>${formatMoney(payment.cash)}</td></tr>
+          <tr><td>Transferencia / QR</td><td>${formatMoney(payment.transfer)}</td></tr>
+          <tr><td>Vuelto</td><td>${formatMoney(payment.change)}</td></tr>
+        `
+        : `<tr><td>Total de la cuenta</td><td>${formatMoney(total)}</td></tr>`;
+      const printWindow = window.open("", "_blank", "width=720,height=900");
+
+      if (!printWindow) {
+        alert("No se pudo abrir la ventana de impresion. Revisa si el navegador bloqueo ventanas emergentes.");
+        return;
+      }
+
+      printWindow.document.write(`
+        <!doctype html>
+        <html lang="es">
+        <head>
+          <meta charset="utf-8">
+          <title>Cuenta ${escapeHtml(customerName)}</title>
+          <style>
+            body { font-family: Arial, sans-serif; color: #111827; padding: 28px; }
+            h1 { margin: 0 0 6px; font-size: 28px; }
+            .muted { color: #64748b; margin-bottom: 22px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+            th, td { border-bottom: 1px solid #e5e7eb; padding: 10px 8px; text-align: left; }
+            th:last-child, td:last-child { text-align: right; }
+            .total { margin-top: 18px; text-align: right; font-size: 24px; font-weight: 800; }
+            .box { margin-top: 20px; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px; }
+            .payment td:first-child { font-weight: 700; }
+            @media print { body { padding: 0; } }
+          </style>
+        </head>
+        <body>
+          <h1>Panaderia Josue</h1>
+          <div class="muted">Cuenta de ${escapeHtml(customerName)} - ${date}</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio actual</th>
+                <th>Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>${detailRows}</tbody>
+          </table>
+          <div class="total">Total: ${formatMoney(total)}</div>
+          <div class="box">
+            <strong>Pago</strong>
+            <table class="payment">${paymentRows}</table>
+          </div>
+        </body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => printWindow.print(), 250);
+    }
+
+    function adjustProductsStock(items, direction) {
+      items.forEach((item) => {
+        const product = products.find((entry) => entry.id === item.productId);
+        if (!product) return;
+        product.stock = Number(product.stock || 0) + direction * Number(item.quantity || 0);
+        product.updatedAt = new Date().toISOString();
+      });
+      saveProducts();
+    }
+
+    function renderProducts() {
+      const search = document.getElementById("searchInput").value.trim().toLowerCase();
+      const filtered = products.filter((product) => {
+        const text = `${product.name} ${product.barcode || ""}`.toLowerCase();
+        return text.includes(search);
+      });
+
+      const grid = document.getElementById("productGrid");
+      if (filtered.length === 0) {
+        grid.innerHTML = "<p class='empty'>No hay productos cargados. Agregalos desde Productos.</p>";
+        return;
+      }
+
+      grid.innerHTML = filtered.map((product) => `
+        <button class="product ${product.weighable ? "weighable" : ""}" type="button" onclick="addProduct('${product.id}')">
+          <strong>${escapeHtml(product.name)}</strong>
+          <small>${formatMoney(product.salePrice)}${product.weighable ? "/kg" : ""}</small>
+        </button>
+      `).join("");
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function addProduct(id) {
+      const product = products.find((item) => item.id === id);
+      if (!product) return;
+
+      if (product.weighable) {
+        cart.push({
+          id: makeId(),
+          productId: product.id,
+          name: product.name,
+          unitPrice: Number(product.salePrice),
+          quantity: 1,
+          total: Number(product.salePrice),
+          weighable: true,
+        });
+      } else {
+        const existing = cart.find((item) => item.productId === product.id && !item.weighable);
+        if (existing) {
+          existing.quantity += 1;
+          existing.total = existing.quantity * existing.unitPrice;
+        } else {
+          cart.push({
+            id: makeId(),
+            productId: product.id,
+            name: product.name,
+            unitPrice: Number(product.salePrice),
+            quantity: 1,
+            total: Number(product.salePrice),
+            weighable: false,
+          });
+        }
+      }
+
+      renderCart();
+    }
+
+    function renderCart() {
+      const container = document.getElementById("cartItems");
+      const emptyCart = document.getElementById("emptyCart");
+      let total = 0;
+
+      emptyCart.style.display = cart.length ? "none" : "block";
+      container.innerHTML = "";
+
+      cart.forEach((item) => {
+        total += item.total;
+        const quantityControl = item.weighable
+          ? formatKg(item.quantity)
+          : `<input class="quantity-edit" type="number" min="1" step="1" value="${item.quantity}" onchange="changeQuantity('${item.id}', this.value)">`;
+        const note = item.weighable ? `<span class="item-note">${formatMoney(item.unitPrice)} por kg</span>` : "";
+
+        container.innerHTML += `
+          <tr>
+            <td>
+              ${escapeHtml(item.name)}
+              ${note}
+            </td>
+            <td>${quantityControl}</td>
+            <td>
+              <input class="price-edit" type="number" value="${item.total}" onchange="changePrice('${item.id}', this.value)">
+            </td>
+            <td>
+              <button class="cart-delete-btn" type="button" onclick="removeItem('${item.id}')" aria-label="Quitar producto">&times;</button>
+            </td>
+          </tr>
+        `;
+      });
+
+      document.getElementById("total").innerText = `Total: ${formatMoney(total)}`;
+    }
+
+    function formatKg(quantity) {
+      const grams = Math.round(Number(quantity || 0) * 1000);
+      if (grams < 1000) return `${grams} g`;
+      return `${Number(quantity || 0).toFixed(3).replace(/\.?0+$/, "")} kg`;
+    }
+
+    function changePrice(id, newPrice) {
+      const item = cart.find((product) => product.id === id);
+      if (!item) return;
+
+      item.total = Number(newPrice || 0);
+      if (item.weighable) {
+        item.quantity = item.unitPrice > 0 ? item.total / item.unitPrice : 0;
+      }
+
+      renderCart();
+    }
+
+    function changeQuantity(id, newQuantity) {
+      const item = cart.find((product) => product.id === id);
+      if (!item || item.weighable) return;
+
+      const quantity = Math.max(1, Math.floor(Number(newQuantity || 1)));
+      item.quantity = quantity;
+      item.total = item.unitPrice * quantity;
+      renderCart();
+    }
+
+    function removeItem(id) {
+      cart = cart.filter((item) => item.id !== id);
+      renderCart();
+    }
+
+    function openPayment() {
+      const total = getCartTotal();
+      const customer = getSelectedCustomer();
+      if (total <= 0) {
+        alert("No hay productos para cobrar.");
+        return;
+      }
+
+      if (!getOpenShift()) {
+        alert("Primero tenes que abrir un turno de caja.");
+        showShiftView();
+        return;
+      }
+
+      document.getElementById("paymentTotal").textContent = formatMoney(total);
+      document.getElementById("cashInput").value = "";
+      document.getElementById("transferInput").value = "";
+      document.getElementById("cashInput").disabled = customer.type !== "normal";
+      document.getElementById("transferInput").disabled = customer.type !== "normal";
+      document.getElementById("paymentModal").classList.remove("hidden");
+      updatePaymentStatus();
+      setTimeout(() => document.getElementById("cashInput").focus(), 50);
+    }
+
+    function closePayment() {
+      document.getElementById("paymentModal").classList.add("hidden");
+    }
+
+    function updatePaymentStatus() {
+      const total = getCartTotal();
+      const customer = getSelectedCustomer();
+      const cash = Number(document.getElementById("cashInput").value || 0);
+      const transfer = Number(document.getElementById("transferInput").value || 0);
+      const paid = cash + transfer;
+      const status = document.getElementById("paymentStatus");
+
+      status.classList.remove("ok");
+      if (customer.type === "family") {
+        status.textContent = `Familia: se anota sin cobrar`;
+        status.classList.add("ok");
+        return;
+      }
+
+      if (customer.type === "account") {
+        status.textContent = `Cuenta corriente: se anota para fin de mes`;
+        status.classList.add("ok");
+        return;
+      }
+
+      if (paid < total) {
+        status.textContent = `Faltan ${formatMoney(total - paid)}`;
+        return;
+      }
+
+      if (cash > 0 && paid > total) {
+        status.textContent = `Vuelto ${formatMoney(paid - total)}`;
+        status.classList.add("ok");
+        return;
+      }
+
+      status.textContent = "Pago completo";
+      status.classList.add("ok");
+    }
+
+    function confirmPayment() {
+      if (isSavingPayment) return;
+      const shift = getOpenShift();
+      if (!shift) {
+        alert("Primero tenes que abrir un turno de caja.");
+        closePayment();
+        showShiftView();
+        return;
+      }
+
+      const total = getCartTotal();
+      const customer = getSelectedCustomer();
+      const cash = Number(document.getElementById("cashInput").value || 0);
+      const transfer = Number(document.getElementById("transferInput").value || 0);
+      const paid = cash + transfer;
+
+      if (customer.type === "normal" && paid < total) {
+        alert(`Faltan ${formatMoney(total - paid)}.`);
+        return;
+      }
+
+      isSavingPayment = true;
+      const confirmButton = document.getElementById("confirmPaymentButton");
+      confirmButton.disabled = true;
+      confirmButton.textContent = "Guardando...";
+
+      const items = cart.map(compactSaleItem);
+
+      try {
+        if (customer.type !== "normal") {
+          const accountEntry = {
+            id: makeId(),
+            shiftId: shift.id,
+            local,
+            date: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            customer: customer.name,
+            customerType: customer.type,
+            items,
+            note: customer.type === "family" ? "Familia" : "Cuenta corriente",
+          };
+
+          if (hasRecentDuplicateAccount(customer.name, items)) {
+            alert("Este consumo ya estaba anotado. No lo vuelvo a cargar para evitar duplicarlo.");
+          } else {
+            accounts.unshift(accountEntry);
+            accounts = dedupeAccountEntries(accounts);
+            saveAccounts();
+            adjustProductsStock(items, -1);
+            alert("Consumo anotado en clientes.");
+          }
+          cart = [];
+          document.getElementById("customerSelect").value = "Consumidor final";
+          closePayment();
+          renderCart();
+          renderProducts();
+          renderProductManageList();
+          renderNotebook();
+          renderClients();
+          renderShift();
+          return;
+        }
+
+        const now = new Date().toISOString();
+        const saleNumber = getNextSaleNumber(shift.id);
+        const sale = {
+          id: makeId(),
+          shiftId: shift.id,
+          saleNumber,
+          local,
+          date: now,
+          updatedAt: now,
+          customer: customer.name,
+          customerType: customer.type,
+          items,
+          total,
+          cash: customer.type === "normal" ? cash : 0,
+          transfer: customer.type === "normal" ? transfer : 0,
+          change: customer.type === "normal" ? Math.max(0, paid - total) : 0,
+          method: getPaymentMethod(customer, cash, transfer),
+        };
+
+        sales = mergeSalesById([sale], sales);
+        saveSales();
+        adjustProductsStock(items, -1);
+        cart = [];
+        document.getElementById("customerSelect").value = "Consumidor final";
+        closePayment();
+        renderCart();
+        renderProducts();
+        renderProductManageList();
+        renderNotebook();
+        renderClients();
+        renderShift();
+        alert(`Venta ${saleNumber} guardada en Cuaderno.`);
+      } catch (error) {
+        console.error("No se pudo guardar la venta.", error);
+        alert("No se pudo guardar la venta. No cierres la pagina y avisame para revisarlo.");
+      } finally {
+        isSavingPayment = false;
+        confirmButton.disabled = false;
+        confirmButton.textContent = "Guardar venta";
+      }
+    }
+
+    function getPaymentMethod(customer, cash, transfer) {
+      if (customer.type === "family") return "Familia";
+      if (customer.type === "account") return "Cuenta corriente";
+      if (cash > 0 && transfer > 0) return "Mixto";
+      if (transfer > 0) return "Transferencia";
+      return "Efectivo";
+    }
+
+    function showSellView() {
+      document.getElementById("sellView").classList.remove("hidden");
+      document.getElementById("shiftView").classList.add("hidden");
+      document.getElementById("notebookView").classList.add("hidden");
+      document.getElementById("productManageView").classList.add("hidden");
+      document.getElementById("clientsView").classList.add("hidden");
+      document.getElementById("sellMenuButton").classList.add("active");
+      document.getElementById("shiftMenuButton").classList.remove("active");
+      document.getElementById("productsMenuButton").classList.remove("active");
+      document.getElementById("notebookMenuButton").classList.remove("active");
+      document.getElementById("clientsMenuButton").classList.remove("active");
+    }
+
+    function showShiftView() {
+      document.getElementById("sellView").classList.add("hidden");
+      document.getElementById("shiftView").classList.remove("hidden");
+      document.getElementById("notebookView").classList.add("hidden");
+      document.getElementById("productManageView").classList.add("hidden");
+      document.getElementById("clientsView").classList.add("hidden");
+      document.getElementById("sellMenuButton").classList.remove("active");
+      document.getElementById("shiftMenuButton").classList.add("active");
+      document.getElementById("productsMenuButton").classList.remove("active");
+      document.getElementById("notebookMenuButton").classList.remove("active");
+      document.getElementById("clientsMenuButton").classList.remove("active");
+      renderShift();
+    }
+
+    function showNotebookView() {
+      document.getElementById("sellView").classList.add("hidden");
+      document.getElementById("shiftView").classList.add("hidden");
+      document.getElementById("notebookView").classList.remove("hidden");
+      document.getElementById("productManageView").classList.add("hidden");
+      document.getElementById("clientsView").classList.add("hidden");
+      document.getElementById("sellMenuButton").classList.remove("active");
+      document.getElementById("shiftMenuButton").classList.remove("active");
+      document.getElementById("productsMenuButton").classList.remove("active");
+      document.getElementById("notebookMenuButton").classList.add("active");
+      document.getElementById("clientsMenuButton").classList.remove("active");
+      renderNotebook();
+    }
+
+    function showProductManageView() {
+      document.getElementById("sellView").classList.add("hidden");
+      document.getElementById("shiftView").classList.add("hidden");
+      document.getElementById("notebookView").classList.add("hidden");
+      document.getElementById("productManageView").classList.remove("hidden");
+      document.getElementById("clientsView").classList.add("hidden");
+      document.getElementById("sellMenuButton").classList.remove("active");
+      document.getElementById("shiftMenuButton").classList.remove("active");
+      document.getElementById("productsMenuButton").classList.add("active");
+      document.getElementById("notebookMenuButton").classList.remove("active");
+      document.getElementById("clientsMenuButton").classList.remove("active");
+      renderProductManageList();
+    }
+
+    function showClientsView() {
+      document.getElementById("sellView").classList.add("hidden");
+      document.getElementById("shiftView").classList.add("hidden");
+      document.getElementById("notebookView").classList.add("hidden");
+      document.getElementById("productManageView").classList.add("hidden");
+      document.getElementById("clientsView").classList.remove("hidden");
+      document.getElementById("sellMenuButton").classList.remove("active");
+      document.getElementById("shiftMenuButton").classList.remove("active");
+      document.getElementById("productsMenuButton").classList.remove("active");
+      document.getElementById("notebookMenuButton").classList.remove("active");
+      document.getElementById("clientsMenuButton").classList.add("active");
+      renderClients();
+    }
+
+    function openShift() {
+      if (getOpenShift()) {
+        alert("Ya hay un turno abierto.");
+        renderShift();
+        return;
+      }
+
+      const initialCash = Number(document.getElementById("initialCashInput").value || 0);
+      shifts.unshift({
+        id: makeId(),
+        local,
+        status: "open",
+        openedAt: new Date().toISOString(),
+        closedAt: null,
+        initialCash,
+        expenses: [],
+        reinforcements: [],
+      });
+      saveShifts();
+      document.getElementById("initialCashInput").value = "";
+      renderShift();
+      renderNotebook();
+    }
+
+    function addExpense() {
+      const shift = getOpenShift();
+      if (!shift) return;
+
+      const descriptionInput = document.getElementById("expenseDescriptionInput");
+      const amountInput = document.getElementById("expenseAmountInput");
+      const amount = Number(amountInput.value || 0);
+      if (amount <= 0) {
+        alert("Cargá el importe del gasto.");
+        return;
+      }
+
+      shift.expenses.push({
+        id: makeId(),
+        description: descriptionInput.value.trim() || "Gasto",
+        amount,
+        date: new Date().toISOString(),
+      });
+      saveShifts();
+      descriptionInput.value = "";
+      amountInput.value = "";
+      renderShift();
+      alert("Gasto agregado.");
+    }
+
+    function addReinforcement() {
+      const shift = getOpenShift();
+      if (!shift) return;
+
+      const descriptionInput = document.getElementById("reinforcementDescriptionInput");
+      const amountInput = document.getElementById("reinforcementAmountInput");
+      const amount = Number(amountInput.value || 0);
+      if (amount <= 0) {
+        alert("Carga el importe del refuerzo.");
+        return;
+      }
+
+      shift.reinforcements = getShiftReinforcements(shift);
+      shift.reinforcements.push({
+        id: makeId(),
+        description: descriptionInput.value.trim() || "Refuerzo",
+        amount,
+        date: new Date().toISOString(),
+      });
+      saveShifts();
+      descriptionInput.value = "";
+      amountInput.value = "";
+      renderShift();
+      alert("Refuerzo agregado.");
+    }
+
+    function closeShift() {
+      const shift = getOpenShift();
+      if (!shift) return;
+
+      const countedCashText = prompt("Con cuanto efectivo cerro realmente la caja?");
+      if (countedCashText === null) return;
+
+      const countedCash = Number(countedCashText);
+      if (Number.isNaN(countedCash) || countedCash < 0) {
+        alert("Carga un importe valido para cerrar la caja.");
+        return;
+      }
+
+      const ok = confirm(`Seguro que queres cerrar la caja con ${formatMoney(countedCash)}?`);
+      if (!ok) return;
+
+      shift.status = "closed";
+      shift.closedAt = new Date().toISOString();
+      shift.countedCash = countedCash;
+      saveShifts();
+      renderShift();
+      renderNotebook();
+    }
+
+    function renderShift() {
+      const shift = getOpenShift();
+      const closedBox = document.getElementById("closedShiftBox");
+      const openBox = document.getElementById("openShiftBox");
+
+      if (!shift) {
+        closedBox.classList.remove("hidden");
+        openBox.classList.add("hidden");
+        return;
+      }
+
+      closedBox.classList.add("hidden");
+      openBox.classList.remove("hidden");
+
+      const shiftSales = getShiftSales(shift.id);
+      const expenses = getShiftExpenses(shift);
+      const reinforcements = getShiftReinforcements(shift);
+      const expenseTotal = expenses.reduce((sum, expense) => sum + Number(expense.amount || 0), 0);
+      const reinforcementTotal = reinforcements.reduce((sum, reinforcement) => sum + Number(reinforcement.amount || 0), 0);
+      const cashSales = shiftSales.reduce((sum, sale) => sum + getSaleCashNet(sale), 0);
+      const digitalSales = shiftSales.reduce((sum, sale) => sum + getSaleDigitalNet(sale), 0);
+      const expectedCash = Number(shift.initialCash || 0) + cashSales + reinforcementTotal - expenseTotal;
+
+      document.getElementById("shiftOpenedAt").textContent = formatDateTime(shift.openedAt);
+      document.getElementById("shiftInitialCash").textContent = formatMoney(shift.initialCash);
+      document.getElementById("shiftExpenses").textContent = formatMoney(expenseTotal);
+      document.getElementById("shiftReinforcements").textContent = formatMoney(reinforcementTotal);
+      document.getElementById("shiftCashSales").textContent = formatMoney(cashSales);
+      document.getElementById("shiftDigitalSales").textContent = formatMoney(digitalSales);
+      document.getElementById("shiftExpectedCash").textContent = formatMoney(expectedCash);
+
+      const expenseList = document.getElementById("expenseList");
+      if (expenses.length === 0) {
+        expenseList.innerHTML = "<p class='empty'>Sin gastos cargados.</p>";
+      } else {
+        expenseList.innerHTML = expenses.map((expense) => `
+          <div class="sale-item">
+            <div class="sale-main">
+              <strong>${escapeHtml(expense.description)}</strong>
+              <strong>${formatMoney(expense.amount)}</strong>
+              <button class="delete-btn" type="button" onclick="deleteExpense('${expense.id}')">X</button>
+            </div>
+          </div>
+        `).join("");
+      }
+
+      const reinforcementList = document.getElementById("reinforcementList");
+      if (reinforcements.length === 0) {
+        reinforcementList.innerHTML = "<p class='empty'>Sin refuerzos cargados.</p>";
+      } else {
+        reinforcementList.innerHTML = reinforcements.map((reinforcement) => `
+          <div class="sale-item">
+            <div class="sale-main">
+              <strong>${escapeHtml(reinforcement.description)}</strong>
+              <strong>${formatMoney(reinforcement.amount)}</strong>
+              <button class="delete-btn" type="button" onclick="deleteReinforcement('${reinforcement.id}')">X</button>
+            </div>
+          </div>
+        `).join("");
+      }
+    }
+
+    function deleteExpense(id) {
+      const shift = getOpenShift();
+      if (!shift) return;
+
+      shift.expenses = getShiftExpenses(shift).filter((expense) => expense.id !== id);
+      saveShifts();
+      renderShift();
+    }
+
+    function deleteReinforcement(id) {
+      const shift = getOpenShift();
+      if (!shift) return;
+
+      shift.reinforcements = getShiftReinforcements(shift).filter((reinforcement) => reinforcement.id !== id);
+      saveShifts();
+      renderShift();
+    }
+
+    function formatDateTime(value) {
+      if (!value) return "-";
+      return new Date(value).toLocaleString("es-AR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    }
+
+    function renderNotebook() {
+      const shift = getOpenShift();
+      const localSales = shift
+        ? getShiftSales(shift.id)
+        : sales.filter((sale) => sale.local === local && !sale.shiftId);
+      document.getElementById("notebookSubtitle").textContent = shift
+        ? `Historial del turno abierto desde ${formatDateTime(shift.openedAt)}.`
+        : "No hay turno abierto. Se muestran ventas anteriores sin turno.";
+
+      const list = document.getElementById("saleList");
+      if (localSales.length === 0) {
+        list.innerHTML = "<p class='empty'>Todavia no hay ventas guardadas.</p>";
+        return;
+      }
+
+      list.innerHTML = localSales.map((sale) => {
+        const time = formatDateTime(sale.date);
+        const detailItems = sale.items.map((item) => `
+          <li>${escapeHtml(item.name)} - ${item.weighable ? formatKg(item.quantity) : item.quantity} - ${formatMoney(item.total)}</li>
+        `).join("");
+        const saleNumber = sale.saleNumber || localSales.length;
+        const paymentLabel = sale.method === "Transferencia" ? "Digital" : sale.method;
+        const customerLabel = sale.customer && sale.customer !== "Consumidor final" ? ` | ${sale.customer}` : "";
+        const invoiceLabel = sale.invoice?.cae
+          ? `Facturada ${sale.invoice.pointOfSale}-${String(sale.invoice.voucherNumber).padStart(8, "0")}`
+          : "Facturar";
+        const invoiceClass = sale.invoice?.cae ? "invoice-btn done" : "invoice-btn";
+        const invoiceDisabled = sale.invoice?.cae ? "disabled" : "";
+
+        return `
+          <article class="sale-item" id="sale-${sale.id}">
+            <div class="sale-main">
+              <button type="button" onclick="toggleSaleDetail('${sale.id}')">
+                <strong>Venta ${saleNumber}</strong>
+                <span class="item-note">${time} | ${paymentLabel}${customerLabel}</span>
+              </button>
+              <strong>${formatMoney(sale.total)}</strong>
+              <button class="${invoiceClass}" type="button" onclick="invoiceSale('${sale.id}')" ${invoiceDisabled}>${invoiceLabel}</button>
+              <button class="delete-btn" type="button" onclick="deleteSale('${sale.id}')">X</button>
+            </div>
+            <div class="sale-detail">
+              <div>Cobrado: ${formatMoney(sale.total)} | Tipo de pago: ${paymentLabel}</div>
+              <div>Efectivo: ${formatMoney(sale.cash)} | Digital: ${formatMoney(sale.transfer)} | Vuelto: ${formatMoney(sale.change)}</div>
+              ${sale.invoice?.cae ? `<div>Factura ARCA: B ${sale.invoice.pointOfSale}-${String(sale.invoice.voucherNumber).padStart(8, "0")} | CAE ${escapeHtml(sale.invoice.cae)} | Vto. ${escapeHtml(sale.invoice.caeDueDate || "-")}</div>` : ""}
+              <ul>${detailItems}</ul>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    async function invoiceSale(id) {
+      const sale = sales.find((entry) => entry.id === id);
+      if (!sale) return;
+      if (sale.invoice?.cae) {
+        alert("Esta venta ya esta facturada.");
+        return;
+      }
+      if (!ARCA_FUNCTION_URL) {
+        alert("Todavia falta configurar la URL de Firebase Functions para facturar.");
+        return;
+      }
+      const ok = confirm(`Facturar venta ${sale.saleNumber || ""} por ${formatMoney(sale.total)} en ARCA?`);
+      if (!ok) return;
+
+      try {
+        const response = await fetch(ARCA_FUNCTION_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(ARCA_INVOICE_TOKEN ? { "X-Panaderia-Token": ARCA_INVOICE_TOKEN } : {}),
+          },
+          body: JSON.stringify({
+            saleId: sale.id,
+            total: Number(sale.total || 0),
+            local: sale.local,
+            saleNumber: sale.saleNumber,
+          }),
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok || !result.ok) {
+          throw new Error(result.error || "ARCA no pudo autorizar la factura.");
+        }
+
+        sale.invoice = {
+          cae: result.cae,
+          caeDueDate: result.caeDueDate,
+          voucherNumber: result.voucherNumber,
+          pointOfSale: result.pointOfSale,
+          invoiceType: result.invoiceType,
+          invoicedAt: new Date().toISOString(),
+        };
+        sale.updatedAt = new Date().toISOString();
+        saveSales();
+        renderNotebook();
+        alert(`Factura creada: B ${result.pointOfSale}-${String(result.voucherNumber).padStart(8, "0")}`);
+      } catch (error) {
+        console.error("No se pudo facturar.", error);
+        alert(`No se pudo facturar: ${error.message}`);
+      }
+    }
+
+    function formatDateOnly(value) {
+      if (!value) return "-";
+      return new Date(value).toLocaleDateString("es-AR");
+    }
+
+    function formatTimeOnly(value) {
+      if (!value) return "-";
+      return new Date(value).toLocaleTimeString("es-AR", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    }
+
+    function toggleSaleDetail(id) {
+      document.getElementById(`sale-${id}`)?.classList.toggle("open");
+    }
+
+    function deleteSale(id) {
+      const ok = confirm("Seguro que queres borrar esta venta?");
+      if (!ok) return;
+
+      const sale = sales.find((entry) => entry.id === id);
+      if (sale) adjustProductsStock(sale.items || [], 1);
+      rememberDeletedSale(id);
+      sales = sales.filter((sale) => sale.id !== id);
+      saveSales();
+      renderProducts();
+      renderProductManageList();
+      renderNotebook();
+      renderClients();
+      renderShift();
+    }
+
+    function renderClients() {
+      const trackedCustomers = customers.filter((customer) => customer.type !== "normal");
+      const list = document.getElementById("clientList");
+      const accountEntries = getAccountEntries();
+
+      list.innerHTML = trackedCustomers.map((customer) => {
+        const customerEntries = accountEntries.filter((entry) => entry.customer === customer.name);
+        if (customerEntries.length === 0) {
+          return `
+            <article class="sale-item">
+              <div class="sale-main">
+                <strong>${customer.name}</strong>
+                <span class="item-note">${customer.type === "family" ? "Familia" : "Cuenta corriente"}</span>
+                <strong>${formatMoney(0)}</strong>
+              </div>
+            </article>
+          `;
+        }
+
+        const currentTotal = customerEntries.reduce((sum, entry) => {
+          return sum + entry.items.reduce((itemSum, item) => itemSum + getCurrentItemValue(item), 0);
+        }, 0);
+        const detail = customerEntries.map((entry) => {
+          const items = entry.items.map((item) => {
+            const currentPrice = getCurrentItemUnitPrice(item);
+            const quantity = item.weighable ? formatKg(item.quantity) : `${item.quantity} un.`;
+            return `${escapeHtml(item.name)} x ${quantity} (${formatMoney(currentPrice)}${item.weighable ? "/kg" : ""})`;
+          }).join(", ");
+          const entryTotal = entry.items.reduce((sum, item) => sum + getCurrentItemValue(item), 0);
+          const deleteAction = entry.source === "account"
+            ? `deleteAccountEntry('${entry.id}')`
+            : `deleteSale('${entry.id}')`;
+          return `
+            <li>
+              ${formatDateTime(entry.date)} - ${items} - Hoy: ${formatMoney(entryTotal)}
+              <button class="delete-btn" type="button" onclick="${deleteAction}">X</button>
+            </li>
+          `;
+        }).join("");
+        const settleLabel = customer.type === "family" ? "Limpiar cuenta" : "Imprimir cuenta";
+
+        return `
+          <article class="sale-item open">
+            <div class="sale-main">
+              <strong>${customer.name}</strong>
+              <span class="item-note">${customer.type === "family" ? "Familia sin cobrar" : "Cuenta corriente"}</span>
+              <strong>${formatMoney(currentTotal)}</strong>
+            </div>
+            <div class="sale-detail">
+              <div>Total con precios actuales: ${formatMoney(currentTotal)}</div>
+              <button class="pay-btn account-settle" type="button" onclick="settleCustomerAccount('${encodeURIComponent(customer.name)}')">${settleLabel}</button>
+              <ul>${detail}</ul>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function deleteAccountEntry(id) {
+      const entry = accounts.find((item) => item.id === id);
+      if (!entry) return;
+
+      const ok = confirm("Seguro que queres borrar este consumo? Se devuelve el stock.");
+      if (!ok) return;
+
+      adjustProductsStock(entry.items || [], 1);
+      accounts = accounts.filter((item) => item.id !== id);
+      saveAccounts();
+      renderProducts();
+      renderProductManageList();
+      renderClients();
+    }
+
+    function settleCustomerAccount(encodedName) {
+      const customerName = decodeURIComponent(encodedName);
+      const customer = customers.find((item) => item.name === customerName);
+      const customerEntries = getAccountEntries().filter((entry) => entry.customer === customerName);
+      const customerAccounts = customerEntries.filter((entry) => entry.source === "account");
+      const legacySales = customerEntries.filter((entry) => entry.source === "sale");
+
+      if (customerEntries.length === 0) return;
+
+      const total = customerEntries.reduce((sum, entry) => {
+        return sum + (entry.items || []).reduce((itemSum, item) => itemSum + getCurrentItemValue(item), 0);
+      }, 0);
+      const accountItems = customerEntries.flatMap((entry) => entry.items || []);
+      const currentItems = accountItems.map((item) => {
+        const unitPrice = getCurrentItemUnitPrice(item);
+        return {
+          ...item,
+          unitPrice,
+          total: unitPrice * Number(item.quantity || 0),
+        };
+      });
+
+      const message = customer?.type === "account"
+        ? `Se va a imprimir la cuenta de ${customerName} por ${formatMoney(total)} y limpiarla. No se suma a caja.`
+        : `Seguro que queres limpiar esta cuenta por ${formatMoney(total)}? No se devuelve stock.`;
+      const ok = confirm(message);
+      if (!ok) return;
+      printCustomerAccountReceipt(customerName, currentItems, total, null);
+
+      accounts = accounts.filter((entry) => entry.customer !== customerName);
+      sales = sales.filter((sale) => !(sale.customer === customerName && sale.customerType && sale.customerType !== "normal"));
+      saveAccounts();
+      saveSales();
+      renderNotebook();
+      renderClients();
+      renderShift();
+    }
+
+    function renderProductManageList() {
+      const search = document.getElementById("productManageSearch").value.trim().toLowerCase();
+      const filtered = products
+        .filter((product) => `${product.name} ${product.barcode || ""} ${product.supplier || ""}`.toLowerCase().includes(search))
+        .sort((a, b) => a.name.localeCompare(b.name, "es"));
+      const list = document.getElementById("productManageList");
+
+      if (filtered.length === 0) {
+        list.innerHTML = "<p class='empty'>No hay productos para mostrar.</p>";
+        return;
+      }
+
+      list.innerHTML = filtered.map((product) => `
+        <button class="product-edit-item ${product.id === selectedProductManageId ? "active" : ""}" type="button" data-product-edit="${product.id}">
+          <strong>${escapeHtml(product.name)}</strong>
+          <small>Venta: ${formatMoney(product.salePrice)} | Costo: ${formatMoney(product.cost)}</small>
+          <small>Stock: ${product.stock || 0} ${product.weighable ? "kg" : "un."}</small>
+          <small>Proveedor: ${escapeHtml(product.supplier || "Otro")}</small>
+          <small>Codigo: ${escapeHtml(product.barcode || "Sin codigo")}</small>
+        </button>
+      `).join("");
+    }
+
+    function selectProductForEdit(id) {
+      const product = products.find((item) => item.id === id);
+      if (!product) return;
+
+      selectedProductManageId = id;
+      document.getElementById("productManageTitle").textContent = product.name;
+      document.getElementById("productManageHelp").textContent = `${formatMoney(product.salePrice)}${product.weighable ? " por kg" : ""}`;
+      document.getElementById("productManageId").value = product.id;
+      document.getElementById("productManageName").value = product.name || "";
+      document.getElementById("productManageCost").value = product.cost || 0;
+      document.getElementById("productManageSalePrice").value = product.salePrice || 0;
+      document.getElementById("productManageBarcode").value = product.barcode || "";
+      document.getElementById("productManageStock").value = product.stock || 0;
+      document.getElementById("productManageSupplier").value = product.supplier || "Otro";
+      document.getElementById("productManageWeighable").checked = !!product.weighable;
+      document.getElementById("productManageForm").classList.remove("hidden");
+      renderProductManageList();
+    }
+
+    function startNewManagedProduct() {
+      selectedProductManageId = null;
+      document.getElementById("productManageTitle").textContent = "Añadir producto";
+      document.getElementById("productManageHelp").textContent = "Completa los datos y guardalo para que aparezca en ventas.";
+      document.getElementById("productManageId").value = "";
+      document.getElementById("productManageName").value = "";
+      document.getElementById("productManageCost").value = "";
+      document.getElementById("productManageSalePrice").value = "";
+      document.getElementById("productManageBarcode").value = "";
+      document.getElementById("productManageStock").value = 0;
+      document.getElementById("productManageSupplier").value = "Otro";
+      document.getElementById("productManageWeighable").checked = false;
+      document.getElementById("productManageForm").classList.remove("hidden");
+      renderProductManageList();
+      document.getElementById("productManageName").focus();
+    }
+
+    function calculateManagedSalePrice() {
+      const cost = Number(document.getElementById("productManageCost").value || 0);
+      if (cost <= 0) return;
+      document.getElementById("productManageSalePrice").value = roundToNearest100(cost * 1.3);
+    }
+
+    function adjustManagedStock(amount) {
+      const stockInput = document.getElementById("productManageStock");
+      const current = Number(stockInput.value || 0);
+      stockInput.value = Number(Math.max(0, current + amount).toFixed(2));
+    }
+
+    function saveManagedProduct(event) {
+      event.preventDefault();
+      const id = document.getElementById("productManageId").value;
+      const name = document.getElementById("productManageName").value.trim();
+      if (!name) {
+        alert("Falta el nombre del producto.");
+        document.getElementById("productManageName").focus();
+        return;
+      }
+      const barcode = document.getElementById("productManageBarcode").value.trim();
+      const repeatedBarcode = barcode && products.find((item) => item.id !== id && item.barcode === barcode);
+      if (repeatedBarcode) {
+        alert(`Ese codigo de barra ya lo tiene ${repeatedBarcode.name}.`);
+        document.getElementById("productManageBarcode").focus();
+        return;
+      }
+
+      let product = products.find((item) => item.id === id);
+      if (!product) {
+        product = { id: makeId(), supplier: "Otro" };
+        products.push(product);
+      }
+
+      product.name = name;
+      product.cost = Number(document.getElementById("productManageCost").value || 0);
+      product.salePrice = Number(document.getElementById("productManageSalePrice").value || 0);
+      product.barcode = barcode;
+      product.stock = Number(document.getElementById("productManageStock").value || 0);
+      product.supplier = document.getElementById("productManageSupplier").value || "Otro";
+      product.weighable = document.getElementById("productManageWeighable").checked;
+      product.updatedAt = new Date().toISOString();
+      saveProducts();
+      selectedProductManageId = product.id;
+      renderProducts();
+      renderProductManageList();
+      selectProductForEdit(product.id);
+      alert(id ? "Producto actualizado." : "Producto agregado.");
+    }
+
+    document.getElementById("searchInput").addEventListener("input", renderProducts);
+    document.getElementById("searchInput").addEventListener("keydown", (event) => {
+      if (event.key !== "Enter") return;
+
+      const search = event.target.value.trim().toLowerCase();
+      const exactMatch = products.find((product) => String(product.barcode || "").toLowerCase() === search);
+      if (!exactMatch) return;
+
+      event.preventDefault();
+      addProduct(exactMatch.id);
+      event.target.value = "";
+      renderProducts();
+    });
+
+    document.getElementById("cashInput").addEventListener("input", updatePaymentStatus);
+    document.getElementById("transferInput").addEventListener("input", updatePaymentStatus);
+    document.getElementById("sellMenuButton").addEventListener("click", showSellView);
+    document.getElementById("shiftMenuButton").addEventListener("click", showShiftView);
+    document.getElementById("productsMenuButton").addEventListener("click", showProductManageView);
+    document.getElementById("notebookMenuButton").addEventListener("click", showNotebookView);
+    document.getElementById("clientsMenuButton").addEventListener("click", showClientsView);
+    document.getElementById("customerSelect").addEventListener("change", updatePaymentStatus);
+    document.getElementById("newManagedProductButton").addEventListener("click", startNewManagedProduct);
+    document.getElementById("productManageCost").addEventListener("input", calculateManagedSalePrice);
+    document.getElementById("productManageSearch").addEventListener("input", renderProductManageList);
+    document.getElementById("productManageList").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-product-edit]");
+      if (!button) return;
+      selectProductForEdit(button.dataset.productEdit);
+    });
+    document.getElementById("productManageForm").addEventListener("submit", saveManagedProduct);
+    document.querySelectorAll("[data-stock-adjust]").forEach((button) => {
+      button.addEventListener("click", () => adjustManagedStock(Number(button.dataset.stockAdjust)));
+    });
+
+    if (typeof listenOnline === "function") {
+      listenOnline(STORAGE_KEY, (data) => {
+        products = data;
+        renderProducts();
+        renderProductManageList();
+        renderClients();
+      });
+
+      listenOnline(SALES_KEY, (data) => {
+        syncSalesFromOnline(data);
+        renderNotebook();
+        renderClients();
+        renderShift();
+      });
+
+      listenOnline(SHIFTS_KEY, (data) => {
+        shifts = data;
+        renderShift();
+        renderNotebook();
+      });
+
+      listenOnline(ACCOUNTS_KEY, (data) => {
+        accounts = data;
+        renderClients();
+      });
+    }
+
+    renderProducts();
+    renderCart();
+    renderShift();
+    renderNotebook();
+    renderProductManageList();
+    renderClients();
   </script>
 </body>
 </html>
