@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Ventas - Panaderia Josue</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=20260620-1">
   <link rel="stylesheet" href="night.css?v=20260618-1">
   <link rel="stylesheet" href="purchase.css?v=20260618-2">
 </head>
@@ -18,11 +18,11 @@
       </div>
 
       <div class="location-grid">
-        <button class="location-card" onclick="window.location.href='ventas.html?local=Central&v=20260616-2'">
+        <button class="location-card" onclick="window.location.href='ventas.html?local=Central&v=20260620-1'">
           <span>Central</span>
           <small>Vender en central</small>
         </button>
-        <button class="location-card" onclick="window.location.href='ventas.html?local=Sucursal&v=20260616-2'">
+        <button class="location-card" onclick="window.location.href='ventas.html?local=Sucursal&v=20260620-1'">
           <span>Sucursal</span>
           <small>Vender en sucursal</small>
         </button>
@@ -177,6 +177,13 @@
               <option value="revenue">Ingreso</option>
             </select>
           </label>
+          <label>
+            Producto para exportar
+            <select id="adminStatsProductInput">
+              <option value="">Elegir producto</option>
+            </select>
+          </label>
+          <button class="ghost-button stats-export-button" id="exportProductStatsButton" type="button">Exportar PDF</button>
         </div>
         <div class="report-list" id="adminReportList"></div>
       </section>
@@ -283,7 +290,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
   <script src="firebase.js?v=20260618-1"></script>
-  <script src="app.js?v=20260616-2"></script>
+  <script src="app.js?v=20260620-1"></script>
   <script src="admin-fixes.js?v=20260618-1"></script>
   <script src="purchase.js?v=20260618-2"></script>
   <script src="supplier-fixes.js?v=20260619-1"></script>
