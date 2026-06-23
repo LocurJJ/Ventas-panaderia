@@ -14,6 +14,7 @@
     "Serenisima",
     "Pastas",
     "Tapas",
+    "Coca Cola",
     "Otro",
   ];
 
@@ -88,6 +89,14 @@
     $("welcomeView")?.classList.remove("hidden");
   }
 
+  function formatMoney(value) {
+    return Number(value || 0).toLocaleString("es-AR", {
+      style: "currency",
+      currency: "ARS",
+      maximumFractionDigits: 0,
+    });
+  }
+
   function formatQty(value, weighable) {
     const number = Number(value || 0);
     const text = number.toLocaleString("es-AR", {
@@ -148,7 +157,9 @@
     const dailyValues = Array.from(stats.days.values());
     const min = dailyValues.length ? Math.min(...dailyValues) : 0;
     const max = dailyValues.length ? Math.max(...dailyValues) : 0;
-    const average = dailyValues.length ? stats.total / dailyValues.length : 0;
+    const average = dailyValues.length
+      ? stats.total / dailyValues.length
+      : 0;
     const variance = dailyValues.length
       ? dailyValues.reduce((sum, value) => sum + Math.pow(value - average, 2), 0) / dailyValues.length
       : 0;
@@ -254,6 +265,50 @@
     renderPurchaseOrder();
   }
 
+  function confirmOrderItem(id, receivedUnits) {
+    loadData();
+
+    const orderIndex = state.order.findIndex((item) => String(item.id) === String(id));
+    if (orderIndex < 0) return;
+
+    const orderItem = state.order[orderIndex];
+    const quantity = Number(receivedUnits || 0);
+    if (!Number.isFinite(quantity) || quantity <= 0) {
+      alert("Carga la cantidad que se compro antes de confirmar.");
+      return;
+    }
+
+    const product = state.products.find((item) => String(item.id) === String(orderItem.productId));
+    if (!product) {
+      alert("No encontre el producto para actualizar el stock.");
+      return;
+    }
+
+    const currentStock = Number(product.stock || 0);
+    product.stock = currentStock + quantity;
+    product.updatedAt = new Date().toISOString();
+    saveProducts();
+
+    const requestedUnits = Number(orderItem.units || 0);
+    const remainingUnits = Math.max(0, requestedUnits - quantity);
+    if (remainingUnits > 0) {
+      const packSize = Math.max(1, Number(orderItem.packSize || 1));
+      state.order[orderIndex] = {
+        ...orderItem,
+        units: remainingUnits,
+        packs: Math.ceil(remainingUnits / packSize),
+        stock: product.stock,
+        updatedAt: new Date().toISOString(),
+      };
+    } else {
+      state.order.splice(orderIndex, 1);
+    }
+
+    saveData(ORDER_KEY, state.order);
+    renderPurchaseOrder();
+    alert("Compra confirmada y stock actualizado.");
+  }
+
   function clearOrder() {
     if (!state.order.length) return;
     if (!confirm("Seguro que queres limpiar la lista de compra?")) return;
@@ -351,7 +406,11 @@
                 ${item.packs} pack${Number(item.packs) === 1 ? "" : "s"} x ${item.packSize} = ${item.units} unidades | Stock al pedir: ${item.stock}
               </span>
             </div>
-            <span class="purchase-status">Pendiente</span>
+            <label class="purchase-received">
+              Comprado
+              <input class="purchase-small-input" type="number" min="0" step="0.01" value="${item.units}" data-received-order="${item.id}">
+            </label>
+            <button class="purchase-confirm-button" type="button" data-confirm-order="${item.id}">Confirmar</button>
             <button class="purchase-delete-button" type="button" data-remove-order="${item.id}">X</button>
           </article>
         `).join("")}
@@ -407,6 +466,13 @@
     });
 
     $("purchaseOrderList")?.addEventListener("click", (event) => {
+      const confirmButton = event.target.closest("[data-confirm-order]");
+      if (confirmButton) {
+        const input = document.querySelector(`[data-received-order="${CSS.escape(confirmButton.dataset.confirmOrder)}"]`);
+        confirmOrderItem(confirmButton.dataset.confirmOrder, input?.value);
+        return;
+      }
+
       const button = event.target.closest("[data-remove-order]");
       if (!button) return;
       removeOrderItem(button.dataset.removeOrder);
