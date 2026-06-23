@@ -407,6 +407,10 @@
               </span>
             </div>
             <label class="purchase-received">
+              Packs
+              <input class="purchase-small-input" type="number" min="0" step="1" value="${item.packs}" data-received-packs="${item.id}" data-pack-size="${item.packSize}">
+            </label>
+            <label class="purchase-received">
               Comprado
               <input class="purchase-small-input" type="number" min="0" step="0.01" value="${item.units}" data-received-order="${item.id}">
             </label>
@@ -476,6 +480,18 @@
       const button = event.target.closest("[data-remove-order]");
       if (!button) return;
       removeOrderItem(button.dataset.removeOrder);
+    });
+
+    $("purchaseOrderList")?.addEventListener("input", (event) => {
+      const packInput = event.target.closest("[data-received-packs]");
+      if (!packInput) return;
+
+      const unitsInput = document.querySelector(`[data-received-order="${CSS.escape(packInput.dataset.receivedPacks)}"]`);
+      if (!unitsInput) return;
+
+      const packs = Number(packInput.value || 0);
+      const packSize = Number(packInput.dataset.packSize || 1);
+      unitsInput.value = Math.max(0, packs * packSize);
     });
   }
 
