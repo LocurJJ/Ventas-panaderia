@@ -3,6 +3,7 @@
   const SALES_KEY = "panaderia_josue_ventas_v1";
   const SETTINGS_KEY = "panaderia_josue_compra_config_v1";
   const ORDER_KEY = "panaderia_josue_lista_compra_v1";
+  const OWN_PRODUCTION_SUPPLIER = "elaboracion propia";
   const suppliers = [
     "Oscar",
     "Baqueano",
@@ -15,6 +16,7 @@
     "Pastas",
     "Tapas",
     "Coca Cola",
+    OWN_PRODUCTION_SUPPLIER,
     "Otro",
   ];
 
@@ -226,6 +228,7 @@
     const statsByProduct = buildStats();
     const product = state.products.find((item) => String(item.id) === String(productId));
     if (!product) return;
+    if (String(product.supplier || "").toLowerCase() === OWN_PRODUCTION_SUPPLIER) return;
 
     const summary = summarizeProduct(product, statsByProduct);
     const packCount = Math.max(1, Number(packs || summary.suggestedPacks || 1));
@@ -326,6 +329,7 @@
     const statsByProduct = buildStats();
     const rows = state.products
       .map((product) => summarizeProduct(product, statsByProduct))
+      .filter((summary) => String(summary.product.supplier || "").toLowerCase() !== OWN_PRODUCTION_SUPPLIER)
       .filter((summary) => {
         const text = `${summary.product.name || ""} ${summary.product.supplier || ""}`.toLowerCase();
         return text.includes(search);
@@ -382,6 +386,8 @@
   function renderPurchaseOrder() {
     const list = $("purchaseOrderList");
     if (!list) return;
+
+    state.order = state.order.filter((item) => String(item.supplier || "").toLowerCase() !== OWN_PRODUCTION_SUPPLIER);
 
     if (!state.order.length) {
       list.innerHTML = `<p class="muted">Todavia no agregaste productos a la lista.</p>`;
