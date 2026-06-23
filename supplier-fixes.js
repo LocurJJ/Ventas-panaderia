@@ -1,11 +1,11 @@
 (function () {
-  const NEW_SUPPLIER = "Coca Cola";
+  const NEW_SUPPLIERS = ["Coca Cola", "elaboracion propia"];
 
-  function addSupplierOption(select) {
-    if (!select || Array.from(select.options).some((option) => option.value === NEW_SUPPLIER)) return;
+  function addSupplierOption(select, supplier) {
+    if (!select || Array.from(select.options).some((option) => option.value === supplier)) return;
     const option = document.createElement("option");
-    option.value = NEW_SUPPLIER;
-    option.textContent = NEW_SUPPLIER;
+    option.value = supplier;
+    option.textContent = supplier;
     const otherOption = Array.from(select.options).find((item) => item.value === "Otro");
     if (otherOption) {
       select.insertBefore(option, otherOption);
@@ -15,8 +15,10 @@
   }
 
   function refreshSupplierSelects() {
-    addSupplierOption(document.getElementById("supplierInput"));
-    document.querySelectorAll(".purchase-supplier-select").forEach(addSupplierOption);
+    NEW_SUPPLIERS.forEach((supplier) => {
+      addSupplierOption(document.getElementById("supplierInput"), supplier);
+      document.querySelectorAll(".purchase-supplier-select").forEach((select) => addSupplierOption(select, supplier));
+    });
   }
 
   document.addEventListener("DOMContentLoaded", () => {
