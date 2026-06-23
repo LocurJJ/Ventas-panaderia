@@ -120,7 +120,7 @@
 
 .purchase-order-item {
   display: grid;
-  grid-template-columns: 1fr auto auto;
+  grid-template-columns: 1fr auto auto auto;
   gap: 14px;
   align-items: center;
   padding: 14px;
@@ -146,6 +146,33 @@
   background: #172554;
   color: #dbeafe;
   font-weight: 850;
+}
+
+.purchase-received {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.purchase-received .purchase-small-input {
+  width: 100px;
+}
+
+.purchase-confirm-button {
+  min-height: 38px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: #16a34a;
+  color: white;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.purchase-confirm-button:hover {
+  background: #15803d;
 }
 
 .purchase-delete-button {
