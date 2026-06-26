@@ -228,7 +228,6 @@
     const statsByProduct = buildStats();
     const product = state.products.find((item) => String(item.id) === String(productId));
     if (!product) return;
-    if (String(product.supplier || "").toLowerCase() === OWN_PRODUCTION_SUPPLIER) return;
 
     const summary = summarizeProduct(product, statsByProduct);
     const packCount = Math.max(1, Number(packs || summary.suggestedPacks || 1));
@@ -342,7 +341,7 @@
       });
 
     if (!rows.length) {
-      list.innerHTML = `<tr><td colspan="14">No hay productos para mostrar.</td></tr>`;
+      list.innerHTML = `<tr><td colspan="12">No hay productos para mostrar.</td></tr>`;
       return;
     }
 
@@ -364,8 +363,6 @@
           <td class="purchase-number">${formatQty(row.max, row.product.weighable)}</td>
           <td class="purchase-number">${formatQty(row.range, row.product.weighable)}</td>
           <td class="purchase-number">${formatQty(row.average, row.product.weighable)}</td>
-          <td class="purchase-number">${formatQty(row.deviation, row.product.weighable)}</td>
-          <td class="purchase-number">${row.frequency}</td>
           <td>
             <select class="purchase-supplier-select" data-product-id="${id}" data-product-field="supplier">
               ${supplierOptions(row.product.supplier)}
@@ -386,8 +383,6 @@
   function renderPurchaseOrder() {
     const list = $("purchaseOrderList");
     if (!list) return;
-
-    state.order = state.order.filter((item) => String(item.supplier || "").toLowerCase() !== OWN_PRODUCTION_SUPPLIER);
 
     if (!state.order.length) {
       list.innerHTML = `<p class="muted">Todavia no agregaste productos a la lista.</p>`;
