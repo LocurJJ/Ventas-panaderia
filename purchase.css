@@ -2,6 +2,10 @@
   grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
 }
 
+.page#purchaseView {
+  max-width: min(1500px, calc(100vw - 48px));
+}
+
 .purchase-panel {
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -27,7 +31,7 @@
 
 .purchase-table {
   width: 100%;
-  min-width: 1080px;
+  min-width: 920px;
   border-collapse: collapse;
 }
 
