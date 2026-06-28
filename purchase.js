@@ -341,7 +341,7 @@
       });
 
     if (!rows.length) {
-      list.innerHTML = `<tr><td colspan="12">No hay productos para mostrar.</td></tr>`;
+      list.innerHTML = `<tr><td colspan="10">No hay productos para mostrar.</td></tr>`;
       return;
     }
 
@@ -361,7 +361,6 @@
           <td class="purchase-number">${formatQty(row.total, row.product.weighable)}</td>
           <td class="purchase-number">${formatQty(row.min, row.product.weighable)}</td>
           <td class="purchase-number">${formatQty(row.max, row.product.weighable)}</td>
-          <td class="purchase-number">${formatQty(row.range, row.product.weighable)}</td>
           <td class="purchase-number">${formatQty(row.average, row.product.weighable)}</td>
           <td>
             <select class="purchase-supplier-select" data-product-id="${id}" data-product-field="supplier">
@@ -370,7 +369,6 @@
           </td>
           <td><input class="purchase-small-input" type="number" min="1" value="${row.leadTime}" data-setting-id="${id}" data-setting-field="leadTime"></td>
           <td><input class="purchase-small-input" type="number" min="1" value="${row.packSize}" data-setting-id="${id}" data-setting-field="packSize"></td>
-          <td class="purchase-suggestion">${suggestion}</td>
           <td>
             <input class="purchase-small-input" type="number" min="1" value="${packsValue}" data-pack-id="${id}">
             <button class="purchase-add-button" type="button" data-add-id="${id}">Anadir</button>
